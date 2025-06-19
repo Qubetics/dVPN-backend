@@ -34,7 +34,7 @@ class UserController implements Controller {
         return sendResponse(res, userData);
     };
 
-      /**
+  /**
    * It handles the user logout helper
    * @param req
    * @param res

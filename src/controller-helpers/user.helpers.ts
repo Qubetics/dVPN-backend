@@ -5,8 +5,15 @@ import {
   AccessTokenPayload,
   ApiResponse,
 } from "interfaces/user.helpers.interfaces";
+// import * as secp256k1 from "@noble/secp256k1";
+// import { sha256 } from "@noble/hashes/sha256";
+// import sha3 from "js-sha3";
 import redisHelper from "../helpers/redis.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES } from "../constants/index";
+// import {messageToAminoTransaction} from "./common.helpers";
+const { messageToAminoTransaction } = require("./common.helpers.ts");
+// import { serializeSignDoc } from "@cosmjs/launchpad";
+// import { serializeSignDoc } from "@cosmjs/launchpad";
 import { v4 as uuidv4 } from "uuid";
 import { STATUS_CODES } from "http";
 import {
@@ -20,9 +27,13 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt.utils";
-const { fromBase64, toAscii, toBech32 } = require("@cosmjs/encoding");
-const { Secp256k1, sha256 } = require("@cosmjs/crypto");
-const { pubkeyToAddress } = require("@cosmjs/amino");
+import { KeplrSignature } from "interfaces/keplrSignature.interfaces";
+// import { signatureToPubkey } from "@hanchon/signature-to-pubkey";
+// import { arrayify } from "@ethersproject/bytes";
+import { verifySentinelSignature } from "./common.helpers";
+// const { fromBase64, toAscii, toBech32 } = require("@cosmjs/encoding");
+// const { Secp256k1, sha256 } = require("@cosmjs/crypto");
+// const { pubkeyToAddress } = require("@cosmjs/amino");
 
 class UserHelper {
   constructor() {
@@ -40,17 +51,24 @@ class UserHelper {
     try {
       // verify keplr signature
 
-      const { wallet_address, signature } = req.body;
+      const { message, signature, pubkey, address, chainId } = req.body;
+      console.log(
+        "🚀 ~ UserHelper ~ publicconnectWal ~ wallet_address:",
+        address
+      );
+      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ signature:", signature);
+      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ pubKey:", pubkey);
 
-      const message = wallet_address;
-      const signerAddress = wallet_address;
+      const  wallet_address=address;
+      // const signerAddress = wallet_address;
 
-      // const verifyKeplrSignature = (
+      // const verifyKeplrSignature = async (
       //   address: string,
       //   pubKey: string,
       //   message: string,
       //   signature: KeplrSignature
       // ) => {
+
       //   // Encode the message into amino format
       //   const aminoEncoded = messageToAminoTransaction(
       //     address,
@@ -66,13 +84,17 @@ class UserHelper {
       //     signature.signature,
       //     "base64"
       //   ).toString("hex")}`;
+
       //   const pubkeyComputed = signatureToPubkey(
       //     signatureToCompare,
       //     Buffer.from(hashed, "hex")
       //   );
 
+      //   // const isValid = await Secp256k1.verify(signature, message, pubKey);
+      //   // console.log("🚀 ~ UserHelper ~ publicconnectWal ~ isValid:", isValid);
+
       //   return {
-      //     verify: pubkeyComputed === pubKey,
+      //     verify: ver,
       //   };
       // };
 
@@ -80,29 +102,40 @@ class UserHelper {
       // let pubKey = wallet_address;
       // let signature = signature;
       // Verify the signature
-      
-      // const isSignatureValid = verifyKeplrSignature(
-      //   signerAddress,
-      //   pubKey,
-      //   signerAddress,
-      //   signature
-      // );
-  
-      // check the address is present in the DB if not than save that in the DB
-      const userData=await PostgresDataHelper.findOneData(
-        DATA_MODELS.User,
-        {
-          where: {
-            wallet_address: `${wallet_address}`
-          },
-        }
+
+      const isSignatureValid = verifySentinelSignature({
+        message,
+        signatureBase64:signature,
+        pubKeyBase64:pubkey.value,
+        address,
+        prefix:'sent'}
       );
+      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ isSignatureValid:", isSignatureValid)
+
+      if (!isSignatureValid) {
+        return {
+          error: true,
+          data: { isLogin: false },
+          status: Number(STATUS_CODES.INTERNALSERVER),
+          message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+        };
+      }
+
+      // check the address is present in the DB if not than save that in the DB
+      const userData = await PostgresDataHelper.findOneData(DATA_MODELS.User, {
+        where: {
+          wallet_address: `${wallet_address}`,
+        },
+      });
+
+      // console.log(userData,"userData");
 
       if (!userData) {
+        console.log("inside the if statement");
         await PostgresDataHelper.saveData(DATA_MODELS.User, {
           id: uuidv4(),
-          walletAddress: wallet_address.toLocaleLowerCase(),
-          status: true
+          wallet_address: wallet_address,
+          status: true,
         });
       }
 
@@ -144,7 +177,6 @@ class UserHelper {
         EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
       });
 
-
       await redisHelper.client.set(
         refresh_token,
         JSON.stringify(setDataRefresh),
@@ -152,7 +184,6 @@ class UserHelper {
           EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
         }
       );
-
 
       return {
         data: {
