@@ -16,7 +16,7 @@ class PlanController implements Controller {
     private initializeRoutes=()=>{
         this.router.get(`/plans`,this.planList);
         this.router.get(`/plan`,this.getPlanById);
-        this.router.get(`$/nodes/by-plan`,this.getAllByPlanId);
+        this.router.get(`/nodes/by-plan`,this.getAllByPlanId);
     }
 
     /**
