@@ -20,8 +20,9 @@ class Redis {
   // connect the the redis server
   public async connectRedis() {
     try {
+      console.log("🚀 ~ Redis ~ connectRedis ~ `${process.env.REDIS_URL}`:", `${process.env.REDIS_URL}`)
       this.client = redis.createClient({
-        url: `${process.env.REDIS_URL}`
+        url: `${process.env.REDIS_URL}/0`
       });
 
       // bind the redis client event
