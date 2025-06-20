@@ -21,7 +21,7 @@ class Redis {
   public async connectRedis() {
     try {
       this.client = redis.createClient({
-        url: `redis://${process.env.REDIS_URL}/0`
+        url: `${process.env.REDIS_URL}`
       });
 
       // bind the redis client event
