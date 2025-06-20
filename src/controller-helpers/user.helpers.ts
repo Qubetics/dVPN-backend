@@ -52,12 +52,7 @@ class UserHelper {
       // verify keplr signature
 
       const { message, signature, pubkey, address, chainId } = req.body;
-      console.log(
-        "🚀 ~ UserHelper ~ publicconnectWal ~ wallet_address:",
-        address
-      );
-      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ signature:", signature);
-      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ pubKey:", pubkey);
+
 
       const  wallet_address=address;
       // const signerAddress = wallet_address;
@@ -105,12 +100,11 @@ class UserHelper {
 
       const isSignatureValid = verifySentinelSignature({
         message,
-        signatureBase64:signature,
-        pubKeyBase64:pubkey.value,
+        signatureBase64: signature,
+        pubKeyBase64: pubkey.value,
         address,
-        prefix:'sent'}
-      );
-      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ isSignatureValid:", isSignatureValid)
+        prefix: "sent",
+      });
 
       if (!isSignatureValid) {
         return {
@@ -171,19 +165,19 @@ class UserHelper {
         refresh_token_expiry: process.env.REFRESH_TOKEN_EXPIRY,
         access_token_uuid: access_uuid,
       };
-
       // set in the redis both the token
       await redisHelper.client.set(access_uuid, JSON.stringify(setDataAccess), {
         EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
       });
 
-      await redisHelper.client.set(
-        refresh_token,
+      const val = await redisHelper.client.set(
+        refresh_uuid,
         JSON.stringify(setDataRefresh),
         {
           EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
         }
       );
+      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ val:", val);
 
       return {
         data: {
@@ -211,14 +205,21 @@ class UserHelper {
       // this removes the token from the redis hence preventing the re-login
       const { wallet_address, refresh_uuid } =
         verifyRefreshToken(refresh_token);
+      console.log("🚀 ~ UserHelper ~ refresh_uuid:", refresh_uuid);
 
       const values = await redisHelper.client.get(refresh_uuid);
+      console.log("🚀 ~ UserHelper ~ values:", typeof values);
 
       if (!values) {
-        throw new Error("No data found for refresh_uuid");
+        return {
+          error: true,
+          status: Number(STATUS_CODES.UNAUTHORIZED),
+          message: RESPONSE_MESSAGES.UNAUTHORIZED,
+        };
       }
 
-      const { access_uuid } = JSON.parse(String(values));
+      const parsedValues = JSON.parse(String(values));
+      const access_uuid = parsedValues.access_token_uuid;
 
       await redisHelper.removeFromRedis(refresh_uuid);
       await redisHelper.removeFromRedis(access_uuid);
@@ -228,7 +229,11 @@ class UserHelper {
         error: false,
       };
     } catch (error) {
-      // return Response.INTERNAL_SERVER_ERROR;
+      return {
+        error: true,
+        status: Number(STATUS_CODES.INTERNALSERVER),
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+      };
     }
   };
   public userRefresh = async (
