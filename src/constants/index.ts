@@ -26,7 +26,8 @@ export const ERR = {
   // DB data models
 export const DATA_MODELS = {
   User: "User",
-  Node: "Node"
+  Node: "Node",
+  Plan: "Plan"
 };
 
 

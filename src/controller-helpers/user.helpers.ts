@@ -15,7 +15,7 @@ const { messageToAminoTransaction } = require("./common.helpers.ts");
 // import { serializeSignDoc } from "@cosmjs/launchpad";
 // import { serializeSignDoc } from "@cosmjs/launchpad";
 import { v4 as uuidv4 } from "uuid";
-import { STATUS_CODES } from "http";
+import { STATUS_CODES } from "../constants/index";
 import {
   REDIS_ACCESS_TOKEN_EXP_TIME,
   REDIS_REFRESH_TOKEN_EXP_TIME,
@@ -55,48 +55,6 @@ class UserHelper {
 
 
       const  wallet_address=address;
-      // const signerAddress = wallet_address;
-
-      // const verifyKeplrSignature = async (
-      //   address: string,
-      //   pubKey: string,
-      //   message: string,
-      //   signature: KeplrSignature
-      // ) => {
-
-      //   // Encode the message into amino format
-      //   const aminoEncoded = messageToAminoTransaction(
-      //     address,
-      //     Buffer.from(message).toString("base64")
-      //   );
-      //   const serialized = serializeSignDoc(aminoEncoded);
-
-      //   // Hash the amino message that was signed
-      //   const hashed = sha3.keccak_256(arrayify(serialized));
-
-      //   // Compare signature
-      //   const signatureToCompare = `0x${Buffer.from(
-      //     signature.signature,
-      //     "base64"
-      //   ).toString("hex")}`;
-
-      //   const pubkeyComputed = signatureToPubkey(
-      //     signatureToCompare,
-      //     Buffer.from(hashed, "hex")
-      //   );
-
-      //   // const isValid = await Secp256k1.verify(signature, message, pubKey);
-      //   // console.log("🚀 ~ UserHelper ~ publicconnectWal ~ isValid:", isValid);
-
-      //   return {
-      //     verify: ver,
-      //   };
-      // };
-
-      // let signerAddress = wallet_address;
-      // let pubKey = wallet_address;
-      // let signature = signature;
-      // Verify the signature
 
       const isSignatureValid = verifySentinelSignature({
         message,
@@ -110,8 +68,8 @@ class UserHelper {
         return {
           error: true,
           data: { isLogin: false },
-          status: Number(STATUS_CODES.INTERNALSERVER),
-          message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+          status: Number(STATUS_CODES.UNAUTHORIZED),
+          message: RESPONSE_MESSAGES.UNAUTHORIZED,
         };
       }
 
@@ -125,7 +83,6 @@ class UserHelper {
       // console.log(userData,"userData");
 
       if (!userData) {
-        console.log("inside the if statement");
         await PostgresDataHelper.saveData(DATA_MODELS.User, {
           id: uuidv4(),
           wallet_address: wallet_address,
@@ -177,7 +134,6 @@ class UserHelper {
           EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
         }
       );
-      console.log("🚀 ~ UserHelper ~ publicconnectWal ~ val:", val);
 
       return {
         data: {
@@ -248,7 +204,11 @@ class UserHelper {
       const values = await redisHelper.client.get(refresh_uuid);
 
       if (!values) {
-        throw new Error("No data found for refresh_uuid");
+        return {
+          error: true,
+          status: Number(STATUS_CODES.UNAUTHORIZED),
+          message: RESPONSE_MESSAGES.UNAUTHORIZED,
+        };
       }
 
       const access_uuid = uuidv4();
