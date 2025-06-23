@@ -82,8 +82,8 @@ export const sessionCheck = async (
     }
 
     // 8. Attach user and session to request
-    // (req as any).user = user;
-    // (req as any).session = { access_uuid, refresh_uuid };
+    (req as any).user.wallet_address = wallet_address;
+    (req as any).user.session = { access_uuid, refresh_uuid };
 
     return next();
   } catch (err) {

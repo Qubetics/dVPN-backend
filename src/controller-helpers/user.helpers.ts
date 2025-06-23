@@ -53,8 +53,7 @@ class UserHelper {
 
       const { message, signature, pubkey, address, chainId } = req.body;
 
-
-      const  wallet_address=address;
+      const wallet_address = address;
 
       const isSignatureValid = verifySentinelSignature({
         message,
@@ -109,9 +108,6 @@ class UserHelper {
       const access_token = generateAccessToken(access_token_payload);
       const refresh_token = generateRefreshToken(refresh_token_payload);
 
-      const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY;
-      const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY;
-
       const setDataAccess = {
         access_token_expiry: process.env.ACCESS_TOKEN_EXPIRY,
         refresh_token_uuid: refresh_uuid,
@@ -127,7 +123,7 @@ class UserHelper {
         EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
       });
 
-      const val = await redisHelper.client.set(
+      await redisHelper.client.set(
         refresh_uuid,
         JSON.stringify(setDataRefresh),
         {
@@ -159,12 +155,17 @@ class UserHelper {
   ): Promise<ESResponse> => {
     try {
       // this removes the token from the redis hence preventing the re-login
-      const { wallet_address, refresh_uuid } =
-        verifyRefreshToken(refresh_token);
-      console.log("🚀 ~ UserHelper ~ refresh_uuid:", refresh_uuid);
+      if (refresh_token) {
+        return {
+          error: true,
+          status: STATUS_CODES.BADREQUEST,
+          message: RESPONSE_MESSAGES.BADREQUEST,
+        };
+      }
+
+      const { refresh_uuid } = verifyRefreshToken(refresh_token);
 
       const values = await redisHelper.client.get(refresh_uuid);
-      console.log("🚀 ~ UserHelper ~ values:", typeof values);
 
       if (!values) {
         return {
@@ -198,8 +199,15 @@ class UserHelper {
   ): Promise<ESResponse> => {
     try {
       // this removes the token from the redis hence preventing the re-login
-      const { wallet_address, refresh_uuid } =
-        verifyRefreshToken(refresh_token);
+      if (refresh_token) {
+        return {
+          error: true,
+          status: STATUS_CODES.BADREQUEST,
+          message: RESPONSE_MESSAGES.BADREQUEST,
+        };
+      }
+
+      const { wallet_address, refresh_uuid } = verifyRefreshToken(refresh_token);
 
       const values = await redisHelper.client.get(refresh_uuid);
 
@@ -225,11 +233,8 @@ class UserHelper {
         wallet_address: wallet_address,
       };
 
-      const access_token = generateAccessToken(access_token_payload);
-      const refresh_tokenn = generateRefreshToken(refresh_token_payload);
-
-      const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY;
-      const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY;
+      const new_access_token = generateAccessToken(access_token_payload);
+      const new_refresh_token = generateRefreshToken(refresh_token_payload);
 
       const setDataAccess = {
         access_token_expiry: process.env.ACCESS_TOKEN_EXPIRY,
@@ -258,8 +263,8 @@ class UserHelper {
 
       return {
         data: {
-          accessToken: access_token,
-          refreshToken: refresh_tokenn,
+          accessToken: new_access_token,
+          refreshToken: new_refresh_token,
         },
         error: false,
         status: 200,
