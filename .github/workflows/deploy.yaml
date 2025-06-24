@@ -24,7 +24,7 @@ jobs:
       run: |
         ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           cd /root/dVPN-backend
-          git pull origin main
+          git pull origin stage
           docker-compose down
           docker-compose up -d --build
         EOF
