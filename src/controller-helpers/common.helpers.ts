@@ -29,7 +29,7 @@ export function verifySentinelSignature({
     const publicKey = Buffer.from(pubKeyBase64, 'base64');
     const messageHash = createHash('sha256').update(message).digest();
 
-    // Validate the signature
+    // Validate in the signature
     // const isValid = secp256k1.ecdsaVerify(signature, messageHash, publicKey);
     // if (!isValid) return { verified: false, reason: 'Invalid signature' };
 
