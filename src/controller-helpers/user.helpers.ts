@@ -2,18 +2,10 @@ import { Response } from "express";
 const axios = require("axios");
 import { ESResponse } from "@interfaces";
 import {
-  AccessTokenPayload,
   ApiResponse,
 } from "interfaces/user.helpers.interfaces";
-// import * as secp256k1 from "@noble/secp256k1";
-// import { sha256 } from "@noble/hashes/sha256";
-// import sha3 from "js-sha3";
 import redisHelper from "../helpers/redis.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES } from "../constants/index";
-// import {messageToAminoTransaction} from "./common.helpers";
-const { messageToAminoTransaction } = require("./common.helpers.ts");
-// import { serializeSignDoc } from "@cosmjs/launchpad";
-// import { serializeSignDoc } from "@cosmjs/launchpad";
 import { v4 as uuidv4 } from "uuid";
 import { STATUS_CODES } from "../constants/index";
 import {
@@ -22,18 +14,11 @@ import {
 } from "../constants/user.constant";
 import PostgresDataHelper from "../helpers/postgres.data.helper";
 import {
-  decodeToken,
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt.utils";
-import { KeplrSignature } from "interfaces/keplrSignature.interfaces";
-// import { signatureToPubkey } from "@hanchon/signature-to-pubkey";
-// import { arrayify } from "@ethersproject/bytes";
-import { verifySentinelSignature } from "./common.helpers";
-// const { fromBase64, toAscii, toBech32 } = require("@cosmjs/encoding");
-// const { Secp256k1, sha256 } = require("@cosmjs/crypto");
-// const { pubkeyToAddress } = require("@cosmjs/amino");
+import { verifyKeplrSignature } from "./common.helpers";
 
 class UserHelper {
   constructor() {
@@ -47,28 +32,20 @@ class UserHelper {
    * @param userAgent
    * @returns
    */
-  public connectWallet = async (req: any, res: any): Promise<ApiResponse> => {
+  public connectWallet = async (wallet_address: any, pubKey: any,signature:any): Promise<ApiResponse> => {
     try {
-      // verify keplr signature
+      const isSignatureValid = verifyKeplrSignature(
+        wallet_address,
+        pubKey,
+        wallet_address,
+        signature
+      );
 
-      const { message, signature, pubkey, address, chainId } = req.body;
-
-      const wallet_address = address;
-
-      const isSignatureValid = verifySentinelSignature({
-        message,
-        signatureBase64: signature,
-        pubKeyBase64: pubkey.value,
-        address,
-        prefix: "sent",
-      });
-
-      if (!isSignatureValid) {
+      if (!isSignatureValid?.verify) {
         return {
           error: true,
-          data: { isLogin: false },
           status: Number(STATUS_CODES.UNAUTHORIZED),
-          message: RESPONSE_MESSAGES.UNAUTHORIZED,
+          message: RESPONSE_MESSAGES.INVALID_CREDENTIALS,
         };
       }
 
@@ -79,8 +56,6 @@ class UserHelper {
         },
       });
 
-      // console.log(userData,"userData");
-
       if (!userData) {
         await PostgresDataHelper.saveData(DATA_MODELS.User, {
           id: uuidv4(),
@@ -89,8 +64,7 @@ class UserHelper {
         });
       }
 
-      // generate the token both access token and refresh token
-
+      // generate the token uuid both access token and refresh token
       const access_uuid = uuidv4();
       const refresh_uuid = uuidv4();
 
@@ -105,6 +79,7 @@ class UserHelper {
         wallet_address: wallet_address,
       };
 
+      // generate the token both access token and refresh token
       const access_token = generateAccessToken(access_token_payload);
       const refresh_token = generateRefreshToken(refresh_token_payload);
 

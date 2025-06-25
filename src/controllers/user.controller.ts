@@ -15,7 +15,7 @@ class UserController implements Controller {
     }
 
     private initializeRoutes=()=>{
-        this.router.post(`${this.path}/login`,loginValidation, this.connectWallet);
+        this.router.post(`${this.path}/login`,loginValidation,this.connectWallet);
         this.router.get(`${this.path}/logout`,this.userLogout);
         this.router.get(`${this.path}/refresh`,this.userRefresh);
     }
@@ -28,9 +28,13 @@ class UserController implements Controller {
      * @returns
      */
     private connectWallet=async (req:Request ,res:Response)=>{
+        const wallet_address=req.body.wallet_address;
+        const pubKey=req.body.pubKey; 
+        const signature=req.body.signature;
         const userData=await UserHelper.connectWallet(
-            req,
-            res
+            wallet_address,
+            pubKey,
+            signature,
         );
         return sendResponse(res, userData);
     };

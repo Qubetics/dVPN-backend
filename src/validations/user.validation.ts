@@ -1,8 +1,8 @@
 import * as Joi from "joi";
-import { Request,Response,NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 
 /**
- * Validation while connecting wallet or logging in 
+ * Validation while connecting wallet or logging in
  */
 const loginValidation = (
   req: Request,
@@ -10,24 +10,31 @@ const loginValidation = (
   next: NextFunction
 ) => {
   const schema = Joi.object({
-    address: Joi.string()
+    wallet_address: Joi.string()
       .pattern(/^sent[0-9a-z]{39}$/)
       .required()
       .messages({
         'string.pattern.base': 'Invalid wallet address format',
-        'any.required': 'Address is required',
+        'any.required': 'Wallet address is required',
       }),
 
     message: Joi.string().required().messages({
       'any.required': 'Message is required',
     }),
 
-    pubkey: Joi.object({
-      type: Joi.string().required(),
-      value: Joi.string().base64().required(),
-    }).required(),
+    pubKey: Joi.string().base64().required().messages({
+      'string.base64': 'Public key must be base64 encoded',
+      'any.required': 'Public key is required',
+    }),
 
-    signature: Joi.string().base64().required(),
+    signature: Joi.object({
+      pub_key: Joi.object({
+        type: Joi.string().required(),
+        value: Joi.string().base64().required(),
+      }).required(),
+
+      signature: Joi.string().base64().required(),
+    }).required(),
   });
 
   const { error } = schema.validate(req.body);

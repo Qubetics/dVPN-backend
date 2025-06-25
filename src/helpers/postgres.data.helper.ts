@@ -3,6 +3,7 @@ import User from "../model/user/index";
 import Node from "../model/nodes/index"
 import Plans from "../model/plans/index";
 import Subscriptions from "../model/subscriptions/index";
+import Sessions from "../model/session/index";
 
 class PostgresDataHelper {
   static instance: PostgresDataHelper = null;
@@ -203,10 +204,12 @@ class PostgresDataHelper {
             return User;
          case DATA_MODELS.Node:
             return Node;
-          case DATA_MODELS.Plans:
-             return Plans;
-             case DATA_MODELS.Subscriptions:
-              return Subscriptions;
+         case DATA_MODELS.Plans:
+            return Plans;
+         case DATA_MODELS.Subscriptions:
+            return Subscriptions;
+         case DATA_MODELS.Sessions:
+            return Sessions;
       default:
         return null;
     }

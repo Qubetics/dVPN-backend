@@ -21,7 +21,7 @@ interface IPlans {
 interface PlansInstance extends Model<IPlans>, IPlans { }
 
 const Plans = sequelize.define<PlansInstance>(
-    "plan",
+    "plans",
     {
         id: {
             type: DataTypes.UUID,

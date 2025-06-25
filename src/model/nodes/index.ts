@@ -1,82 +1,88 @@
-// src/models/Node.ts
-
 import { DataTypes, Model } from "sequelize";
-import dbConnectionHandler from "../../connection";
-import User from "../user/index"; 
+import DBConnectionHandler from "../../connection"; // adjust path if needed
+const sequelize = DBConnectionHandler.sequelize;
 
-const sequelize = dbConnectionHandler.sequelize;
 
-export interface INode {
-  id: string;
-  node_address: string;
-  city: string;
-  country: string;
-  long: number;
-  lat: number;
-  isDelete: boolean;
-  status: boolean;
-  wallet_address: string; 
+interface Price{
+    denom: string;
+    amount: string;
+}
+interface INode {
+    id: string;
+    address: string;
+    gigabyte_prices: Price;
+    hourly_prices: Price;
+    remote_url: string;
+    inactive_at: string;
+    country: string;
+    city: string;
+    long: string;
+    lat: string;
+    status: string;
+    status_at: string;
 }
 
-interface NodeInstance extends Model<INode>, INode {}
+interface NodeInstance extends Model<INode>, INode { }
 
 const Node = sequelize.define<NodeInstance>(
-  "node",
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+    'nodes',
+    {
+        id: {
+            type: DataTypes.UUID,
+            primaryKey: true,
+            unique: true,
+        },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        gigabyte_prices: {
+            type: DataTypes.JSONB,
+            allowNull: false,
+        },
+        hourly_prices: {
+            type: DataTypes.JSONB,
+            allowNull: false,
+        },
+        remote_url: {
+            type: DataTypes.JSONB,
+            allowNull: false,
+        },
+        inactive_at: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        country: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        city: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        long: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        lat: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        status: {
+            type: DataTypes.JSONB,
+            allowNull: false,
+        },
+        status_at: {
+            type: DataTypes.JSONB,
+            allowNull: false,
+        }
     },
-    node_address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    city: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    country: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    long: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    lat: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    isDelete: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    status: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    wallet_address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: User,    
-        key: "wallet_address",
-      },
-      onUpdate: "CASCADE",
-      onDelete: "CASCADE",
-    },
-  },
-  {
-    timestamps: true, 
-  }
-);
-
-
-User.hasMany(Node, { foreignKey: "wallet_address" });
-
-Node.sync({ alter: true }).catch((error) => {
-  console.error("Error syncing Node table:", error);
+    {
+        timestamps: true,
+    }
+)
+Node.sync({ alter: true }).catch((error: any) => {
+    console.error("Error syncing Node table:", error);
 });
 
 export default Node;

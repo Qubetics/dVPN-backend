@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import DBConnectionHandler from "../../connection"; 
+import DBConnectionHandler from "../../connection";
 const sequelize = DBConnectionHandler.sequelize;
 
 interface Deposite {
@@ -70,8 +70,6 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
 );
 
 
-Subscriptions.sync({ alter: true }).catch((error) => {
-    console.error("Error syncing Subscriptions table:", error);
-});
+Subscriptions.sync({ alter: true })
 
 export default Subscriptions;

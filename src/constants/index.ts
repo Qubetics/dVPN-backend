@@ -29,6 +29,7 @@ export const DATA_MODELS = {
   Node: "Node",
   Plans: "Plans",
   Subscriptions: "Subscriptions",
+  Sessions: "Sessions",
 };
 
 // Response messages
@@ -59,6 +60,7 @@ export const RESPONSE_MESSAGES = {
   Max_LIMIT: "Invalid page limit (defaults to 10, maximum is 40)",
   USERNAME_EXIST: "Username already exists",
   API_SERVICE: "API Service is up",
+  INVALID_CREDENTIALS: "Invalid Credentials!"
 };
 
 export const UNDEFINED = "undefined";

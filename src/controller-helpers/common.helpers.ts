@@ -1,62 +1,66 @@
-import * as secp256k1 from 'secp256k1';
-import { bech32 } from 'bech32';
-import { createHash, createHmac } from 'crypto'; // crypto includes ripemd160
-import { ripemd160 } from '@noble/hashes/ripemd160'; // safer/faster
+import sha3 from "js-sha3";
+import { arrayify } from "@ethersproject/bytes";
+import { serializeSignDoc } from '@cosmjs/launchpad'
+import { signatureToPubkey } from '@hanchon/signature-to-pubkey'
+import { KeplrSignature } from "../interfaces/keplrSignature.interfaces";
 
-export interface VerifySignatureOptions {
-  message: string;
-  signatureBase64: string;
-  pubKeyBase64: string;
-  address: string;
-  prefix?: string;
-}
 
-export interface VerificationResult {
-  verified: boolean;
-  reason?: string;
-  derivedAddress?: string;
-}
-
-export function verifySentinelSignature({
-  message,
-  signatureBase64,
-  pubKeyBase64,
-  address,
-  prefix = 'sent',
-}: VerifySignatureOptions): VerificationResult {
-  try {
-    const signature = Buffer.from(signatureBase64, 'base64');
-    const publicKey = Buffer.from(pubKeyBase64, 'base64');
-    const messageHash = createHash('sha256').update(message).digest();
-
-    // Validate in the signature
-    // const isValid = secp256k1.ecdsaVerify(signature, messageHash, publicKey);
-    // if (!isValid) return { verified: false, reason: 'Invalid signature' };
-
-    // ✅ Proper Cosmos address derivation: sha256 → ripemd160 → bech32
-    const sha256Digest = createHash('sha256').update(publicKey).digest();
-    const pubKeyHash = Buffer.from(ripemd160(sha256Digest));
-    const derivedAddress = bech32.encode(prefix, bech32.toWords(pubKeyHash));
-
-    console.log("🚀 ~ address:", address);
-    console.log("🚀 ~ derivedAddress:", derivedAddress);
-
-    if (derivedAddress !== address) {
-      return {
-        verified: false,
-        reason: 'Address mismatch',
-        derivedAddress,
-      };
+function messageToAminoTransaction(signer: string, data: string) {
+    return {
+        chain_id: '',
+        account_number: '0',
+        sequence: '0',
+        fee: {
+            gas: '0',
+            amount: [],
+        },
+        msgs: [
+            {
+                type: 'sign/MsgSignData',
+                value: {
+                    signer,
+                    data,
+                },
+            },
+        ],
+        memo: '',
     }
-
-    return {
-      verified: true,
-      derivedAddress,
-    };
-  } catch (error: any) {
-    return {
-      verified: false,
-      reason: error?.message || 'Unknown error during verification',
-    };
-  }
 }
+
+export const verifyKeplrSignature = (
+  address: string,
+  pubKey: string,
+  message: string,
+  signature: KeplrSignature
+) => {
+// Encode the message into amino format
+try{
+const aminoEncoded = messageToAminoTransaction(
+  address,
+  Buffer.from(message).toString("base64")
+);
+const serialized = serializeSignDoc(aminoEncoded);
+
+// Hash the amino message that was signed
+const hashed = sha3.keccak_256(arrayify(serialized));
+
+// Compare signature
+const signatureToCompare = `0x${Buffer.from(
+  signature.signature,
+  "base64"
+).toString("hex")}`;
+console.log(hashed);
+const pubkeyComputed = signatureToPubkey(
+  signatureToCompare,
+  Buffer.from(hashed, "hex")
+);
+// console.log(pubkeyComputed===pubKey, pubkeyComputed, pubKey )
+return {
+  verify: pubkeyComputed === pubKey,
+};
+} catch (e){
+  return {
+    verify: false,
+  };
+}
+};
