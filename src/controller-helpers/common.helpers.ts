@@ -54,7 +54,7 @@ const pubkeyComputed = signatureToPubkey(
   signatureToCompare,
   Buffer.from(hashed, "hex")
 );
-// console.log(pubkeyComputed===pubKey, pubkeyComputed, pubKey )
+//console.log(pubkeyComputed===pubKey, pubkeyComputed, pubKey )
 return {
   verify: pubkeyComputed === pubKey,
 };
