@@ -45,7 +45,7 @@ const Node = sequelize.define<NodeInstance>(
             allowNull: false,
         },
         remote_url: {
-            type: DataTypes.JSONB,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         inactive_at: {
@@ -69,11 +69,11 @@ const Node = sequelize.define<NodeInstance>(
             allowNull: false,
         },
         status: {
-            type: DataTypes.JSONB,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         status_at: {
-            type: DataTypes.JSONB,
+            type: DataTypes.STRING,
             allowNull: false,
         }
     },

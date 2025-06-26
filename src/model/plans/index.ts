@@ -13,9 +13,9 @@ interface IPlans {
     providerAddress: string;
     duration: string;
     gigabytes:string;
-    prices: Price[];
+    prices: Price;
     status:string;
-    statusAt: string;
+    status_at: string;
 }
 
 interface PlansInstance extends Model<IPlans>, IPlans { }
@@ -52,7 +52,7 @@ const Plans = sequelize.define<PlansInstance>(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        statusAt: {
+        status_at: {
             type: DataTypes.STRING,
             allowNull: false,
         },
