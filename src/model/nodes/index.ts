@@ -2,24 +2,25 @@ import { DataTypes, Model } from "sequelize";
 import DBConnectionHandler from "../../connection"; // adjust path if needed
 const sequelize = DBConnectionHandler.sequelize;
 
-
-interface Price{
+interface Price {
     denom: string;
-    amount: string;
+    base_value: string;
+    quote_value: string;
 }
+
 interface INode {
     id: string;
     address: string;
-    gigabyte_prices: Price;
-    hourly_prices: Price;
+    gigabyte_prices: Price[];
+    hourly_prices: Price[];
     remote_url: string;
-    inactive_at: string;
+    inactive_at: Date;
     country: string;
     city: string;
     long: string;
     lat: string;
     status: string;
-    status_at: string;
+    status_at: Date;
 }
 
 interface NodeInstance extends Model<INode>, INode { }
@@ -31,6 +32,7 @@ const Node = sequelize.define<NodeInstance>(
             type: DataTypes.UUID,
             primaryKey: true,
             unique: true,
+            allowNull: false,
         },
         address: {
             type: DataTypes.STRING,
@@ -49,7 +51,7 @@ const Node = sequelize.define<NodeInstance>(
             allowNull: false,
         },
         inactive_at: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATE,
             allowNull: false,
         },
         country: {
@@ -73,14 +75,15 @@ const Node = sequelize.define<NodeInstance>(
             allowNull: false,
         },
         status_at: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATE,
             allowNull: false,
         }
     },
     {
         timestamps: true,
     }
-)
+);
+
 Node.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing Node table:", error);
 });

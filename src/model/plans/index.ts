@@ -3,19 +3,20 @@ import DBConnectionHandler from "../../connection";
 const sequelize = DBConnectionHandler.sequelize;
 
 interface Price {
-  denom: string;
-  amount: string;
+    denom: string;
+    base_value: string;
+    quote_value: string;
 }
 
 interface IPlans {
     id: string;
     planId: string;
     providerAddress: string;
-    duration: string;
-    gigabytes:string;
-    prices: Price;
-    status:string;
-    status_at: string;
+    hours: string;
+    gigabytes: string;
+    prices: Price[];
+    status: string;
+    status_at: Date;
 }
 
 interface PlansInstance extends Model<IPlans>, IPlans { }
@@ -36,7 +37,7 @@ const Plans = sequelize.define<PlansInstance>(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        duration: {
+        hours: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -45,7 +46,7 @@ const Plans = sequelize.define<PlansInstance>(
             allowNull: false,
         },
         prices: {
-            type: DataTypes.JSONB, // or use DataTypes.JSON if needed
+            type: DataTypes.JSONB,
             allowNull: false,
         },
         status: {
@@ -53,12 +54,12 @@ const Plans = sequelize.define<PlansInstance>(
             allowNull: false,
         },
         status_at: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATE,
             allowNull: false,
         },
     },
     {
-        timestamps: true
+        timestamps: true,
     }
 );
 

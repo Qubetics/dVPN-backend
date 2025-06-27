@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import PostgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
-import postgresDataHelper from "../helpers/postgres.data.helper";
 
 class PlanHelper {
     constructor() {
@@ -50,7 +49,6 @@ class PlanHelper {
       console.log("🚀 ~ PlanHelper ~ offset:", offsetPage);
       console.log("🚀 ~ PlanHelper ~ offset:", typeof offset);
       console.log("🚀 ~ PlanHelper ~ offset:", offset);
-      console.log("postgres",await postgresDataHelper._getModel(DATA_MODELS.User));
 
       const {rows,count} = await PostgresDataHelper.findAndCountAll(DATA_MODELS.Plans, {
         limit: limit,
@@ -79,47 +77,43 @@ class PlanHelper {
     }
   };
 
-
-public getAllByPlanId = async (  
-  planId : string,
+  public getPlansByProviderAddress = async (  
+  providerAddress: string,
+  status?: string, 
   limit?: number,
   page?: number,
   countTotal?: boolean,
-  order?: string,
+  order?: string
   ): Promise<ApiResponse> => {
     try {
-      if (!planId) {
+      if (!providerAddress) {
         return {
           error: true,
           status: STATUS_CODES.BADREQUEST,
-          message: RESPONSE_MESSAGES.NOT_FOUND,
+          message: RESPONSE_MESSAGES.PROVIDER_ADDRESS_NOT_FOUND,
         };
       }
 
-      const plan = await PostgresDataHelper.findOneData(DATA_MODELS.Plans, {
-        where: { id: planId },
-      });
-  
-      if (!plan) {
-        return {
-          error: true,
-          status: STATUS_CODES.NOTFOUND,
-          message: RESPONSE_MESSAGES.PLAN_NOT_FOUND,
-        };
-      }
-  
-      limit = limit || 10;
-      const offsetPage = page || 1;
-      const offset = (offsetPage-1) * limit;
-
-      const query: any = {
-        where: { planId },
-        limit:limit,
-        offset:offset,
-        order: [["createdAt", order ? order : 'ASC' ]],
+      const whereClause: any = {
+        providerAddress,
       };
   
-      const {rows,count} = await PostgresDataHelper.findAndCountAll(DATA_MODELS.Plans, query);
+      if (status && status !== "inactive") {
+        whereClause.status = status;
+      }
+
+      const offsetPage = page || 1;
+      const offset = (offsetPage-1) * limit;
+  
+      const query: any = {
+        where: whereClause,
+        limit: limit || 10,
+        offset: offset,
+        order: [["createdAt",  order ? order : 'ASC' ]],
+      };
+  
+      const { rows, count } = await PostgresDataHelper.findAndCountAll(DATA_MODELS.Plans, query);
+
   
       console.log("🚀 ~ PlanHelper ~ rows,count:", rows,count)
       return {

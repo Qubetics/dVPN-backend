@@ -34,6 +34,8 @@ export const DATA_MODELS = {
 
 // Response messages
 export const RESPONSE_MESSAGES = {
+  PROVIDER_ADDRESS_NOT_FOUND: "Provider address is not found",
+  NODE_ADDRESS_NOT_FOUND: "Node address is not found",
   BADREQUEST: "Missing required header",
   INVALID_TOKEN: "Invalid token",
   INTERNAL_SERVER_ERROR: "Internal Server Error.",

@@ -1,6 +1,5 @@
 import * as express from "express";
 import { Controller } from "@interfaces";
-// import UserHelper from "../controller-helpers/user.helpers"
 import planHelpers from "../controller-helpers/plan.helpers";
 import { Request, Response } from "express";
 import sendResponse from "../responses/response.helper";
@@ -15,8 +14,7 @@ class PlanController implements Controller {
 
   private initializeRoutes = () => {
     this.router.get(`/plans`, this.planList);
-    // this.router.get(`/plan`,this.getPlanById);
-    this.router.get(`/:plan_id/nodes`, this.getAllByPlanId);
+    this.router.get(`/provider/:address/plans`, this.getPlansByProviderAddress);
   };
 
   /**
@@ -36,14 +34,15 @@ class PlanController implements Controller {
     return sendResponse(res, planData);
   };
 
-  private getAllByPlanId = async (req: Request, res: Response) => {
-    const limit= Number(req.query.limit);
-    const page = Number(req.query.page);
-    const countTotal = Boolean(req.query.count_total);
-    const order = String(req.query.order); // order should "ASC" or "DESC"
-    const planId = String(req.params.plan_id); // 
-    const planDataByPlanId = await planHelpers.getAllByPlanId(planId,limit,page,countTotal,order);
-    return sendResponse(res, planDataByPlanId);
+  private getPlansByProviderAddress = async (req: Request, res: Response) => {
+    const providerAddress = String(req.params.provider_address);// Required
+    const status = String(req.query.status);// this should can be active and inactive
+    const limit= Number(req.query.limit);// limit can be anything but default 10
+    const page = Number(req.query.page);// page can be anything but default 1
+    const countTotal = Boolean(req.query.count_total);// true or false
+    const order = String(req.query.order); // "ASC" or "DESC"
+    const planDataByProviderAddress = await planHelpers.getPlansByProviderAddress(providerAddress,status,limit,page,countTotal,order);
+    return sendResponse(res, planDataByProviderAddress);
   };
 }
 

@@ -2,27 +2,22 @@ import { DataTypes, Model } from "sequelize";
 import DBConnectionHandler from "../../connection";
 const sequelize = DBConnectionHandler.sequelize;
 
-interface Deposite {
+interface Price {
     denom: string;
-    amount: string;
-}
-interface Base {
-    id: string;
-    address: string;
-    inactive_at: string;
-    status: string;
-    status_at: string;
+    base_value: string;
+    quote_value: string;
 }
 
 interface ISubscription {
     id: string;
-    type: string;
-    base: Base;
-    node_address: string;
-    gigabytes: string;
-    hours: string;
+    acc_address: string;
     plan_id: string;
-    deposite: Deposite;
+    price: Price;
+    renewal_price_policy: string;
+    status: string;
+    inactive_at: Date | null;
+    start_at: Date | null;
+    status_at: Date | null;
 }
 
 interface SubscriptionInstance extends Model<ISubscription>, ISubscription { }
@@ -35,32 +30,36 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
             primaryKey: true,
             unique: true,
         },
-        type: {
+        acc_address: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        base: {
-            type: DataTypes.JSONB,
-            allowNull: false,
-        },
-        node_address: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        gigabytes: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        hours: {
-            type: DataTypes.STRING,
-            allowNull: true,
         },
         plan_id: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        deposite: {
+        price: {
             type: DataTypes.JSONB,
+            allowNull: true,
+        },
+        renewal_price_policy: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        inactive_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        start_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        status_at: {
+            type: DataTypes.DATE,
             allowNull: true,
         },
     },
@@ -69,7 +68,8 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
     }
 );
 
-
-Subscriptions.sync({ alter: true })
+Subscriptions.sync({ alter: true }).catch((error: any) => {
+    console.error("Error syncing subscriptions table:", error);
+});
 
 export default Subscriptions;
