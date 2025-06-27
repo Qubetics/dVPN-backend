@@ -33,10 +33,10 @@ class SentinelController implements Controller {
     return sendResponse(res, sessions);
   };
 
-  private getSessionParam = async (req: Request, res:Response) => {
-     const sessionParmasData=await sessionHelper.sessionParmas(req,res);
-     return sendResponse(res,sessionParmasData);
-  }
+  // private getSessionParam = async (req: Request, res:Response) => {
+  //    const sessionParmasData=await sessionHelper.sessionParmas(req,res);
+  //    return sendResponse(res,sessionParmasData);
+  // }
 }
 
 export default SentinelController;

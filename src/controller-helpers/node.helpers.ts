@@ -57,7 +57,7 @@ class NodeHelper {
             where: whereClause,
             limit: limit,
             offset: offset,
-            order: [["createdAt", order ? order : 'ASC' ]],
+            // order: [["createdAt", order ? order : 'ASC' ]],
           });
     
           console.log("🚀 ~ PlanHelper ~ planList= ~ result:", rows,"rows",count,"count");

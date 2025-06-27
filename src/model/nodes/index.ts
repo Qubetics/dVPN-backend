@@ -36,6 +36,7 @@ const Node = sequelize.define<NodeInstance>(
         },
         address: {
             type: DataTypes.STRING,
+            unique: true,
             allowNull: false,
         },
         gigabyte_prices: {
