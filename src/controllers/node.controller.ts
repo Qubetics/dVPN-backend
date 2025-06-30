@@ -24,17 +24,31 @@ class NodeController implements Controller {
    * @param response
    * @returns
    */
-  private nodeList = async (req: Request, res: Response) => {
-    console.log("start");
-    const status = String(req.query.status);
-    const limit = Number(req.query.limit);
-    const page = Number(req.query.page);
-    const countTotal = Boolean(req.query.count_total);
-    const order = String(req.query.order); // order should "ASC" or "DESC"
-    const nodeAddress = String(req.query.address); // 
-    const planData = await nodeHelpers.nodeList(status,limit, page, countTotal, order, nodeAddress);
-    return sendResponse(res, planData);
-  };
+      private nodeList = async (req: Request, res: Response) => {
+        console.log("start");
+        const status = String(req.query.status);
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const countTotal = Boolean(req.query.count_total);
+        const order = String(req.query.order);
+        const nodeAddress = String(req.query.address);
+        const country = String(req.query.country);  
+        const city = String(req.query.city);       
+      
+        const planData = await nodeHelpers.nodeList(
+          status,
+          limit,
+          page,
+          countTotal,
+          order,
+          nodeAddress,
+          country,
+          city
+        );
+      
+        return sendResponse(res, planData);
+      };
+      
 }
 
 export default NodeController;
