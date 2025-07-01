@@ -58,11 +58,12 @@ class NodeHelper {
       const offsetPage = page || 1;
       const offset = (offsetPage - 1) * limit;
 
+      // order: [["createdAt", order ? order : 'ASC' ]],
+
       const { rows, count } = await postgresDataHelper.findAndCountAll(DATA_MODELS.Node, {
         where: whereClause,
         limit: limit,
         offset: offset,
-        order: [["createdAt", order ? order : 'ASC' ]],
       });
 
       console.log("🚀 ~ PlanHelper ~ planList= ~ result:", rows, "rows", count, "count");
