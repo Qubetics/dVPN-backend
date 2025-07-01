@@ -39,7 +39,7 @@ const Plans = sequelize.define<PlansInstance>(
         },
         hours: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         gigabytes: {
             type: DataTypes.STRING,

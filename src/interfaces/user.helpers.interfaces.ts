@@ -1,7 +1,6 @@
 interface ApiResponse {
     error?: boolean;
     data?: any;
-    pagination?: any,
     message?: string;
     status?: number;
     token?: string;

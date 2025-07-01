@@ -3,6 +3,7 @@ import { Controller } from "@interfaces";
 import { Request, Response } from "express";
 import sendResponse from "../responses/response.helper";
 import nodeHelpers from "../controller-helpers/node.helpers";
+import { sessionCheck } from "../middleware/sessionCheck";
 
 class NodeController implements Controller {
     public path="";
@@ -14,7 +15,7 @@ class NodeController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get("/nodes",this.nodeList);
+        this.router.get("/nodes",sessionCheck,this.nodeList);
     };
 
       /**
