@@ -15,7 +15,7 @@ class NodeController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get("/nodes",sessionCheck,this.nodeList);
+        this.router.get("/nodes",this.nodeList);
     };
 
       /**
