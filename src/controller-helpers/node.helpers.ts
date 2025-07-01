@@ -54,14 +54,15 @@ class NodeHelper {
         whereClause.city = city;
       }
 
+
       limit = limit || 10;
       const offsetPage = page || 1;
       const offset = (offsetPage - 1) * limit;
 
       // order: [["createdAt", order ? order : 'ASC' ]],
+      // where: whereClause,
 
       const { rows, count } = await postgresDataHelper.findAndCountAll(DATA_MODELS.Node, {
-        where: whereClause,
         limit: limit,
         offset: offset,
       });

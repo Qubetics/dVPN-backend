@@ -51,7 +51,7 @@ class SessionHelper {
         order: [["createdAt", order ? order : 'ASC' ]],
       });
 
-      console.log("🚀 ~ PlanHelper ~ planList= ~ result:", rows,"rows",count,"count");
+      // console.log("🚀 ~ PlanHelper ~ planList= ~ result:", rows,"rows",count,"count");
 
       return {
         data: {
