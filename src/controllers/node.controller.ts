@@ -34,6 +34,7 @@ class NodeController implements Controller {
         const order = String(req.query.order);
         const nodeAddress = String(req.query.address);
         const country = String(req.query.country);  
+        console.log("🚀 ~ NodeController ~ nodeList= ~ country:", country)
         const city = String(req.query.city);       
       
         const planData = await nodeHelpers.nodeList(
