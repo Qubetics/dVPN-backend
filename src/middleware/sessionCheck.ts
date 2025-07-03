@@ -10,7 +10,7 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
  * Middleware to validate access token and session from Redis.
  */
 export const sessionCheck = async (
-  req: Request,
+  req: any,
   res: Response,
   next: NextFunction
 ) => {
@@ -82,8 +82,7 @@ export const sessionCheck = async (
     }
 
     // 8. Attach user and session to request
-    (req as any).user.wallet_address = wallet_address;
-    (req as any).user.session = { access_uuid, refresh_uuid };
+    req.user = { wallet_address: wallet_address, access_uuid: access_uuid, refresh_uuid: refresh_uuid };
 
     return next();
   } catch (err) {

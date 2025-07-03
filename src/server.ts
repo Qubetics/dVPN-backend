@@ -7,12 +7,13 @@ import UserController from "./controllers/user.controller";
 import dbConnectionHandler from "./connection"
 import PlanController from "./controllers/plan.controller";
 import NodeController from "./controllers/node.controller";
+import SentinelController from "./controllers/session.controller";
 require('dotenv').config();
 
 (async ()=>{
     try {
             await config.initiate();
-            const app=new App([new UserController(),new PlanController(),new NodeController()]);
+            const app=new App([new UserController(),new PlanController(),new NodeController(),new SentinelController()]);
 
             // connect to the postgres server
             const isDBconnected = await dbConnectionHandler.createDBConnection();

@@ -9,55 +9,65 @@ class SessionHelper {
       }
 
   public sessionList = async (   
+    wallet_address: string,
     limit?: number,
     page?: number,
     countTotal?: boolean,
-    order?: string,
-    sessionId?: string,
+    order?: string
     ): Promise<ApiResponse> => {
       try {
-        console.log("🚀 ~ PlanHelper ~ planId:",sessionId);
 
-      if(sessionId!='undefined' && sessionId) {
-        const session = await PostgresDataHelper.findOneData(DATA_MODELS.Plans, {
-          where: { id: sessionId },
-        });
-        console.log("🚀 ~ PlanHelper ~ plan:", session)
+      // if(sessionId!='undefined' && sessionId) {
+      //   const session = await PostgresDataHelper.findOneData(DATA_MODELS.Plans, {
+      //     where: { id: sessionId },
+      //   });
+      //   console.log("🚀 ~ PlanHelper ~ plan:", session)
     
-        if (!session) {
-          return {
-            error: true,
-            status: STATUS_CODES.UNAUTHORIZED,
-            message: RESPONSE_MESSAGES.UNAUTHORIZED,
-          };
-        };
+      //   if (!session) {
+      //     return {
+      //       error: true,
+      //       status: STATUS_CODES.UNAUTHORIZED,
+      //       message: RESPONSE_MESSAGES.UNAUTHORIZED,
+      //     };
+      //   };
     
+      //   return {
+      //     data: session,
+      //     status: STATUS_CODES.SUCCESS,
+      //     error: false,
+      //     message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+      //   };
+      // }
+
+      if(wallet_address==="undefined"){
         return {
-          data: session,
-          status: STATUS_CODES.SUCCESS,
-          error: false,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+          error: true,
+          status: STATUS_CODES.UNAUTHORIZED,
+          message: RESPONSE_MESSAGES.UNAUTHORIZED
         };
       }
 
       limit=limit || 10;
       const offsetPage = page || 1;
       const offset = (offsetPage-1) * limit;
-    //   console.log("postgres",await postgresDataHelper._getModel(DATA_MODELS.User));
+      const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
       const {rows,count} = await PostgresDataHelper.findAndCountAll(DATA_MODELS.Sessions, {
+        where:{address:wallet_address},
         limit: limit,
         offset: offset,
-        order: [["createdAt", order ? order : 'ASC' ]],
+        order: [["createdAt", sortOrder ]],
       });
 
-      // console.log("🚀 ~ PlanHelper ~ planList= ~ result:", rows,"rows",count,"count");
-
+      const responseData: any = {
+        plans: rows,
+      };
+  
+      if (countTotal === true) {
+        responseData.total = count;
+      }
       return {
-        data: {
-          plans: rows ,
-          total: (countTotal ? count:0)
-        },
+        data: responseData,
         status: STATUS_CODES.SUCCESS,
         error: false,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
@@ -70,10 +80,6 @@ class SessionHelper {
         status: STATUS_CODES.INTERNALSERVER,
       };
     }
-  };
-
-  public sessionParmas = async (req:Request, res:Response) => {
-    
   };
 
 

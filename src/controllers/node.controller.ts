@@ -26,7 +26,6 @@ class NodeController implements Controller {
    * @returns
    */
       private nodeList = async (req: Request, res: Response) => {
-        console.log("start");
         const status = String(req.query.status);
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -34,7 +33,6 @@ class NodeController implements Controller {
         const order = String(req.query.order);
         const nodeAddress = String(req.query.address);
         const country = String(req.query.country);  
-        console.log("🚀 ~ NodeController ~ nodeList= ~ country:", country)
         const city = String(req.query.city);       
       
         const planData = await nodeHelpers.nodeList(

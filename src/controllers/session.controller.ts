@@ -3,6 +3,7 @@ import { Controller } from "@interfaces";
 import { Request, Response } from "express";
 import sendResponse from "../responses/response.helper";
 import sessionHelper from "../controller-helpers/session.helper";
+import { sessionCheck } from "../middleware/sessionCheck";
 
 class SentinelController implements Controller {
   public path = "";
@@ -13,17 +14,17 @@ class SentinelController implements Controller {
   }
 
   private initializeRoutes = () => {
-    this.router.get(`/sessions`, this.getSessions);
+    this.router.get(`/sessions`,sessionCheck, this.getSessions);
   };
 
-  private getSessions = async (req: Request, res: Response) => {
+  private getSessions = async (req: any, res: Response) => {
     const limit = Number(req.query.limit);
     const page = Number(req.query.page);
     const countTotal = Boolean(req.query.count_total);
-    // const key = String(req.query.key);
     const order = String(req.query.order);
-    const sessionId=String(req.query.session_id);
+    const wallet_address=String(req.user.wallet_address);
     const sessions = await sessionHelper.sessionList(
+      wallet_address,
       limit,
       page,
       countTotal,
@@ -33,10 +34,6 @@ class SentinelController implements Controller {
     return sendResponse(res, sessions);
   };
 
-  // private getSessionParam = async (req: Request, res:Response) => {
-  //    const sessionParmasData=await sessionHelper.sessionParmas(req,res);
-  //    return sendResponse(res,sessionParmasData);
-  // }
 }
 
 export default SentinelController;
