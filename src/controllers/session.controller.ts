@@ -5,7 +5,7 @@ import sendResponse from "../responses/response.helper";
 import sessionHelper from "../controller-helpers/session.helper";
 import { sessionCheck } from "../middleware/sessionCheck";
 
-class SentinelController implements Controller {
+class SessionController implements Controller {
   public path = "";
   public router = express.Router();
 
@@ -36,4 +36,4 @@ class SentinelController implements Controller {
 
 }
 
-export default SentinelController;
+export default SessionController;
