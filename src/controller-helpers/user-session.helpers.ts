@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import PostgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
+import UserSessions from "../model/user-session/index";
 
 class UserSessionHelper {
     constructor() {
@@ -17,24 +18,36 @@ class UserSessionHelper {
     ): Promise<ApiResponse> => {
       try {
 
-      if(wallet_address==="undefined"){
+      if(!wallet_address || wallet_address==="undefined"){
         return {
           error: true,
           status: STATUS_CODES.UNAUTHORIZED,
           message: RESPONSE_MESSAGES.UNAUTHORIZED
         };
       }
+      const user = await PostgresDataHelper.findOneData(DATA_MODELS.User, {
+        where: { wallet_address },
+      });
 
-      limit=limit || 10;
+      if (!user) {
+        return {
+          error: true,
+          status: STATUS_CODES.NOTFOUND,
+          message: RESPONSE_MESSAGES.NOT_FOUND,
+        };
+      }
+
+      // Step 2: Get UserSessions for user.id
+      limit = limit || 10;
       const offsetPage = page || 1;
-      const offset = (offsetPage-1) * limit;
+      const offset = (offsetPage - 1) * limit;
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
-      const {rows,count} = await PostgresDataHelper.findAndCountAll(DATA_MODELS.UserSession, {
-        where:{address:wallet_address},
-        limit: limit,
-        offset: offset,
-        order: [["createdAt", sortOrder ]],
+      const { rows, count } = await PostgresDataHelper.findAndCountAll(DATA_MODELS.UserSession, {
+        where: { user_id: user.id },
+        limit,
+        offset,
+        order: [["createdAt", sortOrder]],
       });
 
       const responseData: any = {

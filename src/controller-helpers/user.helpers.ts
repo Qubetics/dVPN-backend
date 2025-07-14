@@ -176,7 +176,7 @@ class UserHelper {
   ): Promise<ESResponse> => {
     try {
       // this removes the token from the redis hence preventing the re-login
-      if (refresh_token) {
+      if (!refresh_token) {
         return {
           error: true,
           status: STATUS_CODES.BADREQUEST,
