@@ -2,7 +2,6 @@ import {REDIS_ERR_MSG} from "../src/constants/redis.constant";
 import App from "./app";
 import { log } from './utils/helper.utils';
 import * as config from './config';
-import "./model/index"
 import redisHelper from "../src/helpers/redis.helper";
 import UserController from "./controllers/user.controller";
 import dbConnectionHandler from "./connection"
