@@ -26,18 +26,27 @@ services:
       - "5555:80"
 
   redis:
-      image: redis:latest
-      container_name: redis_server
-      volumes:
-         - '/data/2021/backups/dvolumes/bwb/docker-redis:/data'
-      ports:
-         - '6379:6379'
-      restart: always
-      healthcheck:
-         test: ['CMD', 'redis-cli', 'ping']
-         interval: 30s
-         timeout: 10s
-         retries: 3
+    image: redis:latest
+    container_name: redis_server
+    volumes:
+        - '/data/2021/backups/dvolumes/bwb/docker-redis:/data'
+    ports:
+        - '6379:6379'
+    restart: always
+    healthcheck:
+        test: ['CMD', 'redis-cli', 'ping']
+        interval: 30s
+        timeout: 10s
+        retries: 3
+  api:
+    build:
+      context: .
+      dockerfile: dockerfilez
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '7000:7000'
 
   # redpanda service (kafka)
   # redpanda-0:
