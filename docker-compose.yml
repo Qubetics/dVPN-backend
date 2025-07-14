@@ -41,12 +41,12 @@ services:
   api:
     build:
       context: .
-      dockerfile: dockerfilez
+      dockerfile: Dockerfile
     restart: always
     env_file:
-      - .env
+      - /root/dVPN-backend/.env
     ports:
-      - '7000:7000'
+      - "0.0.0.0:7000:7000"
 
   # redpanda service (kafka)
   # redpanda-0:
