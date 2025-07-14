@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import PostgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
-import UserSessions from "../model/user-session/index";
 
 class UserSessionHelper {
     constructor() {

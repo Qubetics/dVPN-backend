@@ -31,11 +31,11 @@ const Sessions = sequelize.define<SessionInstance>(
     {
         subscription_id: {
             type: DataTypes.STRING,
-            primaryKey: true,
             allowNull: false,
         },
         id: {
             type: DataTypes.STRING,
+            primaryKey: true,
             allowNull: false,
         },
         acc_address: {
