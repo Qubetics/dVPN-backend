@@ -86,7 +86,6 @@ export const sessionCheck = async (
 
     return next();
   } catch (err) {
-    console.error("Session check error:", err);
     return sendResponse(res, {
       message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       status: STATUS_CODES.INTERNALSERVER,

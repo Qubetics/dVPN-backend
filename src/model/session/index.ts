@@ -2,72 +2,96 @@ import { DataTypes, Model } from "sequelize";
 import DBConnectionHandler from "../../connection";
 const sequelize = DBConnectionHandler.sequelize;
 
-
-interface Bandwidth{
-    upload: string;
-    download: string;
+interface Price {
+    denom: string;
+    base_value: string;
+    quote_value: string;
 }
-
-interface ISessions {
+interface ISession {
     id: string;
     subscription_id: string;
+    acc_address: string;
     node_address: string;
-    address: string;
-    bandwidth:Bandwidth;
+    download_bytes: string;
+    upload_bytes: string;
+    max_bytes: string;
     duration: string;
-    inactive_at: string;
+    max_duration: string;
     status: string;
-    status_at:string;
+    inactive_at: string;
+    start_at: string;
+    status_at: string;
+    price: Price;
 }
 
-interface SessionsInstance extends Model<ISessions>, ISessions { }
+interface SessionInstance extends Model<ISession>, ISession { }
 
-const Sessions = sequelize.define<SessionsInstance>(
-    'sessions',
+const Sessions = sequelize.define<SessionInstance>(
+    "sessions",
     {
-        id:{
-           type: DataTypes.UUID,
+        subscription_id: {
+            type: DataTypes.STRING,
             primaryKey: true,
-            unique: true,
+            allowNull: false,
         },
-        subscription_id:{
+        id: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        node_address:{
+        acc_address: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        address:{
+        node_address: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        bandwidth:{
+        download_bytes: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        upload_bytes: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        max_bytes: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        duration: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        max_duration: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        inactive_at: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        start_at: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        status_at: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        price: {
             type: DataTypes.JSONB,
-            allowNull: false,
+            allowNull: true,
         },
-        duration:{
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-         inactive_at:{
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        status:{
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        status_at:{
-            type: DataTypes.STRING,
-            allowNull: false,
-        }
-
     },
     {
-        timestamps: true
+        timestamps: true,
     }
-)
+);
+
 Sessions.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing Sessions table:", error);
 });

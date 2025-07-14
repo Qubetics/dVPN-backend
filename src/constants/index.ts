@@ -30,6 +30,7 @@ export const DATA_MODELS = {
   Plans: "Plans",
   Subscriptions: "Subscriptions",
   Sessions: "Sessions",
+  UserSession: "UserSession"
 };
 
 // Response messages

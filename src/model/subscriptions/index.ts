@@ -26,9 +26,8 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
     "subscriptions",
     {
         id: {
-            type: DataTypes.UUID,
+            type: DataTypes.STRING,
             primaryKey: true,
-            unique: true,
         },
         acc_address: {
             type: DataTypes.STRING,

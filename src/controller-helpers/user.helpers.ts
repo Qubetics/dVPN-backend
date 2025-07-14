@@ -124,6 +124,7 @@ class UserHelper {
       };
     }
   };
+
   public userLogout = async (
     refresh_token: any,
     res: Response
@@ -168,6 +169,7 @@ class UserHelper {
       };
     }
   };
+  
   public userRefresh = async (
     refresh_token: any,
     res: Response

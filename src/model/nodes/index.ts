@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import DBConnectionHandler from "../../connection"; // adjust path if needed
+import DBConnectionHandler from "../../connection";
 const sequelize = DBConnectionHandler.sequelize;
 
 interface Price {
@@ -21,8 +21,8 @@ interface INode {
     lat: string;
     status: string;
     status_at: Date;
+    flag_url?: string;
 }
-
 interface NodeInstance extends Model<INode>, INode { }
 
 const Node = sequelize.define<NodeInstance>(
@@ -30,13 +30,12 @@ const Node = sequelize.define<NodeInstance>(
     {
         id: {
             type: DataTypes.UUID,
-            primaryKey: true,
             unique: true,
             allowNull: false,
         },
         address: {
             type: DataTypes.STRING,
-            unique: true,
+            primaryKey: true,
             allowNull: false,
         },
         gigabyte_prices: {
@@ -78,7 +77,11 @@ const Node = sequelize.define<NodeInstance>(
         status_at: {
             type: DataTypes.DATE,
             allowNull: false,
-        }
+        },
+        flag_url: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
     },
     {
         timestamps: true,

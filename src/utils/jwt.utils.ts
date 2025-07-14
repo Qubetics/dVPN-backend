@@ -6,10 +6,7 @@ import { AccessTokenPayload } from 'interfaces/user.helpers.interfaces';
 
 (async () => {
   const success = await initiate();
-  if (success) {
-    console.log('Environment variables loaded ✅');
-    // Start your server or other setup logic here
-  } else {
+  if (!success) {
     console.error('Failed to load environment config ❌');
   }
 })();

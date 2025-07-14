@@ -66,7 +66,7 @@ class DBConnectionHandler {
    */
     createDBConnection = async () => {
         try {
-            log.blue(connections.connected);
+            log.blue(connections.connecting);
             this._bindPostgresConnectionEvents();
             await this.sequelize.authenticate().then(() => {
                 sequelizeEvent.emit(connections.connected);

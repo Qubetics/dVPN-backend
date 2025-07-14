@@ -26,12 +26,12 @@ const Plans = sequelize.define<PlansInstance>(
     {
         id: {
             type: DataTypes.UUID,
-            primaryKey: true,
             unique: true,
+            allowNull: false,
         },
         planId: {
             type: DataTypes.STRING,
-            unique: true,
+            primaryKey: true,
         },
         providerAddress: {
             type: DataTypes.STRING,

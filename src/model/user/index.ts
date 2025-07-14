@@ -18,8 +18,7 @@ const User = sequeslize.define<UserInstance>(
         },
         wallet_address: {
             type: DataTypes.STRING,
-            primaryKey: true,
-            unique: true,
+            primaryKey: true
         },
         status: {
             type: DataTypes.BOOLEAN,
