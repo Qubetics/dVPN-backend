@@ -38,15 +38,15 @@ services:
         interval: 30s
         timeout: 10s
         retries: 3
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   env_file:
-  #     - /root/dVPN-backend/.env
-  #   ports:
-  #     - "0.0.0.0:7000:7000"
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - /root/dVPN-backend/.env
+    ports:
+      - "0.0.0.0:7000:7000"
 
   # redpanda service (kafka)
   # redpanda-0:
