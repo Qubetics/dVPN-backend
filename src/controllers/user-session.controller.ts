@@ -14,10 +14,11 @@ class UserSessionController implements Controller {
   }
 
   private initializeRoutes = () => {
-    this.router.get(`/user-sessions`,sessionCheck, this.getSessions);
+    this.router.get(`/user-sessions`, sessionCheck, this.getSessionsList);
+    this.router.get(`/user-servers`, sessionCheck,this.UserServerList);
   };
 
-  private getSessions = async (req: any, res: Response) => {
+  private getSessionsList = async (req: any, res: Response) => {
     const limit = Number(req.query.limit);
     const page = Number(req.query.page);
     const countTotal = Boolean(req.query.count_total);
@@ -32,6 +33,23 @@ class UserSessionController implements Controller {
     );
 
     return sendResponse(res, sessions);
+  };
+
+  private UserServerList = async (req: any, res: Response) => {
+    const limit = Number(req.query.limit);
+    const page = Number(req.query.page);
+    const countTotal = Boolean(req.query.count_total);
+    const order = String(req.query.order);
+    const wallet_address=String(req.user.wallet_address);
+    const servers = await UserSessionHelper.UserServerList(
+      wallet_address,
+      limit,
+      page,
+      countTotal,
+      order
+    );
+
+    return sendResponse(res, servers);
   };
 
 }

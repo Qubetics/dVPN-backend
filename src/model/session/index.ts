@@ -92,6 +92,8 @@ const Sessions = sequelize.define<SessionInstance>(
     }
 );
 
+
+
 Sessions.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing Sessions table:", error);
 });

@@ -86,6 +86,7 @@ const Node = sequelize.define<NodeInstance>(
     {
         timestamps: true,
     }
+    
 );
 
 Node.sync({ alter: true }).catch((error: any) => {
