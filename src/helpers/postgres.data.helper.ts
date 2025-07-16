@@ -176,7 +176,13 @@ class PostgresDataHelper {
     whereClause: any,
     attributes: any[],
     include: any[],
-    options: any
+    options: {
+      limit?: number;
+      offset?: number;
+      order?: any;
+      group?: string[] | string;
+      raw?: boolean;
+    }
   ) => {
     try {
       this._checkModel(modelName);
@@ -187,6 +193,8 @@ class PostgresDataHelper {
         limit: options.limit,
         offset: options.offset,
         order: options.order,
+        group: options.group,
+        raw: options.raw ?? true,
       });
       return result;
     } catch (error) {
@@ -201,18 +209,18 @@ class PostgresDataHelper {
   // get the selected moongose model
   _getModel = (model: string): any => {
     switch (model) {
-         case DATA_MODELS.User:
-            return User;
-         case DATA_MODELS.Node:
-            return Node;
-         case DATA_MODELS.Plans:
-            return Plans;
-         case DATA_MODELS.Subscriptions:
-            return Subscriptions;
-         case DATA_MODELS.Sessions:
-            return Sessions;
-        case DATA_MODELS.UserSession: 
-            return UserSessions;
+      case DATA_MODELS.User:
+        return User;
+      case DATA_MODELS.Node:
+        return Node;
+      case DATA_MODELS.Plans:
+        return Plans;
+      case DATA_MODELS.Subscriptions:
+        return Subscriptions;
+      case DATA_MODELS.Sessions:
+        return Sessions;
+      case DATA_MODELS.UserSession:
+        return UserSessions;
       default:
         return null;
     }

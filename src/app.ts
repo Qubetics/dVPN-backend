@@ -6,7 +6,6 @@ import { Controller } from "@interfaces";
 import './model/index';
 import sendResponse from "./responses/response.helper";
 import { RESPONSE_MESSAGES } from "../src/constants/index";
-import { STATUS_CODES } from "../src/constants/index";
 
 class App {
     public app:express.Application;
