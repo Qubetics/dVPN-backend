@@ -25,7 +25,7 @@ const messageToAminoTransaction=(signer: string, data: string) => {
         ],
         memo: '',
     }
-}
+};
 
 export const verifyKeplrSignature = (
   address: string,
@@ -61,4 +61,21 @@ return {
     verify: false,
   };
 }
+};
+
+export function flattenNodeFields(results: any[]): any[] {
+  return results.map((row: any) => {
+    const flatRow: any = {};
+
+    for (const key in row) {
+      if (key.startsWith("node.")) {
+        const cleanKey = key.replace("node.", "");
+        flatRow[cleanKey] = row[key];
+      } else {
+        flatRow[key] = row[key];
+      }
+    }
+
+    return flatRow;
+  });
 };

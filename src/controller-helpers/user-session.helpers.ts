@@ -5,6 +5,7 @@ import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import DBConnectionHandler from "../connection";
 import postgresDataHelper from "../helpers/postgres.data.helper";
 import Node from "../model/nodes/index";
+import { flattenNodeFields } from "./common.helpers";
 const sequelize = DBConnectionHandler.sequelize;
 
 class UserSessionHelper {
@@ -80,12 +81,13 @@ class UserSessionHelper {
           order: [['createdAt', sortOrder]], // ASC or DESC
         }
       );
-      
+
+      const flatResults = flattenNodeFields(results);
 
       return {
         data: {
-          sessions: results,
-          total: results.length
+          sessions: flatResults ?? [],
+          total: flatResults?.length ?? 0,
         },
         status: STATUS_CODES.SUCCESS,
         error: false,
@@ -93,7 +95,7 @@ class UserSessionHelper {
       };
 
     } catch (error: any) {
-      console.log("error",error);
+      console.log("error", error);
       return {
         error: true,
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -148,20 +150,18 @@ class UserSessionHelper {
           [sequelize.col('node.country'), 'country'],
           [sequelize.fn('COUNT', sequelize.fn('DISTINCT', sequelize.col('node.address'))), 'location']
         ],
-       [
+        [
           {
             model: Node,
             attributes: [], // we only want to group by country and count address
           }
-        ],{
+        ], {
         group: ['node.country'],
-        order: [[sequelize.literal('location'), sortOrder]], 
+        order: [[sequelize.literal('location'), sortOrder]],
         limit,
         offset,
         raw: true,
-        }
-      );
-      
+      });
 
       return {
         data: {
