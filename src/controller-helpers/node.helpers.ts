@@ -3,6 +3,7 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import { log } from "console";
+import { Op, fn, col, Sequelize } from "sequelize";
 
 class NodeHelper {
   constructor() {
@@ -20,8 +21,8 @@ class NodeHelper {
     city?: string
   ): Promise<ApiResponse> => {
     try {
-      // Case: Fetch single node by address
-      if (nodeAddress && nodeAddress !== 'undefined') {
+      //  Case : Fetch a single node by address
+      if (nodeAddress && nodeAddress !== "undefined") {
         const node = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
           where: { address: nodeAddress },
         });
@@ -42,13 +43,51 @@ class NodeHelper {
         };
       }
 
-      // Construct dynamic where clause
-      const whereClause: any = {};
+      //  Case : No country & no city and it return list of countries with node count
+      if ((!country || country === "undefined") && (!city || city === "undefined")) {
+        const countries = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
+          attributes: [
+            "country",
+            [fn("COUNT", col("country")), "node_count"],
+          ],
+          group: ["country"],
+          raw: true,
+        });
 
+        return {
+          data: { countries },
+          status: STATUS_CODES.SUCCESS,
+          error: false,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+        };
+      }
+
+      // Case : Country exists but no city and it return cities with node count
+      if (country && country !== "undefined" && (!city || city === "undefined")) {
+        const cities = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
+          attributes: [
+            "city",
+            [fn("COUNT", col("city")), "node_count"],
+          ],
+          where: { country },
+          group: ["city"],
+          raw: true,
+        });
+
+        return {
+          data: { country, cities },
+          status: STATUS_CODES.SUCCESS,
+          error: false,
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+        };
+      }
+
+      // Case : Country and City both provided and it return list of nodes
+      const whereClause: any = {};
 
       if (status && status !== "undefined" && status !== "inactive") {
         whereClause.status = status;
-      } else  if (status && status !== "undefined" && status !== "active"){
+      } else if (status && status !== "undefined" && status !== "active") {
         whereClause.status = "inactive";
       }
 
@@ -60,21 +99,20 @@ class NodeHelper {
         whereClause.city = city;
       }
 
-      // Clean order (default is DESC unless explicitly provided)
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
-
       limit = limit || 5;
       page = page || 1;
       const offset = (page - 1) * limit;
+
       const { rows, count } = await postgresDataHelper.findAndCountAll(DATA_MODELS.Node, {
         where: whereClause,
         limit,
         offset,
         order: [["createdAt", sortOrder]],
       });
-      // Prepare response
+
       const responseData: any = {
-        plans: rows,
+        nodes: rows,
       };
 
       if (countTotal === true) {
@@ -87,7 +125,6 @@ class NodeHelper {
         error: false,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
       };
-
     } catch (error: any) {
       return {
         error: true,
@@ -97,6 +134,36 @@ class NodeHelper {
     }
   };
 
+  public getRandomNode = async (): Promise<ApiResponse> => {
+    try {
+      const node = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
+        where: { status: "active" },
+        order: [Sequelize.literal("RANDOM()")], 
+      });
+  
+      if (!node) {
+        return {
+          error: true,
+          status: STATUS_CODES.NOTFOUND,
+          message: RESPONSE_MESSAGES.NODE_NOT_FOUND,
+        };
+      }
+  
+      return {
+        data: node,
+        status: STATUS_CODES.SUCCESS,
+        error: false,
+        message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+      };
+    } catch (error: any) {
+      return {
+        error: true,
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+        status: STATUS_CODES.INTERNALSERVER,
+      };
+    }
+  };
+  
 }
 
 

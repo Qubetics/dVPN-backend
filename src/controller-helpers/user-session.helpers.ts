@@ -35,34 +35,6 @@ class UserSessionHelper {
       const offset = (offsetPage - 1) * limit;
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
-      // const results = await sequelize.query(
-      //   `
-      //   SELECT 
-      //    n.flag_url,
-      //    n.city,
-      //    n.country,
-      //    n.remote_url,
-      //    n.address,
-      //    s.start_at,
-      //    s.status_at,
-      //    s.status
-      //   FROM dvpn_db.sessions AS s
-      //   LEFT JOIN dvpn_db.nodes AS n
-      //     ON s.node_address = n.address
-      //   WHERE s.acc_address = :wallet_address
-      //   ORDER BY s."createdAt" ${sortOrder}
-      //   LIMIT :limit OFFSET :offset;
-      //   `,
-      //   {
-      //     replacements: {
-      //       wallet_address,
-      //       limit,
-      //       offset,
-      //     },
-      //     type: QueryTypes.SELECT,
-      //   }
-      // );
-
       const results = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Sessions,
         {
@@ -114,32 +86,9 @@ class UserSessionHelper {
   ): Promise<ApiResponse> => {
     try {
       limit = limit || 10;
-      const offsetPage = page || 1;
-      const offset = (offsetPage - 1) * limit;
+      page = page || 1;
+      const offset = (page - 1) * limit;
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
-
-      // const results = await sequelize.query(
-      //   `
-      //   SELECT 
-      //     n.country AS country,
-      //     COUNT(DISTINCT n.address) AS location
-      //   FROM dvpn_db.sessions AS s
-      //   LEFT JOIN dvpn_db.nodes AS n
-      //     ON s.node_address = n.address
-      //   WHERE s.acc_address = :wallet_address
-      //   GROUP BY n.country
-      //   ORDER BY location ${sortOrder}
-      //   LIMIT :limit OFFSET :offset;
-      //   `,
-      //   {
-      //     replacements: {
-      //       wallet_address,
-      //       limit,
-      //       offset,
-      //     },
-      //     type: QueryTypes.SELECT,
-      //   }
-      // );
 
       const results = await PostgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Sessions,
@@ -147,27 +96,39 @@ class UserSessionHelper {
           acc_address: wallet_address,
         },
         [
-          [sequelize.col('node.country'), 'country'],
-          [sequelize.fn('COUNT', sequelize.fn('DISTINCT', sequelize.col('node.address'))), 'location']
+          [sequelize.literal('DISTINCT ON ("node"."address") "node"."address"'), 'address'],
+          [sequelize.col("node.city"), "city"],
+          [sequelize.col("node.country"), "country"],
         ],
         [
           {
             model: Node,
-            attributes: [], // we only want to group by country and count address
-          }
-        ], {
-        group: ['node.country'],
-        order: [[sequelize.literal('location'), sortOrder]],
-        limit,
-        offset,
-        raw: true,
-      });
+            as: "node",
+            attributes: [],
+            required: true,
+          },
+        ],
+        {
+          order: [
+            [sequelize.literal('"node"."address"'), sortOrder],
+          ],
+          limit,
+          offset,
+          raw: true,
+        }
+      );
+
+      const responseData: any = {
+        nodes: results,
+      };
+
+      if (countTotal) {
+        responseData.total = results.length;
+      }
+
 
       return {
-        data: {
-          countries: results,
-          total: results?.length,
-        },
+        data: responseData,
         status: STATUS_CODES.SUCCESS,
         error: false,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
@@ -181,6 +142,7 @@ class UserSessionHelper {
       };
     }
   };
+
 
 }
 

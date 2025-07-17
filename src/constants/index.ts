@@ -63,7 +63,8 @@ export const RESPONSE_MESSAGES = {
   Max_LIMIT: "Invalid page limit (defaults to 10, maximum is 40)",
   USERNAME_EXIST: "Username already exists",
   API_SERVICE: "API Service is up",
-  INVALID_CREDENTIALS: "Invalid Credentials!"
+  INVALID_CREDENTIALS: "Invalid Credentials!",
+  NODE_NOT_FOUND:"No Node Server Available."
 };
 
 export const UNDEFINED = "undefined";
