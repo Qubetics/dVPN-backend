@@ -124,7 +124,6 @@ public getAllByPlanId = async (
   
       const {rows,count} = await PostgresDataHelper.findAndCountAll(DATA_MODELS.Plans, query);
   
-      console.log("🚀 ~ PlanHelper ~ rows,count:", rows,count)
       return {
         data: {
           plans: rows ,

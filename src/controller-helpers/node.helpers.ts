@@ -49,6 +49,7 @@ class NodeHelper {
           attributes: [
             "country",
             [fn("COUNT", col("country")), "node_count"],
+            [fn("MIN", col("flag_url")), "flag_url"],
           ],
           group: ["country"],
           raw: true,
@@ -68,14 +69,24 @@ class NodeHelper {
           attributes: [
             "city",
             [fn("COUNT", col("city")), "node_count"],
+            [fn("MIN", col("flag_url")), "flag_url"],
           ],
           where: { country },
           group: ["city"],
           raw: true,
         });
 
+        const flag_url = cities[0]?.flag_url || null;
+
         return {
-          data: { country, cities },
+          data: {
+            country,
+            flag_url,
+            cities: cities.map(({ city, node_count }) => ({
+              city,
+              node_count,
+            })),
+          },
           status: STATUS_CODES.SUCCESS,
           error: false,
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
@@ -138,9 +149,9 @@ class NodeHelper {
     try {
       const node = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
         where: { status: "active" },
-        order: [Sequelize.literal("RANDOM()")], 
+        order: [Sequelize.literal("RANDOM()")],
       });
-  
+
       if (!node) {
         return {
           error: true,
@@ -148,7 +159,7 @@ class NodeHelper {
           message: RESPONSE_MESSAGES.NODE_NOT_FOUND,
         };
       }
-  
+
       return {
         data: node,
         status: STATUS_CODES.SUCCESS,
@@ -163,7 +174,7 @@ class NodeHelper {
       };
     }
   };
-  
+
 }
 
 
