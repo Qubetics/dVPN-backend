@@ -184,7 +184,18 @@ class UserHelper {
         };
       }
 
-      const { wallet_address, refresh_uuid } = verifyRefreshToken(refresh_token);
+      const payload = verifyRefreshToken(refresh_token);
+
+      if (!payload) {
+        return {  
+          error: true,
+          status: STATUS_CODES.UNAUTHORIZED,
+          message: RESPONSE_MESSAGES.INVALID_TOKEN,
+        };
+      }
+      
+      const { wallet_address, refresh_uuid } = payload;
+      
 
       const values = await redisHelper.client.get(refresh_uuid);
 
@@ -245,7 +256,7 @@ class UserHelper {
         },
         error: false,
         status: 200,
-        message: RESPONSE_MESSAGES.SIGNUP,
+        message: RESPONSE_MESSAGES.SUCCESS_NEW_TOKEN,
       };
     } catch (error) {
       return {

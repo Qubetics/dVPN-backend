@@ -35,6 +35,7 @@ export const DATA_MODELS = {
 
 // Response messages
 export const RESPONSE_MESSAGES = {
+  SUCCESS_NEW_TOKEN: "New Token generated succesfully",
   PROVIDER_ADDRESS_NOT_FOUND: "Provider address is not found",
   NODE_ADDRESS_NOT_FOUND: "Node address is not found",
   BADREQUEST: "Missing required header",

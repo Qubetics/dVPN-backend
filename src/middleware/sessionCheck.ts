@@ -49,7 +49,7 @@ export const sessionCheck = async (
     // 4. Validate UUID
     if (!access_uuid) {
       return sendResponse(res, {
-        message: "Missing access UUID in token",
+        message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
       });
     }
@@ -58,7 +58,7 @@ export const sessionCheck = async (
     const sessionData = await redisHelper.client.get(access_uuid);
     if (!sessionData) {
       return sendResponse(res, {
-        message: "Session expired or invalid",
+        message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
       });
     }
@@ -76,7 +76,7 @@ export const sessionCheck = async (
 
     if (!userData) {
       return sendResponse(res, {
-        message: "User not found",
+        message: RESPONSE_MESSAGES.USER_NOT_FOUND,
         status: STATUS_CODES.UNAUTHORIZED,
       });
     }
