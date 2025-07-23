@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { Controller } from "@interfaces";
 import './model/index';
 import sendResponse from "./responses/response.helper";
-import { RESPONSE_MESSAGES } from "../src/constants/index";
+import { RESPONSE_MESSAGES, STATUS_CODES } from "../src/constants/index";
 
 class App {
     public app:express.Application;
@@ -67,12 +67,13 @@ class App {
         this.app.use('/api',controller.router);
      });
      //Unknown rotues handler
-    //  this.app.all("*",(req:Request,res: Response)=>{
-    //     sendResponse(res,{
-    //         status: STATUS_CODES.UNAUTHORIZED,
-    //         message:RESPONSE_MESSAGES.ROUTE_404,
-    //     })
-    //  });
+     this.app.all("/*path",(req:Request,res: Response)=>{
+        sendResponse(res,{
+            status: STATUS_CODES.NOTFOUND,
+            message:RESPONSE_MESSAGES.ROUTE_404,
+            data:"sdfsdfsdf",
+        })
+     });
     }
 }
 

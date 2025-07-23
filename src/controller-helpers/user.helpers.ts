@@ -126,8 +126,7 @@ class UserHelper {
   };
 
   public userLogout = async (
-    refresh_token: any,
-    res: Response
+    refresh_token: any
   ): Promise<ESResponse> => {
     try {
       // this removes the token from the redis hence preventing the re-login
@@ -171,8 +170,7 @@ class UserHelper {
   };
   
   public userRefresh = async (
-    refresh_token: any,
-    res: Response
+    refresh_token: any
   ): Promise<ESResponse> => {
     try {
       // this removes the token from the redis hence preventing the re-login

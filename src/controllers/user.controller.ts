@@ -47,13 +47,13 @@ class UserController implements Controller {
    */
   private userLogout = async (req: Request, res: Response) => {
     const refresh_token = req.headers['refresh_token'];
-    const check = await userHelpers.userLogout(refresh_token, res);
+    const check = await userHelpers.userLogout(refresh_token);
     return sendResponse(res, check);
   };
 
   private userRefresh = async (req: Request, res: Response) => {
     const refresh_token = req.headers['refresh_token'];
-    const check = await userHelpers.userRefresh(refresh_token, res);
+    const check = await userHelpers.userRefresh(refresh_token);
     return sendResponse(res, check);
   };
 }

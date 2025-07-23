@@ -17,8 +17,7 @@ const sendResponse=(res:Response,resData: ESResponse)=>{
         }else if(statusCode===STATUS_CODES.NOTFOUND){
             res.status(statusCode).send({
                 message: customMessage || RESPONSE_MESSAGES.NOT_FOUND,
-                status:statusCode,
-                data: null
+                status:statusCode
               });
         }else res.status(statusCode).send({data: resData.data});
     } catch(err) {
