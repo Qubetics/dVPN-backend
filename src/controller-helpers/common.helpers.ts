@@ -4,27 +4,26 @@ import { serializeSignDoc } from '@cosmjs/launchpad'
 import { signatureToPubkey } from '@hanchon/signature-to-pubkey'
 import { KeplrSignature } from "../interfaces/keplrSignature.interfaces";
 
-
-const messageToAminoTransaction=(signer: string, data: string) => {
-    return {
-        chain_id: '',
-        account_number: '0',
-        sequence: '0',
-        fee: {
-            gas: '0',
-            amount: [],
+const messageToAminoTransaction = (signer: string, data: string) => {
+  return {
+    chain_id: '',
+    account_number: '0',
+    sequence: '0',
+    fee: {
+      gas: '0',
+      amount: [],
+    },
+    msgs: [
+      {
+        type: 'sign/MsgSignData',
+        value: {
+          signer,
+          data,
         },
-        msgs: [
-            {
-                type: 'sign/MsgSignData',
-                value: {
-                    signer,
-                    data,
-                },
-            },
-        ],
-        memo: '',
-    }
+      },
+    ],
+    memo: '',
+  }
 };
 
 export const verifyKeplrSignature = (
@@ -33,34 +32,32 @@ export const verifyKeplrSignature = (
   message: string,
   signature: KeplrSignature
 ) => {
-// Encode the message into amino format
-try{
-const aminoEncoded = messageToAminoTransaction(
-  address,
-  Buffer.from(message).toString("base64")
-);
-const serialized = serializeSignDoc(aminoEncoded);
+  try {
+    const aminoEncoded = messageToAminoTransaction(
+      address,
+      Buffer.from(message).toString("base64")
+    );
+    const serialized = serializeSignDoc(aminoEncoded);
 
-// Hash the amino message that was signed
-const hashed = sha3.keccak_256(arrayify(serialized));
+    const hashed = sha3.keccak_256(arrayify(serialized));
 
-// Compare signature
-const signatureToCompare = `0x${Buffer.from(
-  signature.signature,
-  "base64"
-).toString("hex")}`;
-const pubkeyComputed = signatureToPubkey(
-  signatureToCompare,
-  Buffer.from(hashed, "hex")
-);
-return {
-  verify: pubkeyComputed === pubKey,
-};
-} catch (e){
-  return {
-    verify: false,
-  };
-}
+    const signatureToCompare = `0x${Buffer.from(
+      signature.signature,
+      "base64"
+    ).toString("hex")}`;
+
+    const pubkeyComputed = signatureToPubkey(
+      signatureToCompare,
+      Buffer.from(hashed, "hex")
+    );
+    return {
+      verify: pubkeyComputed === pubKey,
+    };
+  } catch (e) {
+    return {
+      verify: false,
+    };
+  }
 };
 
 export function flattenNodeFields(results: any[]): any[] {

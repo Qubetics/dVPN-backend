@@ -7,6 +7,7 @@ import UserController from "./controllers/user.controller";
 import dbConnectionHandler from "./connection"
 import NodeController from "./controllers/node.controller";
 import UserSessionController from "./controllers/user-session.controller";
+import ERR from "../src/constants/server.constants";
 require('dotenv').config();
 
 (async ()=>{
@@ -16,7 +17,7 @@ require('dotenv').config();
 
             // connect to the postgres server
             const isDBconnected = await dbConnectionHandler.createDBConnection();
-            if (!isDBconnected) throw new Error("DB is not connected");
+            if (!isDBconnected) throw new Error(ERR.POSTGRES_CONN);
 
             //connect to the redis server
             const isRedisConnected=await redisHelper.connectRedis();

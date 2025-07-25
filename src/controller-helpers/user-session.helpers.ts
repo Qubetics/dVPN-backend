@@ -1,6 +1,6 @@
 
 import PostgresDataHelper from "../helpers/postgres.data.helper";
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
+import { DATA_MODELS, NODE_ATTRIBUTES, RESPONSE_MESSAGES, SESSION_ATTRIBUTES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import DBConnectionHandler from "../connection";
 import postgresDataHelper from "../helpers/postgres.data.helper";
@@ -10,7 +10,7 @@ import { flattenNodeFields } from "./common.helpers";
 const sequelize = DBConnectionHandler.sequelize;
 
 class UserSessionHelper {
-  
+
   constructor() {
     (async () => { })();
   }
@@ -52,11 +52,11 @@ class UserSessionHelper {
         {
           acc_address: wallet_address,
         },
-        ['start_at', 'status_at', 'status'], // or specific attributes from Sessions, 
+        SESSION_ATTRIBUTES, // or specific attributes from Sessions, 
         [
           {
             model: Node,
-            attributes: ['flag_url', 'city', 'country', 'remote_url', 'address'],
+            attributes: NODE_ATTRIBUTES,
           },
         ],
         {
@@ -79,7 +79,6 @@ class UserSessionHelper {
       };
 
     } catch (error: any) {
-      console.log("error", error);
       return {
         error: true,
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,

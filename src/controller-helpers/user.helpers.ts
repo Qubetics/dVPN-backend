@@ -111,7 +111,7 @@ class UserHelper {
         },
         error: false,
         status: 200,
-        message: RESPONSE_MESSAGES.SIGNUP,
+        message: RESPONSE_MESSAGES.LOGIN,
       };
     } catch (err: any) {
       return {

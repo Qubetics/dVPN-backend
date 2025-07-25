@@ -1,5 +1,5 @@
 import postgresDataHelper from "../helpers/postgres.data.helper";
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
+import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, INACTIVE, ACTIVE } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import { fn, col, Sequelize } from "sequelize";
 
@@ -33,7 +33,7 @@ class NodeHelper {
   ): Promise<ApiResponse> => {
     try {
       //  Case : when to fetch a single node by address
-      if (nodeAddress && nodeAddress !== "undefined") {
+      if (nodeAddress && nodeAddress !== UNDEFINED) {
         const node = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
           where: { address: nodeAddress },
         });
@@ -55,7 +55,7 @@ class NodeHelper {
       }
 
       //  Case : No country & no city and it return list of countries with node count
-      if ((!country || country === "undefined") && (!city || city === "undefined")) {
+      if ((!country || country === UNDEFINED) && (!city || city === UNDEFINED)) {
         const countries = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
           attributes: [
             "country",
@@ -75,7 +75,7 @@ class NodeHelper {
       }
 
       // Case : Country exists but no city and it return cities with node count
-      if (country && country !== "undefined" && (!city || city === "undefined")) {
+      if (country && country !== UNDEFINED && (!city || city === UNDEFINED)) {
         const cities = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
           attributes: [
             "city",
@@ -107,17 +107,17 @@ class NodeHelper {
       // Case : Country and City both provided and it return list of nodes
       const whereClause: any = {};
 
-      if (status && status !== "undefined" && status !== "inactive") {
+      if (status && status !== UNDEFINED && status !== INACTIVE) {
         whereClause.status = status;
-      } else if (status && status !== "undefined" && status !== "active") {
-        whereClause.status = "inactive";
+      } else if (status && status !== UNDEFINED && status !== ACTIVE) {
+        whereClause.status = INACTIVE;
       }
 
-      if (country && country !== "undefined") {
+      if (country && country !== UNDEFINED) {
         whereClause.country = country;
       }
 
-      if (city && city !== "undefined") {
+      if (city && city !== UNDEFINED) {
         whereClause.city = city;
       }
 
@@ -161,7 +161,7 @@ class NodeHelper {
   public getRandomNode = async (): Promise<ApiResponse> => {
     try {
       const nodeData = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
-        where: { status: "active" },
+        where: { status: ACTIVE },
         order: [Sequelize.literal("RANDOM()")],
       });
 

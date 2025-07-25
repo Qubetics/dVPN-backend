@@ -36,37 +36,26 @@ export const DATA_MODELS = {
 // Response messages
 export const RESPONSE_MESSAGES = {
   SUCCESS_NEW_TOKEN: "New Token generated succesfully",
-  PROVIDER_ADDRESS_NOT_FOUND: "Provider address is not found",
-  NODE_ADDRESS_NOT_FOUND: "Node address is not found",
   BADREQUEST: "Missing required header",
   INVALID_TOKEN: "Invalid token",
   INTERNAL_SERVER_ERROR: "Internal Server Error.",
   NOT_FOUND: "Not Found!",
-  PLAN_NOT_FOUND: "Plan not found!",
-  SAVEDATA: "Save Successfully",
-  DISPUTE: "Dispute already raised",
-  USERALREADY: "User already exists",
   USER_NOT_FOUND: "Not found!",
   LOGOUT: "Logout Successfull",
-  ADMINNOTFOUND: "Invalid Admin Address",
   LOGIN: "Login success",
-  SIGNUP: "Signup success",
   FETCH_DATA_SUCCESS: "Fetch data successfully",
-  FETCH_USER_SUCCESS: "Fetch user data successfully",
-  FETCH_EVENTSDATA_SUCCESS: "Fetch events successfully",
-  UPDATED_SUCCESS: "Updated Successfully.",
-  EVENTCREATE: "Event create successfully.",
-  NOT_VALID_QUERY: "Query is not Valid!",
-  INVALID_ID: "Id is not valid!",
-  INVALID_NAME: "Name is not valid",
   UNAUTHORIZED: "Unauthorized!",
   ROUTE_404: "Route not found.",
-  Max_LIMIT: "Invalid page limit (defaults to 10, maximum is 40)",
-  USERNAME_EXIST: "Username already exists",
   API_SERVICE: "API Service is up",
   INVALID_CREDENTIALS: "Invalid Credentials!",
-  NODE_NOT_FOUND:"No Node Server Available."
+  NODE_NOT_FOUND: "No Node Server Available."
 };
 
+export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
+
+export const NODE_ATTRIBUTES = ['flag_url', 'city', 'country', 'remote_url', 'address'];
+
 export const UNDEFINED = "undefined";
+export const ACTIVE = "active";
+export const INACTIVE = "inactive";
 export const USER = "user";

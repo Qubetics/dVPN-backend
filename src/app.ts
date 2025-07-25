@@ -48,7 +48,6 @@ class App {
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended: false}));
         this.app.use(cookieParser());
-        // this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
         this.app.use(function onError(err, req:Request, res: any, next:NextFunction) {
           // The error id is attached to `res.sentry` to be returned
           // and optionally displayed to the user for support.

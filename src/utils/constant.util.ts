@@ -5,8 +5,6 @@ const envType = {
 const morganMiddlewareParam =
     ':method :url :status :res[content-length] - :response-time ms';
 
-const socketSuccess = 'Socket connected successfully';
-
 const connections = {
     disconnected: 'disconnected',
     connected: 'connected',
@@ -18,6 +16,5 @@ const connections = {
 export {
     envType,
     morganMiddlewareParam,
-    socketSuccess,
     connections
 };
