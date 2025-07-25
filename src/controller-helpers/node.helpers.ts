@@ -1,15 +1,26 @@
-import { Request, Response } from "express";
 import postgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
-import { log } from "console";
-import { Op, fn, col, Sequelize } from "sequelize";
+import { fn, col, Sequelize } from "sequelize";
 
 class NodeHelper {
+
   constructor() {
     (async () => { })();
   }
-
+  /**
+ * Fetches a list of nodes or metadata about nodes based on the provided filters.
+ * 
+ * @param {string} status 
+ * @param {number} limit 
+ * @param {number} page 
+ * @param {boolean} countTotal 
+ * @param {string} order 
+ * @param {string} nodeAddress 
+ * @param {string} country 
+ * @param {string} city 
+ * @returns ApiResponse containing the relevant node(s) or metadata
+ */
   public nodeList = async (
     status?: string,
     limit?: number,
@@ -21,7 +32,7 @@ class NodeHelper {
     city?: string
   ): Promise<ApiResponse> => {
     try {
-      //  Case : Fetch a single node by address
+      //  Case : when to fetch a single node by address
       if (nodeAddress && nodeAddress !== "undefined") {
         const node = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
           where: { address: nodeAddress },
@@ -111,7 +122,7 @@ class NodeHelper {
       }
 
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
-      limit = limit || 5;
+      limit = limit || 5; // 5 is default
       page = page || 1;
       const offset = (page - 1) * limit;
 
@@ -144,15 +155,17 @@ class NodeHelper {
       };
     }
   };
-
+  /**
+   * Fetch the details of the single random node
+   */
   public getRandomNode = async (): Promise<ApiResponse> => {
     try {
-      const node = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
+      const nodeData = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
         where: { status: "active" },
         order: [Sequelize.literal("RANDOM()")],
       });
 
-      if (!node) {
+      if (!nodeData) {
         return {
           error: true,
           status: STATUS_CODES.NOTFOUND,
@@ -161,7 +174,7 @@ class NodeHelper {
       }
 
       return {
-        data: node,
+        data: nodeData,
         status: STATUS_CODES.SUCCESS,
         error: false,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,

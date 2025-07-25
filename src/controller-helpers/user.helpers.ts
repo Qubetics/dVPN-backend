@@ -1,5 +1,3 @@
-import { Response } from "express";
-const axios = require("axios");
 import { ESResponse } from "@interfaces";
 import {
   ApiResponse,
@@ -19,20 +17,20 @@ import {
   verifyRefreshToken,
 } from "../utils/jwt.utils";
 import { verifyKeplrSignature } from "./common.helpers";
+import { KeplrSignature } from "../interfaces/keplrSignature.interfaces";
 
 class UserHelper {
   constructor() {
-    (async () => {})();
+    (async () => { })();
   }
   /**
    * The user sign-in helper handles all the login operations and checks for valid users
-   * @param req
-   * @param res
-   * @param payload
-   * @param userAgent
+   * @param {string} wallet_address
+   * @param {string} pubKey
+   * @param {KeplrSignature} signature
    * @returns
    */
-  public connectWallet = async (wallet_address: any, pubKey: any,signature:any): Promise<ApiResponse> => {
+  public connectWallet = async (wallet_address: string, pubKey: string, signature: KeplrSignature): Promise<ApiResponse> => {
     try {
       const isSignatureValid = verifyKeplrSignature(
         wallet_address,
@@ -125,12 +123,15 @@ class UserHelper {
     }
   };
 
+  /**
+   *  Logs out the user by deleting the refresh and access token entries from Redis.
+   * @param {string} refresh_token
+   */
   public userLogout = async (
-    refresh_token: any
+    refresh_token: string
   ): Promise<ESResponse> => {
     try {
-      // this removes the token from the redis hence preventing the re-login
-      if (refresh_token) {
+      if (!refresh_token) {
         return {
           error: true,
           status: STATUS_CODES.BADREQUEST,
@@ -168,9 +169,14 @@ class UserHelper {
       };
     }
   };
-  
+
+  /**
+   * Refreshes the user's session by validating the provided refresh token,
+   * generating new access and refresh tokens, and updating them in Redis.
+   * @param {string} refresh_token
+   */
   public userRefresh = async (
-    refresh_token: any
+    refresh_token: string
   ): Promise<ESResponse> => {
     try {
       // this removes the token from the redis hence preventing the re-login
@@ -185,15 +191,15 @@ class UserHelper {
       const payload = verifyRefreshToken(refresh_token);
 
       if (!payload) {
-        return {  
+        return {
           error: true,
           status: STATUS_CODES.UNAUTHORIZED,
           message: RESPONSE_MESSAGES.INVALID_TOKEN,
         };
       }
-      
+
       const { wallet_address, refresh_uuid } = payload;
-      
+
 
       const values = await redisHelper.client.get(refresh_uuid);
 

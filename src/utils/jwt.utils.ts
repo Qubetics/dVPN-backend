@@ -7,7 +7,7 @@ import { AccessTokenPayload } from 'interfaces/user.helpers.interfaces';
 (async () => {
   const success = await initiate();
   if (!success) {
-    console.error('Failed to load environment config ❌');
+    console.error('Failed to load environment config');
   }
 })();
 

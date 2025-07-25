@@ -4,10 +4,12 @@ import sendResponse from "../responses/response.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants";
 import { verifyAccessToken, decodeToken } from "../utils/jwt.utils";
 import postgresDataHelper from "../helpers/postgres.data.helper";
-// import UserModel from "../models/user.model";
 
 /**
  * Middleware to validate access token and session from Redis.
+ * @param {any} req
+ * @param {Response} res
+ * @param {NextFunction} next
  */
 export const sessionCheck = async (
   req: any,
@@ -15,7 +17,6 @@ export const sessionCheck = async (
   next: NextFunction
 ) => {
   try {
-    // 1. Fetch access token from Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return sendResponse(res, {
@@ -26,7 +27,6 @@ export const sessionCheck = async (
 
     const token = authHeader.split(" ")[1];
 
-    // 2. Decode token (optional - for debugging or UID access)
     const decoded = decodeToken(token);
     if (!decoded) {
       return sendResponse(res, {
@@ -35,7 +35,7 @@ export const sessionCheck = async (
       });
     }
 
-    // 3. Verify token signature and expiry
+    // Verify token signature and expiry
     const verifiedToken = verifyAccessToken(token);
     if (!verifiedToken) {
       return sendResponse(res, {
@@ -46,7 +46,7 @@ export const sessionCheck = async (
 
     const { access_uuid, wallet_address } = verifiedToken;
 
-    // 4. Validate UUID
+
     if (!access_uuid) {
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.INVALID_TOKEN,
@@ -54,7 +54,7 @@ export const sessionCheck = async (
       });
     }
 
-    // 5. Fetch session info from Redis using UUID
+    
     const sessionData = await redisHelper.client.get(access_uuid);
     if (!sessionData) {
       return sendResponse(res, {
@@ -62,12 +62,10 @@ export const sessionCheck = async (
         status: STATUS_CODES.UNAUTHORIZED,
       });
     }
-
-    // 6. Parse session info if needed
+    
     const parsedSession = JSON.parse(String(sessionData));
     const { refresh_uuid } = parsedSession;
 
-    // 7. Validate wallet address and user existence in DB
     const userData = await postgresDataHelper.findOneData(DATA_MODELS.User, {
       where: {
         wallet_address: `${wallet_address}`,

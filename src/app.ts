@@ -6,6 +6,7 @@ import { Controller } from "@interfaces";
 import './model/index';
 import sendResponse from "./responses/response.helper";
 import { RESPONSE_MESSAGES, STATUS_CODES } from "../src/constants/index";
+require('dotenv').config();
 
 class App {
     public app:express.Application;
@@ -71,7 +72,6 @@ class App {
         sendResponse(res,{
             status: STATUS_CODES.NOTFOUND,
             message:RESPONSE_MESSAGES.ROUTE_404,
-            data:"sdfsdfsdf",
         })
      });
     }

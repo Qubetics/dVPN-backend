@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+
 import PostgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -6,12 +6,24 @@ import DBConnectionHandler from "../connection";
 import postgresDataHelper from "../helpers/postgres.data.helper";
 import Node from "../model/nodes/index";
 import { flattenNodeFields } from "./common.helpers";
+
 const sequelize = DBConnectionHandler.sequelize;
 
 class UserSessionHelper {
+  
   constructor() {
     (async () => { })();
   }
+
+  /**
+   * Fetches a paginated list of user sessions joined with node information.
+   * @param {string} wallet_address 
+   * @param {number} limit 
+   * @param {number} page 
+   * @param {boolean} countTotal 
+   * @param {string} order 
+   * @returns 
+   */
 
   public UserSessionList = async (
     wallet_address: string,
@@ -76,7 +88,15 @@ class UserSessionHelper {
     }
   };
 
-
+  /**
+   * Retrieves a distinct list of nodes (servers) that a user has connected to in past sessions.
+   * @param {string} wallet_address 
+   * @param {number} limit 
+   * @param {number} page 
+   * @param {boolean} countTotal 
+   * @param {string} order 
+   * @returns
+   */
   public UserServerList = async (
     wallet_address: string,
     limit?: number,
@@ -126,7 +146,6 @@ class UserSessionHelper {
         responseData.total = results.length;
       }
 
-
       return {
         data: responseData,
         status: STATUS_CODES.SUCCESS,
@@ -134,7 +153,6 @@ class UserSessionHelper {
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
       };
     } catch (error: any) {
-      console.error("UserServerList Error:", error);
       return {
         error: true,
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -142,7 +160,6 @@ class UserSessionHelper {
       };
     }
   };
-
 
 }
 

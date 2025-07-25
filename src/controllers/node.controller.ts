@@ -1,6 +1,6 @@
 import * as express from "express";
 import { Controller } from "@interfaces";
-import { Request, Response } from "express";
+import {  Response } from "express";
 import sendResponse from "../responses/response.helper";
 import nodeHelpers from "../controller-helpers/node.helpers";
 import { sessionCheck } from "../middleware/sessionCheck";
@@ -10,23 +10,21 @@ class NodeController implements Controller {
   public router = express.Router();
 
   constructor() {
-    // this.router=express.Router();
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    this.router.get("/nodes", sessionCheck, this.nodeList);
-    this.router.get("/one-node",sessionCheck,this.nodeOneData);
+    this.router.get("/nodes", sessionCheck, this.getNodeList);
+    this.router.get("/nodes/random",sessionCheck,this.getRandomNodeData);
   };
 
   /**
-* It connect the wallet of the user helps in logging/sign up
-* and sends the cookie with the response
-* @param req
-* @param response
-* @returns
-*/
-  private nodeList = async (req: Request, res: Response) => {
+   * Retrieves a paginated list of nodes with optional filters like status, address, country, and city.
+   * @param req
+   * @param res
+   * @returns
+   */
+  private getNodeList = async (req: any, res: Response) => {
     const status = String(req.query.status);
     const limit = Number(req.query.limit);
     const page = Number(req.query.page);
@@ -49,10 +47,15 @@ class NodeController implements Controller {
 
     return sendResponse(res, nodeListData);
   };
-
-  private nodeOneData = async (req:Request,res: Response) => {
-    const nodeData = await nodeHelpers.getRandomNode();
-    return sendResponse(res,nodeData);
+  /**
+   * Retrieves data of a randomly selected node.
+   * @param req 
+   * @param res 
+   * @returns 
+   */
+  private getRandomNodeData = async (req:any,res: Response) => {
+    const randomNodeResponse = await nodeHelpers.getRandomNode();
+    return sendResponse(res,randomNodeResponse);
   };
 
 }

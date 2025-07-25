@@ -43,6 +43,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    
     env_file:
       - /root/dVPN-backend/.env
     ports:
