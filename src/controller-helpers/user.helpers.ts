@@ -162,6 +162,7 @@ class UserHelper {
         error: false,
       };
     } catch (error) {
+      console.log(error,"error in login");
       return {
         error: true,
         status: Number(STATUS_CODES.INTERNALSERVER),
