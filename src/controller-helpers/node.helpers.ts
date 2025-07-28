@@ -126,19 +126,41 @@ class NodeHelper {
       page = page || 1;
       const offset = (page - 1) * limit;
 
-      const { rows, count } = await postgresDataHelper.findAndCountAll(DATA_MODELS.Node, {
-        where: whereClause,
-        limit,
-        offset,
-        order: [["createdAt", sortOrder]],
-      });
+      const attributes = [
+        'id',
+        'address',
+        'country',
+        'city',
+        'status',
+      ];
+      
+      const include = [
+        {
+          model: DATA_MODELS.Plans,
+          attributes: ['planId'], // Or other attributes like ['planId', 'duration', 'price']
+          required: false, // Set to true if you only want nodes with plans
+        },
+      ];
+
+      const result = await postgresDataHelper.findDataFromJoinModels(
+        "Node", // or whatever your model key is
+        whereClause,
+        attributes,
+        include,
+        {
+          limit,
+          offset,
+          order: [["createdAt", sortOrder]],
+          raw: false, // <-- Important: use `false` if you want nested data under `Plans`
+        }
+      );
 
       const responseData: any = {
-        nodes: rows,
+        nodes: result,
       };
 
       if (countTotal === true) {
-        responseData.total = count;
+        responseData.total = result;
       }
 
       return {

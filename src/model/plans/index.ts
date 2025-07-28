@@ -12,6 +12,7 @@ interface IPlans {
     id: string;
     planId: string;
     providerAddress: string;
+    nodeAddress: string,
     hours: string;
     gigabytes: string;
     prices: Price[];
@@ -32,10 +33,14 @@ const Plans = sequelize.define<PlansInstance>(
         planId: {
             type: DataTypes.STRING,
             primaryKey: true,
+    
         },
         providerAddress: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        nodeAddress: {
+            type: DataTypes.STRING,
         },
         hours: {
             type: DataTypes.STRING,
