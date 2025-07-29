@@ -6,11 +6,11 @@ const morganMiddlewareParam =
     ':method :url :status :res[content-length] - :response-time ms';
 
 const connections = {
-    disconnected: 'disconnected',
-    connected: 'connected',
-    connecting: 'connecting',
-    connection: 'connection',
-    error: 'error',
+    disconnected: 'DB disconnected',
+    connected: 'DB connected',
+    connecting: 'DB connecting',
+    connection: 'DB connection',
+    error: 'DB error',
     connection_error: 'Unable to connect postgres'
  };
 export {

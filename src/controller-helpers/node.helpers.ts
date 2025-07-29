@@ -1,7 +1,8 @@
 import postgresDataHelper from "../helpers/postgres.data.helper";
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, INACTIVE, ACTIVE } from "../constants/index";
+import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, INACTIVE, ACTIVE, NODE_LIST_ATTRIBUTES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import { fn, col, Sequelize } from "sequelize";
+import Plans from "../model/plans/index";
 
 class NodeHelper {
 
@@ -111,6 +112,8 @@ class NodeHelper {
         whereClause.status = status;
       } else if (status && status !== UNDEFINED && status !== ACTIVE) {
         whereClause.status = INACTIVE;
+      }else {
+        whereClause.status = ACTIVE;
       }
 
       if (country && country !== UNDEFINED) {
@@ -125,35 +128,26 @@ class NodeHelper {
       limit = limit || 5; // 5 is default
       page = page || 1;
       const offset = (page - 1) * limit;
-
-      const attributes = [
-        'id',
-        'address',
-        'country',
-        'city',
-        'status',
-      ];
-      
-      const include = [
-        {
-          model: DATA_MODELS.Plans,
-          attributes: ['planId'], // Or other attributes like ['planId', 'duration', 'price']
-          required: false, // Set to true if you only want nodes with plans
-        },
-      ];
-
+            
       const result = await postgresDataHelper.findDataFromJoinModels(
-        "Node", // or whatever your model key is
+        DATA_MODELS.Node,
         whereClause,
-        attributes,
-        include,
+        NODE_LIST_ATTRIBUTES,
+        [
+          {
+            model: Plans,
+            attributes: ['planId'],
+          },
+        ],
         {
           limit,
           offset,
-          order: [["createdAt", sortOrder]],
-          raw: false, // <-- Important: use `false` if you want nested data under `Plans`
+          order: [['address', 'ASC']],
+          raw: false,
         }
       );
+
+      console.log("🚀 ~ NodeHelper ~ result:", result);
 
       const responseData: any = {
         nodes: result,

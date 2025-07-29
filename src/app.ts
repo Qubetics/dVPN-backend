@@ -23,8 +23,8 @@ class App {
      * bind the port and start listening for requests
      */
     public listen(){
-      this.app.listen(process.env.PORT? Number(process.env.PORT):7200,()=>{
-        console.log(`App listing on the port ${process.env.PORT? process.env.PORT:7200}`);
+      this.app.listen(process.env.PORT? Number(process.env.PORT):7200,(err)=>{
+        console.log(`App listing on the port ${process.env.PORT? process.env.PORT:7200}`,err);
       });
     }
 

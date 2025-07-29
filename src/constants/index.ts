@@ -55,6 +55,24 @@ export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
 
 export const NODE_ATTRIBUTES = ['flag_url', 'city', 'country', 'remote_url', 'address'];
 
+export const NODE_LIST_ATTRIBUTES = [
+  'id',
+  'address',
+  'country',
+  'city',
+  'status',
+  'gigabyte_prices',
+  'hourly_prices',
+  'remote_url',
+  'lat',
+  'long',
+  'flag_url',
+  'createdAt',
+  'updatedAt',
+  'status_at',
+  'inactive_at'
+];
+
 export const UNDEFINED = "undefined";
 export const ACTIVE = "active";
 export const INACTIVE = "inactive";
