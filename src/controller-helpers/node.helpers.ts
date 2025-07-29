@@ -112,7 +112,7 @@ class NodeHelper {
         whereClause.status = status;
       } else if (status && status !== UNDEFINED && status !== ACTIVE) {
         whereClause.status = INACTIVE;
-      }else {
+      } else {
         whereClause.status = ACTIVE;
       }
 
@@ -128,7 +128,7 @@ class NodeHelper {
       limit = limit || 5; // 5 is default
       page = page || 1;
       const offset = (page - 1) * limit;
-            
+
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
         whereClause,
@@ -176,10 +176,24 @@ class NodeHelper {
    */
   public getRandomNode = async (): Promise<ApiResponse> => {
     try {
-      const nodeData = await postgresDataHelper.findOneData(DATA_MODELS.Node, {
-        where: { status: ACTIVE },
-        order: [Sequelize.literal("RANDOM()")],
-      });
+      const result = await postgresDataHelper.findDataFromJoinModels(
+        DATA_MODELS.Node,
+        { status: ACTIVE }, // or use a dynamic whereClause
+        NODE_LIST_ATTRIBUTES,
+        [
+          {
+            model: Plans,
+            attributes: ['planId'],
+          },
+        ],
+        {
+          limit: 1,
+          order: [Sequelize.literal('RANDOM()')],
+          raw: false,
+        }
+      );
+
+      const nodeData = result?.[0] || null;
 
       if (!nodeData) {
         return {
