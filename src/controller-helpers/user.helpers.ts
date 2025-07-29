@@ -114,6 +114,7 @@ class UserHelper {
         message: RESPONSE_MESSAGES.LOGIN,
       };
     } catch (err: any) {
+      console.log(err,"error in login");
       return {
         error: true,
         data: { isLogin: false },
@@ -162,7 +163,7 @@ class UserHelper {
         error: false,
       };
     } catch (error) {
-      console.log(error,"error in login");
+      console.log(error,"error in logout");
       return {
         error: true,
         status: Number(STATUS_CODES.INTERNALSERVER),
