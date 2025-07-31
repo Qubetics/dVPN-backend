@@ -1,5 +1,5 @@
 import postgresDataHelper from "../helpers/postgres.data.helper";
-import { DATA_MODELS, NODE_ATTRIBUTES, RESPONSE_MESSAGES, SESSION_ATTRIBUTES, STATUS_CODES } from "../constants/index";
+import { ACTIVE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 
 class SubscriptionHelper {
@@ -12,12 +12,11 @@ class SubscriptionHelper {
         wallet_address: string,
         limit?: number,
         page?: number,
-        countTotal?: boolean,
         order?: string
     ): Promise<ApiResponse> => {
         try {
 
-            if (!wallet_address || wallet_address === "undefined") {
+            if (!wallet_address || wallet_address === UNDEFINED) {
                 return {
                     error: true,
                     status: STATUS_CODES.UNAUTHORIZED,
@@ -32,7 +31,7 @@ class SubscriptionHelper {
 
 
             const flatResults = await postgresDataHelper.findAndQueryData(DATA_MODELS.Subscriptions, {
-                where:  { acc_address:wallet_address },
+                where:  { acc_address:wallet_address,status:ACTIVE },
                 limit,
                 offset,
                 order: [["createdAt", sortOrder]],
@@ -40,7 +39,7 @@ class SubscriptionHelper {
 
             return {
                 data: {
-                    sessions: flatResults ?? [],
+                    subscriptions: flatResults ?? [],
                     total: flatResults?.length ?? 0,
                 },
                 status: STATUS_CODES.SUCCESS,
