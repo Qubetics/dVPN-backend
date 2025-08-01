@@ -16,6 +16,7 @@ export const sessionCheck = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("1 start");
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -61,7 +62,7 @@ export const sessionCheck = async (
     
     const sessionData = await redisHelper.client.get(access_uuid);
     if (!sessionData) {
-      console.log("5");
+      console.log("5 middleware");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
