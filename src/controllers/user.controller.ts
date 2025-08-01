@@ -18,7 +18,7 @@ class UserController implements Controller {
   private initializeRoutes = () => {
     this.router.post(`${this.path}/login`, loginValidation, this.connectWallet);
     this.router.get(`${this.path}/logout`, sessionCheck, this.userLogout);
-    this.router.get(`${this.path}/refresh`, sessionCheck, this.userRefresh);
+    this.router.get(`${this.path}/refresh`, this.userRefresh);
   }
 
   /**

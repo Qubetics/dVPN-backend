@@ -75,7 +75,7 @@ export const sessionCheck = async (
     if (!userData) {
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.USER_NOT_FOUND,
-        status: STATUS_CODES.UNAUTHORIZED,
+        status: STATUS_CODES.NOTFOUND,
       });
     }
 

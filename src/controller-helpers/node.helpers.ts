@@ -42,7 +42,7 @@ class NodeHelper {
         if (!node) {
           return {
             error: true,
-            status: STATUS_CODES.UNAUTHORIZED,
+            status: STATUS_CODES.BADREQUEST,
             message: RESPONSE_MESSAGES.UNAUTHORIZED,
           };
         }

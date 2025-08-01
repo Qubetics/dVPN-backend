@@ -42,7 +42,7 @@ class UserHelper {
       if (!isSignatureValid?.verify) {
         return {
           error: true,
-          status: Number(STATUS_CODES.UNAUTHORIZED),
+          status: Number(STATUS_CODES.BADREQUEST),
           message: RESPONSE_MESSAGES.INVALID_CREDENTIALS,
         };
       }
