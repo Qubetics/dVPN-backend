@@ -3,6 +3,12 @@ import { log } from "./utils/helper.utils";
 import * as config from './config';
 import { EventEmitter } from "events";
 import { connections } from "../src/utils/constant.util";
+import Node from "../src/model/nodes/index";
+import UserSessions from "../src/model/user-session/index";
+import Sessions from "../src/model/session/index";
+import Subscriptions from "../src/model/subscriptions";
+import User from "../src/model/user/index";
+import Plans from "../src/model/plans/index";
 
 (async () => {
     await config.initiate();
@@ -64,7 +70,7 @@ class DBConnectionHandler {
    * connect to the postgresDB server
    * @returns boolean
    */
-createDBConnection = async () => {
+    createDBConnection = async () => {
         try {
             log.blue(connections.connecting);
             this._bindPostgresConnectionEvents();
@@ -85,7 +91,11 @@ createDBConnection = async () => {
                         log.red(`creating schema: ${error.message}`);
                     }
                 });
+
+            await this.sequelize.sync({ alter: true });
+
             return true;
+
         } catch (err) {
             log.red(connections.error, err);
             // sequelizeEvent.emit(connections.DISCONNECT);
@@ -116,6 +126,7 @@ createDBConnection = async () => {
             log.red(connections.error, err);
         }
     };
+
 }
 const dbConnectionHandler = DBConnectionHandler.getInstance();
 export default dbConnectionHandler;
