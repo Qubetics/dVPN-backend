@@ -40,15 +40,15 @@ export const RESPONSE_MESSAGES = {
   INVALID_TOKEN: "Invalid token",
   INTERNAL_SERVER_ERROR: "Internal Server Error.",
   NOT_FOUND: "Not Found!",
-  USER_NOT_FOUND: "Not found!",
+  USER_NOT_FOUND: "User Not found",
   LOGOUT: "Logout Successfull",
   LOGIN: "Login success",
   FETCH_DATA_SUCCESS: "Fetch data successfully",
-  UNAUTHORIZED: "Unauthorized!",
-  ROUTE_404: "Route not found.",
+  UNAUTHORIZED: "Unauthorized",
+  ROUTE_404: "Route not found",
   API_SERVICE: "API Service is up",
   INVALID_CREDENTIALS: "Invalid Credentials!",
-  NODE_NOT_FOUND: "No Node Server Available."
+  NODE_NOT_FOUND: "No Node Server Available"
 };
 
 export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
