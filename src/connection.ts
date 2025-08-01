@@ -64,7 +64,7 @@ class DBConnectionHandler {
    * connect to the postgresDB server
    * @returns boolean
    */
-    createDBConnection = async () => {
+createDBConnection = async () => {
         try {
             log.blue(connections.connecting);
             this._bindPostgresConnectionEvents();

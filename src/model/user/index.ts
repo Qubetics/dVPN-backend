@@ -1,6 +1,8 @@
-import dbConnectionHandler from "../../connection";
+// import dbConnectionHandler from "../../connection";
 import { DataTypes,Model } from "sequelize";
-const sequeslize=dbConnectionHandler.sequelize;
+// const sequeslize=dbConnectionHandler.sequelize;
+import DBConnectionHandler from "../../connection";
+const sequelize = DBConnectionHandler.sequelize;
 
 export interface IUser {
     id: string;
@@ -8,8 +10,10 @@ export interface IUser {
     status: boolean
 }
 
+console.log("1111111");
+
 interface UserInstance extends Model<IUser>, IUser {}
-const User = sequeslize.define<UserInstance>(
+const User = sequelize.define<UserInstance>(
     "user",
     {
         id: {

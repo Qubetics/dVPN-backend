@@ -1,4 +1,4 @@
-import {REDIS_ERR_MSG} from "../src/constants/redis.constant";
+import { REDIS_ERR_MSG } from "../src/constants/redis.constant";
 import App from "./app";
 import { log } from './utils/helper.utils';
 import * as config from './config';
@@ -11,22 +11,25 @@ import ERR from "../src/constants/server.constants";
 import SubscriptionController from "./controllers/subscription.controller";
 require('dotenv').config();
 
-(async ()=>{
+(async () => {
     try {
-            await config.initiate();
-            const app=new App([new UserController(),new NodeController(),new UserSessionController(),new SubscriptionController()]);
+        console.log("start");
+        await config.initiate();
+        const app = new App([new UserController(), new NodeController(), new UserSessionController(), new SubscriptionController()]);
 
-            // connect to the postgres server
-            const isDBconnected = await dbConnectionHandler.createDBConnection();
-            if (!isDBconnected) throw new Error(ERR.POSTGRES_CONN);
+        console.log("end");
 
-            //connect to the redis server
-            const isRedisConnected=await redisHelper.connectRedis();
-            if(!isRedisConnected)throw new Error(REDIS_ERR_MSG.CONN_ERR);
+        // connect to the postgres server
+        const isDBconnected = await dbConnectionHandler.createDBConnection();
+        if (!isDBconnected) throw new Error(ERR.POSTGRES_CONN);
 
-            // bind the post and listen for requests
-            app.listen();
-        } catch (err:any) {
-        log.red(REDIS_ERR_MSG.CONN_ERR,err.mesaage);
+        //connect to the redis server
+        const isRedisConnected = await redisHelper.connectRedis();
+        if (!isRedisConnected) throw new Error(REDIS_ERR_MSG.CONN_ERR);
+
+        // bind the post and listen for requests
+        app.listen();
+    } catch (err: any) {
+        log.red(REDIS_ERR_MSG.CONN_ERR, err.mesaage);
     }
 })();
