@@ -19,6 +19,7 @@ export const sessionCheck = async (
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      console.log("1");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.UNAUTHORIZED,
         status: STATUS_CODES.UNAUTHORIZED,
@@ -29,6 +30,7 @@ export const sessionCheck = async (
 
     const decoded = decodeToken(token);
     if (!decoded) {
+      console.log("2");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
@@ -38,6 +40,7 @@ export const sessionCheck = async (
     // Verify token signature and expiry
     const verifiedToken = verifyAccessToken(token);
     if (!verifiedToken) {
+      console.log("3");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
@@ -48,6 +51,7 @@ export const sessionCheck = async (
 
 
     if (!access_uuid) {
+      console.log("4");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
@@ -57,6 +61,7 @@ export const sessionCheck = async (
     
     const sessionData = await redisHelper.client.get(access_uuid);
     if (!sessionData) {
+      console.log("5");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.INVALID_TOKEN,
         status: STATUS_CODES.UNAUTHORIZED,
@@ -73,6 +78,7 @@ export const sessionCheck = async (
     });
 
     if (!userData) {
+      console.log("6");
       return sendResponse(res, {
         message: RESPONSE_MESSAGES.USER_NOT_FOUND,
         status: STATUS_CODES.NOTFOUND,
@@ -84,6 +90,7 @@ export const sessionCheck = async (
 
     return next();
   } catch (err) {
+    console.log("7");
     return sendResponse(res, {
       message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       status: STATUS_CODES.INTERNALSERVER,
