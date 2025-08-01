@@ -1,16 +1,12 @@
-// import dbConnectionHandler from "../../connection";
 import { DataTypes,Model } from "sequelize";
-// const sequeslize=dbConnectionHandler.sequelize;
 import DBConnectionHandler from "../../connection";
 const sequelize = DBConnectionHandler.sequelize;
 
-export interface IUser {
+ interface IUser {
     id: string;
     wallet_address: string;
     status: boolean
 }
-
-console.log("1111111");
 
 interface UserInstance extends Model<IUser>, IUser {}
 const User = sequelize.define<UserInstance>(

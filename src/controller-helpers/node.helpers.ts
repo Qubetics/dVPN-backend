@@ -147,8 +147,6 @@ class NodeHelper {
         }
       );
 
-      console.log("🚀 ~ NodeHelper ~ result:", result);
-
       const responseData: any = {
         nodes: result,
       };

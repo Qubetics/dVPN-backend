@@ -13,11 +13,8 @@ require('dotenv').config();
 
 (async () => {
     try {
-        console.log("start");
         await config.initiate();
         const app = new App([new UserController(), new NodeController(), new UserSessionController(), new SubscriptionController()]);
-
-        console.log("end");
 
         // connect to the postgres server
         const isDBconnected = await dbConnectionHandler.createDBConnection();
