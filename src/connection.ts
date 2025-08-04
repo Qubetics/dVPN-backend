@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import { log } from "./utils/helper.utils";
-import * as config from './config';
+import * as config from './config/index';
 import { EventEmitter } from "events";
 import { connections } from "../src/utils/constant.util";
 import Node from "../src/model/nodes/index";
@@ -29,22 +29,23 @@ class DBConnectionHandler {
 
     public sequelize = new Sequelize({
         replication: {
+            write: {
+                host: process.env.DB_WRITE_HOST,
+                username: process.env.DB_WRITE_USER,
+                password: process.env.DB_WRITE_PASS,
+                database: process.env.DB_WRITE_NAME,
+                port: Number(process.env.DB_WRITE_PORT),
+            },
             read: [
                 {
                     host: process.env.DB_READ_HOST,
                     username: process.env.DB_READ_USER,
                     password: process.env.DB_READ_PASS,
                     database: process.env.DB_READ_NAME,
-                    port: process.env.DB_READ_PORT,
+                    port: Number(process.env.DB_WRITE_PORT),
                 },
             ],
-            write: {
-                host: process.env.DB_WRITE_HOST,
-                username: process.env.DB_WRITE_USER,
-                password: process.env.DB_WRITE_PASS,
-                database: process.env.DB_WRITE_NAME,
-                port: process.env.DB_WRITE_PORT,
-            },
+
         },
         dialect: "postgres",
         dialectOptions: {
