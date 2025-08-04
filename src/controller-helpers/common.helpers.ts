@@ -50,6 +50,8 @@ export const verifyKeplrSignature = (
       signatureToCompare,
       Buffer.from(hashed, "hex")
     );
+    console.log("🚀 ~ verifyKeplrSignature ~ pubkeyComputed:", pubkeyComputed);
+      console.log("🚀 ~ verifyKeplrSignature ~ pubKey:", pubKey);
     return {
       verify: pubkeyComputed === pubKey,
     };

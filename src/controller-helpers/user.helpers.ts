@@ -79,7 +79,9 @@ class UserHelper {
 
       // generate the token both access token and refresh token
       const access_token = generateAccessToken(access_token_payload);
+      console.log("🚀 ~ UserHelper ~ access_token:", access_token)
       const refresh_token = generateRefreshToken(refresh_token_payload);
+      console.log("🚀 ~ UserHelper ~ refresh_token:", refresh_token)
 
       const setDataAccess = {
         access_token_expiry: process.env.ACCESS_TOKEN_EXPIRY,
@@ -114,7 +116,7 @@ class UserHelper {
         message: RESPONSE_MESSAGES.LOGIN,
       };
     } catch (err: any) {
-      console.log(err,"error in login");
+      console.log(err, "error in login");
       return {
         error: true,
         data: { isLogin: false },
@@ -163,7 +165,7 @@ class UserHelper {
         error: false,
       };
     } catch (error) {
-      console.log(error,"error in logout");
+      console.log(error, "error in logout");
       return {
         error: true,
         status: Number(STATUS_CODES.INTERNALSERVER),
@@ -191,6 +193,7 @@ class UserHelper {
       }
 
       const payload = verifyRefreshToken(refresh_token);
+      console.log("🚀 ~ UserHelper ~ payload:", payload)
 
       if (!payload) {
         return {
