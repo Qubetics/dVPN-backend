@@ -48,7 +48,11 @@ export const RESPONSE_MESSAGES = {
   ROUTE_404: "Route not found",
   API_SERVICE: "API Service is up",
   INVALID_CREDENTIALS: "Invalid Credentials!",
-  NODE_NOT_FOUND: "No Node Server Available"
+  NODE_NOT_FOUND: "No Node Server Available",
+  APP_VERSION_SUCCESSFULLY_FETCH: "Application version successfully fetched",
+  CHAIN_URL_SUCCESSFULLY_FETCH: "Chain URL successfully fetched",
+  APP_VERSION_IS_MISSING: "App version not found",
+  CHAIN_URL_IS_MISSING: "Chain URL not found",
 };
 
 export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
