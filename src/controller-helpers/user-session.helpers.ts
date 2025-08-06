@@ -6,6 +6,8 @@ import DBConnectionHandler from "../connection";
 import postgresDataHelper from "../helpers/postgres.data.helper";
 import Node from "../model/nodes/index";
 import { flattenNodeFields } from "./common.helpers";
+import { errorHandler } from "../error-handler/index";
+import { successHandler } from "../success-handler/index";
 
 const sequelize = DBConnectionHandler.sequelize;
 
@@ -35,11 +37,10 @@ class UserSessionHelper {
     try {
 
       if (!wallet_address || wallet_address === "undefined") {
-        return {
-          error: true,
+        return errorHandler({
           status: STATUS_CODES.UNAUTHORIZED,
           message: RESPONSE_MESSAGES.UNAUTHORIZED
-        };
+        });
       }
 
       limit = limit || 10;
@@ -68,22 +69,19 @@ class UserSessionHelper {
 
       const flatResults = flattenNodeFields(results);
 
-      return {
+      return successHandler({
         data: {
           sessions: flatResults ?? [],
           total: flatResults?.length ?? 0,
         },
         status: STATUS_CODES.SUCCESS,
-        error: false,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-      };
-
+      });
     } catch (error: any) {
-      return {
-        error: true,
+      return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-        status: STATUS_CODES.INTERNALSERVER,
-      };
+        status: STATUS_CODES.INTERNALSERVER
+      });
     }
   };
 
@@ -145,18 +143,12 @@ class UserSessionHelper {
         responseData.total = results.length;
       }
 
-      return {
-        data: responseData,
-        status: STATUS_CODES.SUCCESS,
-        error: false,
-        message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-      };
+      return successHandler({ data: responseData, status: STATUS_CODES.SUCCESS, message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS });
     } catch (error: any) {
-      return {
-        error: true,
+      return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-        status: STATUS_CODES.INTERNALSERVER,
-      };
+        status: STATUS_CODES.INTERNALSERVER
+      });
     }
   };
 

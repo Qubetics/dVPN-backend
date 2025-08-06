@@ -2,6 +2,8 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
 import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, INACTIVE, ACTIVE, NODE_LIST_ATTRIBUTES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import { fn, col, Sequelize } from "sequelize";
+import { successHandler } from "../success-handler/index";
+import { errorHandler } from "../error-handler/index";
 import Plans from "../model/plans/index";
 
 class NodeHelper {
@@ -40,19 +42,18 @@ class NodeHelper {
         });
 
         if (!node) {
-          return {
-            error: true,
+          return errorHandler({
             status: STATUS_CODES.BADREQUEST,
-            message: RESPONSE_MESSAGES.UNAUTHORIZED,
-          };
+            message: RESPONSE_MESSAGES.UNAUTHORIZED
+          });
         }
 
-        return {
+        return successHandler({
           data: node,
           status: STATUS_CODES.SUCCESS,
-          error: false,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-        };
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
+        });
+
       }
 
       //  Case : No country & no city and it return list of countries with node count
@@ -67,12 +68,11 @@ class NodeHelper {
           raw: true,
         });
 
-        return {
+        return successHandler({
           data: { countries },
           status: STATUS_CODES.SUCCESS,
-          error: false,
-          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-        };
+          message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
+        })
       }
 
       // Case : Country exists but no city and it return cities with node count
@@ -90,7 +90,7 @@ class NodeHelper {
 
         const flag_url = cities[0]?.flag_url || null;
 
-        return {
+        return successHandler({
           data: {
             country,
             flag_url,
@@ -100,9 +100,8 @@ class NodeHelper {
             })),
           },
           status: STATUS_CODES.SUCCESS,
-          error: false,
           message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-        };
+        });
       }
 
       // Case : Country and City both provided and it return list of nodes
@@ -155,18 +154,16 @@ class NodeHelper {
         responseData.total = result;
       }
 
-      return {
+      return successHandler({
         data: responseData,
         status: STATUS_CODES.SUCCESS,
-        error: false,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-      };
+      });
     } catch (error: any) {
-      return {
-        error: true,
+      return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         status: STATUS_CODES.INTERNALSERVER,
-      };
+      });
     }
   };
   /**
@@ -194,25 +191,19 @@ class NodeHelper {
       const nodeData = result?.[0] || null;
 
       if (!nodeData) {
-        return {
-          error: true,
+        return errorHandler({
           status: STATUS_CODES.NOTFOUND,
           message: RESPONSE_MESSAGES.NODE_NOT_FOUND,
-        };
+        });
       }
 
-      return {
-        data: nodeData,
-        status: STATUS_CODES.SUCCESS,
-        error: false,
-        message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-      };
+      return successHandler({data:nodeData,status: STATUS_CODES.SUCCESS,message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,});
+
     } catch (error: any) {
-      return {
-        error: true,
+      return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         status: STATUS_CODES.INTERNALSERVER,
-      };
+      });
     }
   };
 

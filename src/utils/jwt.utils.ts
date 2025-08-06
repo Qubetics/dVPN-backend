@@ -15,9 +15,7 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY;     // short-lived
-console.log("🚀 ~ ACCESS_TOKEN_EXPIRY:", ACCESS_TOKEN_EXPIRY)
 const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY;     // long-lived
-console.log("🚀 ~ REFRESH_TOKEN_EXPIRY:", REFRESH_TOKEN_EXPIRY)
 
 
 export const generateAccessToken = (payload: AccessTokenPayload) => {

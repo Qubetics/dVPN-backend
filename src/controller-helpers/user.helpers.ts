@@ -16,6 +16,8 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt.utils";
+import { errorHandler } from "../error-handler/index";
+import { successHandler } from "../success-handler/index";
 import { verifyKeplrSignature } from "./common.helpers";
 import { KeplrSignature } from "../interfaces/keplrSignature.interfaces";
 
@@ -40,11 +42,10 @@ class UserHelper {
       );
 
       if (!isSignatureValid?.verify) {
-        return {
-          error: true,
+        return errorHandler({
           status: Number(STATUS_CODES.BADREQUEST),
           message: RESPONSE_MESSAGES.INVALID_CREDENTIALS,
-        };
+        });
       }
 
       // check the address is present in the DB if not than save that in the DB
@@ -79,9 +80,7 @@ class UserHelper {
 
       // generate the token both access token and refresh token
       const access_token = generateAccessToken(access_token_payload);
-      console.log("🚀 ~ UserHelper ~ access_token:", access_token)
       const refresh_token = generateRefreshToken(refresh_token_payload);
-      console.log("🚀 ~ UserHelper ~ refresh_token:", refresh_token)
 
       const setDataAccess = {
         access_token_expiry: process.env.ACCESS_TOKEN_EXPIRY,
@@ -106,23 +105,21 @@ class UserHelper {
         }
       );
 
-      return {
+      return successHandler({
         data: {
           accessToken: access_token,
           refreshToken: refresh_token,
         },
-        error: false,
         status: 200,
         message: RESPONSE_MESSAGES.LOGIN,
-      };
+      });
     } catch (err: any) {
       console.log(err, "error in login");
-      return {
-        error: true,
+      return errorHandler({
         data: { isLogin: false },
         status: Number(STATUS_CODES.INTERNALSERVER),
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-      };
+      });
     }
   };
 
@@ -135,11 +132,10 @@ class UserHelper {
   ): Promise<ESResponse> => {
     try {
       if (!refresh_token) {
-        return {
-          error: true,
+        return errorHandler({
           status: STATUS_CODES.BADREQUEST,
           message: RESPONSE_MESSAGES.BADREQUEST,
-        };
+        });
       }
 
       const { refresh_uuid } = verifyRefreshToken(refresh_token);
@@ -147,11 +143,10 @@ class UserHelper {
       const values = await redisHelper.client.get(refresh_uuid);
 
       if (!values) {
-        return {
-          error: true,
+        return errorHandler({
           status: Number(STATUS_CODES.UNAUTHORIZED),
           message: RESPONSE_MESSAGES.UNAUTHORIZED,
-        };
+        });
       }
 
       const parsedValues = JSON.parse(String(values));
@@ -159,18 +154,17 @@ class UserHelper {
 
       await redisHelper.removeFromRedis(refresh_uuid);
       await redisHelper.removeFromRedis(access_uuid);
-      return {
+
+      return successHandler({
         message: RESPONSE_MESSAGES.LOGOUT,
         status: Number(STATUS_CODES.SUCCESS),
-        error: false,
-      };
+      });
     } catch (error) {
       console.log(error, "error in logout");
-      return {
-        error: true,
+      return errorHandler({
         status: Number(STATUS_CODES.INTERNALSERVER),
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-      };
+      });
     }
   };
 
@@ -185,22 +179,19 @@ class UserHelper {
     try {
       // this removes the token from the redis hence preventing the re-login
       if (!refresh_token) {
-        return {
-          error: true,
+        return errorHandler({
           status: STATUS_CODES.BADREQUEST,
           message: RESPONSE_MESSAGES.BADREQUEST,
-        };
+        });
       }
 
       const payload = verifyRefreshToken(refresh_token);
-      console.log("🚀 ~ UserHelper ~ payload:", payload)
 
       if (!payload) {
-        return {
-          error: true,
+        return errorHandler({
           status: STATUS_CODES.UNAUTHORIZED,
           message: RESPONSE_MESSAGES.INVALID_TOKEN,
-        };
+        });
       }
 
       const { wallet_address, refresh_uuid } = payload;
@@ -209,11 +200,10 @@ class UserHelper {
       const values = await redisHelper.client.get(refresh_uuid);
 
       if (!values) {
-        return {
-          error: true,
+        return errorHandler({
           status: Number(STATUS_CODES.UNAUTHORIZED),
           message: RESPONSE_MESSAGES.UNAUTHORIZED,
-        };
+        });
       }
 
       const access_uuid = uuidv4();
@@ -258,22 +248,19 @@ class UserHelper {
         }
       );
 
-      return {
+      return successHandler({
         data: {
           accessToken: new_access_token,
           refreshToken: new_refresh_token,
         },
-        error: false,
         status: 200,
         message: RESPONSE_MESSAGES.SUCCESS_NEW_TOKEN,
-      };
+      });
     } catch (error) {
-      return {
-        error: true,
-        data: { isLogin: false },
+      return errorHandler({
         status: Number(STATUS_CODES.INTERNALSERVER),
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-      };
+      });
     }
   };
 }

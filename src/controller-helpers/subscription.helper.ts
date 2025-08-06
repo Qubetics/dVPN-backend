@@ -1,6 +1,8 @@
 import postgresDataHelper from "../helpers/postgres.data.helper";
 import { ACTIVE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
+import { successHandler } from "../success-handler/index";
+import { errorHandler } from "../error-handler/index";
 
 class SubscriptionHelper {
 
@@ -17,11 +19,10 @@ class SubscriptionHelper {
         try {
 
             if (!wallet_address || wallet_address === UNDEFINED) {
-                return {
-                    error: true,
+                return errorHandler({
                     status: STATUS_CODES.UNAUTHORIZED,
                     message: RESPONSE_MESSAGES.UNAUTHORIZED
-                };
+                });
             }
 
             limit = limit || 10;
@@ -31,28 +32,25 @@ class SubscriptionHelper {
 
 
             const flatResults = await postgresDataHelper.findAndQueryData(DATA_MODELS.Subscriptions, {
-                where:  { acc_address:wallet_address,status:ACTIVE },
+                where: { acc_address: wallet_address, status: ACTIVE },
                 limit,
                 offset,
                 order: [["createdAt", sortOrder]],
-              });
+            });
 
-            return {
+            return successHandler({
                 data: {
                     subscriptions: flatResults ?? [],
                     total: flatResults?.length ?? 0,
                 },
                 status: STATUS_CODES.SUCCESS,
-                error: false,
-                message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
-            };
-
+                message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS
+            });
         } catch (error: any) {
-            return {
-                error: true,
+            return errorHandler({
                 message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-                status: STATUS_CODES.INTERNALSERVER,
-            };
+                status: STATUS_CODES.INTERNALSERVER
+            });
         }
     };
 

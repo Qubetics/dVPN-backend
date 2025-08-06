@@ -53,6 +53,8 @@ export const RESPONSE_MESSAGES = {
   CHAIN_URL_SUCCESSFULLY_FETCH: "Chain URL successfully fetched",
   APP_VERSION_IS_MISSING: "App version not found",
   CHAIN_URL_IS_MISSING: "Chain URL not found",
+  BASE_SUCCESS_MESSAGE: "Success",
+  BASE_ERROR_MESSAGE: "Failed",
 };
 
 export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
