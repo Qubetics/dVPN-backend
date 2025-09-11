@@ -30,11 +30,20 @@ export const DATA_MODELS = {
   Plans: "Plans",
   Subscriptions: "Subscriptions",
   Sessions: "Sessions",
-  UserSession: "UserSession"
+  UserSession: "UserSession",
+  PlanPurchase: "PlanPurchase"
 };
 
 // Response messages
 export const RESPONSE_MESSAGES = {
+  PLAN_ID_SUCCESS:"Plan ID saved successfully",
+  PLAN_ID_NOT_FOUND:"Plan ID not found in transaction message",
+  NO_MESSAGE:"No messages found in transaction",
+  FAILED_TRANSACTION: "Invalid transaction or failed transaction",
+  PLAN_FETCH_SUCCESS:"Plans fetched successfully",
+  NODE_DETAIL_FOUND:"Node details fetched successfully",
+  NO_NODE_FOUND: "No nodes found for this planId",
+  PLAN_NOT_FOUND: "No plan found for this address",
   SUCCESS_NEW_TOKEN: "New Token generated succesfully",
   BADREQUEST: "Missing required header",
   INVALID_TOKEN: "Invalid token",

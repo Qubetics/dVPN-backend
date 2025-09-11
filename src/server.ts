@@ -10,12 +10,13 @@ import UserSessionController from "./controllers/user-session.controller";
 import ERR from "../src/constants/server.constants";
 import SubscriptionController from "./controllers/subscription.controller";
 import AppController from "./controllers/app.controller";
+import PlanController from "./controllers/plan.controller";
 require('dotenv').config();
 
 (async () => {
     try {
         await config.initiate();
-        const app = new App([new UserController(), new NodeController(), new UserSessionController(), new SubscriptionController(),new AppController()]);
+        const app = new App([new UserController(), new NodeController(), new UserSessionController(), new SubscriptionController(),new AppController(),new PlanController()]);
 
         // connect to the postgres server
         const isDBconnected = await dbConnectionHandler.createDBConnection();

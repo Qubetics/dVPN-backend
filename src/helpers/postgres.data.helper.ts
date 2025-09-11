@@ -5,6 +5,7 @@ import Plans from "../model/plans/index";
 import Subscriptions from "../model/subscriptions/index";
 import Sessions from "../model/session/index";
 import UserSessions from "../model/user-session/index";
+import PlanPurchase from "../model/plan-purchase";
 
 class PostgresDataHelper {
   static instance: PostgresDataHelper = null;
@@ -221,6 +222,8 @@ class PostgresDataHelper {
         return Sessions;
       case DATA_MODELS.UserSession:
         return UserSessions;
+      case DATA_MODELS.PlanPurchase:
+        return PlanPurchase;
       default:
         return null;
     }
