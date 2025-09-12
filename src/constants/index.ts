@@ -36,6 +36,7 @@ export const DATA_MODELS = {
 
 // Response messages
 export const RESPONSE_MESSAGES = {
+  PLAN_ID_FETCH:"Plan Id fetch successfully",
   PLAN_ID_SUCCESS:"Plan ID saved successfully",
   PLAN_ID_NOT_FOUND:"Plan ID not found in transaction message",
   NO_MESSAGE:"No messages found in transaction",

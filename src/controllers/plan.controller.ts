@@ -17,6 +17,7 @@ class PlanController implements Controller {
         this.router.get(`${this.path}/`, sessionCheck, this.getAllPlans);
         this.router.get(`${this.path}/node`, sessionCheck,this.getAllNodeForPlan);
         this.router.post(`${this.path}/id`,sessionCheck,this.postForPlanId);
+        this.router.get(`${this.path}/id`,sessionCheck,this.getPlanId);
     };
 
     private getAllPlans = async (req: any, res: Response) => {
@@ -39,6 +40,12 @@ class PlanController implements Controller {
        const TxHash=String(req.body.txhash);
        const responsePlanId=await planHelpers.postForPlanId(walletAddress,TxHash);
        return sendResponse(res,responsePlanId);
+    };
+
+    private getPlanId = async (req:any,res:Response)=>{
+        const walletAddress=String(req.user.wallet_address);
+        const resPlanID=await planHelpers.getPlanId(walletAddress);
+        return sendResponse(res,resPlanID); 
     };
 
 }

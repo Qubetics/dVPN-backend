@@ -34,7 +34,7 @@ class PlanHelper {
                 }
             );
 
-            const plan = result[0]; 
+            const plan = result[0];
 
             const transformed = {
                 planId: plan.planId,
@@ -54,11 +54,11 @@ class PlanHelper {
                 status: STATUS_CODES.INTERNALSERVER
             });
         }
-    }
+    };
 
     public getAllNodeForPlan = async (walletAddress: string, page: number, limit: number): Promise<ApiResponse> => {
         try {
-            
+
             const offset = (page - 1) * limit;
 
             const planPurchase = await postgresDataHelper.findOneData(
@@ -115,7 +115,7 @@ class PlanHelper {
                 status: STATUS_CODES.INTERNALSERVER
             });
         }
-    }
+    };
 
     public postForPlanId = async (walletAddress: string, TxHash: string) => {
         try {
@@ -170,7 +170,31 @@ class PlanHelper {
                 status: STATUS_CODES.INTERNALSERVER
             })
         }
-    }
+    };
+
+    public getPlanId = async (walletAddress: string) => {
+        try {
+
+            const result = await postgresDataHelper.findOneData(
+                DATA_MODELS.PlanPurchase,
+                {
+                    where: { wallet_address: walletAddress },
+                    order: [["createdAt", "DESC"]], // get the most recent purchase
+                }
+            );
+
+            return successHandler({
+                message: RESPONSE_MESSAGES.PLAN_ID_FETCH,
+                status: STATUS_CODES.SUCCESS,
+                data: result
+            })
+        } catch (error) {
+            return errorHandler({
+                message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+                status: STATUS_CODES.INTERNALSERVER
+            })
+        }
+    };
 }
 
 export default new PlanHelper();

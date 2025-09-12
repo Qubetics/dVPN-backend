@@ -5,6 +5,8 @@ import { fn, col, Sequelize } from "sequelize";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import Plans from "../model/plans/index";
+import dbConnectionHandler from "../connection";
+const sequelize = dbConnectionHandler.sequelize;
 
 class NodeHelper {
 
@@ -32,7 +34,8 @@ class NodeHelper {
     order?: string,
     nodeAddress?: string,
     country?: string,
-    city?: string
+    city?: string,
+    planId?: number
   ): Promise<ApiResponse> => {
     try {
       //  Case : when to fetch a single node by address
@@ -128,16 +131,19 @@ class NodeHelper {
       page = page || 1;
       const offset = (page - 1) * limit;
 
+      const include: any[] = [];
+      if (planId) {
+        include.push({
+          model: Plans,
+          attributes: ["planId"],
+        });
+      }
+
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
         whereClause,
         NODE_LIST_ATTRIBUTES,
-        [
-          {
-            model: Plans,
-            attributes: ['planId'],
-          },
-        ],
+        include,
         {
           limit,
           offset,
@@ -179,6 +185,7 @@ class NodeHelper {
           {
             model: Plans,
             attributes: ['planId'],
+            required: true,       
           },
         ],
         {
@@ -197,7 +204,7 @@ class NodeHelper {
         });
       }
 
-      return successHandler({data:nodeData,status: STATUS_CODES.SUCCESS,message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,});
+      return successHandler({ data: nodeData, status: STATUS_CODES.SUCCESS, message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS, });
 
     } catch (error: any) {
       return errorHandler({

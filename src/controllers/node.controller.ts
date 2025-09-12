@@ -33,7 +33,7 @@ class NodeController implements Controller {
     const nodeAddress = String(req.query.address);
     const country = String(req.query.country);
     const city = String(req.query.city);
-
+    const planId= Number(req.query?.plan_id);
     const nodeListData = await nodeHelpers.nodeList(
       status,
       limit,
@@ -42,7 +42,8 @@ class NodeController implements Controller {
       order,
       nodeAddress,
       country,
-      city
+      city,
+      planId
     );
 
     return sendResponse(res, nodeListData);
