@@ -61,12 +61,17 @@ class NodeHelper {
 
       //  Case : No country & no city and it return list of countries with node count
       if ((!country || country === UNDEFINED) && (!city || city === UNDEFINED)) {
+        let where: any;
+        if (planId) {
+          where = { status: ACTIVE };
+        }
         const countries = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
           attributes: [
             "country",
             [fn("COUNT", col("country")), "node_count"],
             [fn("MIN", col("flag_url")), "flag_url"],
           ],
+          where,
           group: ["country"],
           raw: true,
         });
@@ -80,6 +85,10 @@ class NodeHelper {
 
       // Case : Country exists but no city and it return cities with node count
       if (country && country !== UNDEFINED && (!city || city === UNDEFINED)) {
+        let where: any;
+        if (planId) {
+          where = { status: ACTIVE };
+        }
         const cities = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
           attributes: [
             "city",
@@ -185,7 +194,7 @@ class NodeHelper {
           {
             model: Plans,
             attributes: ['planId'],
-            required: true,       
+            required: true,
           },
         ],
         {
