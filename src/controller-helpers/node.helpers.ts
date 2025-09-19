@@ -119,14 +119,6 @@ class NodeHelper {
       // Case : Country and City both provided and it return list of nodes
       const whereClause: any = {};
 
-      if (status && status !== UNDEFINED && status !== INACTIVE) {
-        whereClause.status = status;
-      } else if (status && status !== UNDEFINED && status !== ACTIVE) {
-        whereClause.status = INACTIVE;
-      } else {
-        whereClause.status = ACTIVE;
-      }
-
       if (country && country !== UNDEFINED) {
         whereClause.country = country;
       }
@@ -146,7 +138,18 @@ class NodeHelper {
           model: Plans,
           attributes: ["planId"],
         });
+        
+        whereClause.status=ACTIVE;
       }
+
+        // if (status && status !== UNDEFINED && status !== INACTIVE) {
+        //   whereClause.status = status;
+        // } else if (status && status !== UNDEFINED && status !== ACTIVE) {
+        //   whereClause.status = INACTIVE;
+        // } else {
+        //   whereClause.status = ACTIVE;
+        // }
+      
 
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
