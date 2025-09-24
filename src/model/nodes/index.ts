@@ -9,7 +9,6 @@ interface Price {
 }
 
 interface INode {
-    id: string;
     address: string;
     gigabyte_prices: Price[];
     hourly_prices: Price[];
@@ -28,11 +27,6 @@ interface NodeInstance extends Model<INode>, INode { }
 const Node = sequelize.define<NodeInstance>(
     'nodes',
     {
-        id: {
-            type: DataTypes.UUID,
-            unique: true,
-            allowNull: false,
-        },
         address: {
             type: DataTypes.STRING,
             primaryKey: true,
