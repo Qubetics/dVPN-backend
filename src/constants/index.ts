@@ -72,7 +72,6 @@ export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
 export const NODE_ATTRIBUTES = ['flag_url', 'city', 'country', 'remote_url', 'address'];
 
 export const NODE_LIST_ATTRIBUTES = [
-  'id',
   'address',
   'country',
   'city',
