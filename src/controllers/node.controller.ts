@@ -55,7 +55,8 @@ class NodeController implements Controller {
    * @returns 
    */
   private getRandomNodeData = async (req:any,res: Response) => {
-    const randomNodeResponse = await nodeHelpers.getRandomNode();
+    const planId= String(req.query?.plan_id);
+    const randomNodeResponse = await nodeHelpers.getRandomNode(planId);
     return sendResponse(res,randomNodeResponse);
   };
 

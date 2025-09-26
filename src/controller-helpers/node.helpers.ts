@@ -61,10 +61,8 @@ class NodeHelper {
 
       //  Case : No country & no city and it return list of countries with node count
       if ((!country || country === UNDEFINED) && (!city || city === UNDEFINED)) {
-        let where: any;
-        if (planId) {
-          where = { status: ACTIVE };
-        }
+        const where: any = { status: ACTIVE };
+
         const countries = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
           attributes: [
             "country",
@@ -85,10 +83,7 @@ class NodeHelper {
 
       // Case : Country exists but no city and it return cities with node count
       if (country && country !== UNDEFINED && (!city || city === UNDEFINED)) {
-        const where: any = { country };
-        if (planId) {
-          where.status = ACTIVE;
-        }
+        const where: any = { country, status: ACTIVE };
         const cities = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
           attributes: [
             "city",
@@ -119,6 +114,8 @@ class NodeHelper {
       // Case : Country and City both provided and it return list of nodes
       const whereClause: any = {};
 
+      whereClause.status = ACTIVE;
+
       if (country && country !== UNDEFINED) {
         whereClause.country = country;
       }
@@ -137,19 +134,17 @@ class NodeHelper {
         include.push({
           model: Plans,
           attributes: ["planId"],
+          where: { planId: String(planId) }
         });
-        
-        whereClause.status=ACTIVE;
       }
 
-        // if (status && status !== UNDEFINED && status !== INACTIVE) {
-        //   whereClause.status = status;
-        // } else if (status && status !== UNDEFINED && status !== ACTIVE) {
-        //   whereClause.status = INACTIVE;
-        // } else {
-        //   whereClause.status = ACTIVE;
-        // }
-      
+      // if (status && status !== UNDEFINED && status !== INACTIVE) {
+      //   whereClause.status = status;
+      // } else if (status && status !== UNDEFINED && status !== ACTIVE) {
+      //   whereClause.status = INACTIVE;
+      // } else {
+      //   whereClause.status = ACTIVE;
+      // }
 
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
@@ -187,19 +182,27 @@ class NodeHelper {
   /**
    * Fetch the details of the single random node
    */
-  public getRandomNode = async (): Promise<ApiResponse> => {
+  public getRandomNode = async (planId: string): Promise<ApiResponse> => {
     try {
+      const include: any[] = [];
+      if (planId && planId!=UNDEFINED) {
+        include.push({
+          model: Plans,
+          attributes: ["planId"],
+          where: { planId }
+        });
+      } else {
+        return {
+          status: STATUS_CODES.BADREQUEST,
+          message: RESPONSE_MESSAGES.PLAN_ID_IS_NOT_PRESENT
+        }
+      }
+
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
         { status: ACTIVE }, // or use a dynamic whereClause
         NODE_LIST_ATTRIBUTES,
-        [
-          {
-            model: Plans,
-            attributes: ['planId'],
-            required: true,
-          },
-        ],
+        include,
         {
           limit: 1,
           order: [Sequelize.literal('RANDOM()')],
