@@ -63,17 +63,34 @@ class NodeHelper {
       if ((!country || country === UNDEFINED) && (!city || city === UNDEFINED)) {
         const where: any = { status: ACTIVE };
 
-        const countries = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
-          attributes: [
-            "country",
-            [fn("COUNT", col("country")), "node_count"],
-            [fn("MIN", col("flag_url")), "flag_url"],
-          ],
+        const attributes = [
+          "country",
+          [fn("COUNT", col("country")), "node_count"],
+          [fn("MIN", col("flag_url")), "flag_url"],
+        ];
+        
+        const include: any[] = [];
+        
+        if (planId) {
+          include.push({
+            model: Plans,
+            attributes: [],                // 👈 don’t select planId
+            where: { planId: String(planId) },
+            required: true,                // inner join (only matching nodes)
+          });
+        }
+        
+        const countries = await postgresDataHelper.findDataFromJoinModels(
+          DATA_MODELS.Node,
           where,
-          group: ["country"],
-          raw: true,
-        });
-
+          attributes,
+          include,
+          {
+            group: ["country"], // 👈 only group by country
+            raw: true,
+          }
+        );
+        
         return successHandler({
           data: { countries },
           status: STATUS_CODES.SUCCESS,
@@ -83,19 +100,39 @@ class NodeHelper {
 
       // Case : Country exists but no city and it return cities with node count
       if (country && country !== UNDEFINED && (!city || city === UNDEFINED)) {
-        const where: any = { country, status: ACTIVE };
-        const cities = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
-          attributes: [
-            "city",
-            [fn("COUNT", col("city")), "node_count"],
-            [fn("MIN", col("flag_url")), "flag_url"],
-          ],
-          where,
-          group: ["city"],
-          raw: true,
-        });
 
+        const cityAttributes = [
+          "city",
+          [fn("COUNT", col("city")), "node_count"],
+          [fn("MIN", col("flag_url")), "flag_url"],
+        ];
+        
+        const cityInclude: any[] = [];
+        
+        if (planId) {
+          cityInclude.push({
+            model: Plans,
+            attributes: [],                // 👈 don’t select planId
+            where: { planId: String(planId) },
+            required: true,                // inner join (only matching nodes)
+          });
+        }
+        
+        const cityWhere: any = { country, status: ACTIVE };
+        
+        const cities = await postgresDataHelper.findDataFromJoinModels(
+          DATA_MODELS.Node,
+          cityWhere,
+          cityAttributes,
+          cityInclude,
+          {
+            group: ["city"],  // 👈 only group by city
+            raw: true,
+          }
+        );
+        
         const flag_url = cities[0]?.flag_url || null;
+        
 
         return successHandler({
           data: {
