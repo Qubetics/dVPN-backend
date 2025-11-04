@@ -33,7 +33,8 @@ class NodeController implements Controller {
     const nodeAddress = String(req.query.address);
     const country = String(req.query.country);
     const city = String(req.query.city);
-    const planId= Number(req.query?.plan_id);
+    const planId= String(req.query?.plan_id);
+    const walletAddress=String(req.user?.wallet_address)
     const nodeListData = await nodeHelpers.nodeList(
       status,
       limit,
@@ -43,7 +44,8 @@ class NodeController implements Controller {
       nodeAddress,
       country,
       city,
-      planId
+      planId,
+      walletAddress
     );
 
     return sendResponse(res, nodeListData);
@@ -55,8 +57,9 @@ class NodeController implements Controller {
    * @returns 
    */
   private getRandomNodeData = async (req:any,res: Response) => {
-    const planId= String(req.query?.plan_id);
-    const randomNodeResponse = await nodeHelpers.getRandomNode(planId);
+    const wallet_address= String(req.user?.wallet_address);
+    console.log("🚀 ~ NodeController ~ wallet_address:", wallet_address)
+    const randomNodeResponse = await nodeHelpers.getRandomNode(wallet_address);
     return sendResponse(res,randomNodeResponse);
   };
 
