@@ -3,6 +3,7 @@ import { ACTIVE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from 
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
+import Plans from "../model/plans";
 
 class SubscriptionHelper {
 
@@ -31,12 +32,37 @@ class SubscriptionHelper {
             const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
 
-            const flatResults = await postgresDataHelper.findAndQueryData(DATA_MODELS.Subscriptions, {
-                where: { acc_address: wallet_address, status: ACTIVE },
-                limit,
-                offset,
-                order: [["createdAt", sortOrder]],
-            });
+            const flatResults = await postgresDataHelper.findDataFromJoinModels(
+                DATA_MODELS.Subscriptions,
+                { wallet_address: wallet_address, status: ACTIVE },
+                [
+                  "id",
+                  "wallet_address",
+                  "plan_id",
+                  "price",
+                  "renewal_price_policy",
+                  "status",
+                  "inactive_at",
+                  "start_at",
+                ],
+                [
+                  {
+                    model: Plans,
+                    as: "plans",
+                    attributes: [
+                      "provider_address",
+                    ],
+                  },
+                ],
+                {
+                  limit,
+                  offset,
+                  order: [["createdAt", sortOrder]],
+                  raw: false,
+                }
+              );
+
+            console.log("🚀 ~ SubscriptionHelper ~ flatResults:", flatResults)
 
             return successHandler({
                 data: {

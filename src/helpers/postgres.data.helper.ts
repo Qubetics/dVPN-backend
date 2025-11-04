@@ -6,6 +6,7 @@ import Subscriptions from "../model/subscriptions/index";
 import Sessions from "../model/session/index";
 import UserSessions from "../model/user-session/index";
 import PlanPurchase from "../model/plan-purchase";
+import Providers  from "../model/provider/index";
 
 class PostgresDataHelper {
   static instance: PostgresDataHelper = null;
@@ -142,6 +143,39 @@ class PostgresDataHelper {
   };
 
   /**
+ * Group & aggregate data from a single model (no JOIN)
+ * @param modelName
+ * @param whereClause
+ * @param attributes (aggregation like COUNT, MIN, MAX)
+ * @param groupFields (string or array)
+ * @returns
+ */
+public findGroupedData = async (
+  modelName: string,
+  whereClause: any,
+  attributes: any[],
+  groupFields: string | string[]
+) => {
+  try {
+    this._checkModel(modelName);
+
+    const result = await this._getModel(modelName).findAll({
+      where: whereClause,
+      attributes: attributes,
+      group: groupFields,
+      raw: true,
+      subQuery: false
+    });
+
+    return result;
+  } catch (error) {
+    console.log("Error while findGroupedData: \n", error);
+    return null;
+  }
+};
+
+
+  /**
    * this helper is use to remove  data field in a collection of postgresdb
    * @param name
    * @param deleteObj
@@ -196,6 +230,7 @@ class PostgresDataHelper {
         order: options.order,
         group: options.group,
         raw: options.raw ?? true,
+        subQuery: false,
       });
       return result;
     } catch (error) {
@@ -224,7 +259,9 @@ class PostgresDataHelper {
         return UserSessions;
       case DATA_MODELS.PlanPurchase:
         return PlanPurchase;
-      default:
+      case DATA_MODELS.Providers:
+        return Providers
+      default: 
         return null;
     }
   };

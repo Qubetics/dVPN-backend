@@ -57,6 +57,7 @@ class UserSessionHelper {
         [
           {
             model: Node,
+            as: 'nodes',
             attributes: NODE_ATTRIBUTES,
           },
         ],
@@ -66,6 +67,7 @@ class UserSessionHelper {
           order: [['createdAt', sortOrder]], // ASC or DESC
         }
       );
+      console.log("🚀 ~ UserSessionHelper ~ results:", results)
 
       const flatResults = flattenNodeFields(results);
 
@@ -113,27 +115,28 @@ class UserSessionHelper {
           acc_address: wallet_address,
         },
         [
-          [sequelize.literal('DISTINCT ON ("node"."address") "node"."address"'), 'address'],
-          [sequelize.col("node.city"), "city"],
-          [sequelize.col("node.country"), "country"],
+          [sequelize.literal('DISTINCT ON ("nodes"."address") "nodes"."address"'), 'address'],
+          [sequelize.col("nodes.city"), "city"],
+          [sequelize.col("nodes.country"), "country"],
         ],
         [
           {
             model: Node,
-            as: "node",
+            as: "nodes",
             attributes: [],
             required: true,
           },
         ],
         {
           order: [
-            [sequelize.literal('"node"."address"'), sortOrder],
+            [sequelize.literal('"nodes"."address"'), sortOrder],
           ],
           limit,
           offset,
           raw: true,
         }
       );
+      console.log("🚀 ~ UserSessionHelper ~ results:", results)
 
       const responseData: any = {
         nodes: results,
