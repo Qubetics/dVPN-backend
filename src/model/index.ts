@@ -65,18 +65,6 @@ Session.belongsTo(Node, {
     as: "nodes",
 });
 
-User.hasMany(Subscriptions, {
-    foreignKey: "wallet_address",
-    sourceKey: "wallet_address",
-    as: "subscriptions",
-});
-
-Subscriptions.belongsTo(User, {
-    foreignKey: "wallet_address",
-    targetKey: "wallet_address",
-    as: "user",
-});
-
 Subscriptions.hasMany(Node, {
   foreignKey: "plan_id",
   sourceKey: "plan_id",
