@@ -1,6 +1,6 @@
 import * as express from "express";
 import { Controller } from "@interfaces";
-import {  Response } from "express";
+import { Response } from "express";
 import sendResponse from "../responses/response.helper";
 import nodeHelpers from "../controller-helpers/node.helpers";
 import { sessionCheck } from "../middleware/sessionCheck";
@@ -15,7 +15,7 @@ class NodeController implements Controller {
 
   private initializeRoutes() {
     this.router.get("/nodes", sessionCheck, this.getNodeList);
-    this.router.get("/nodes/random",sessionCheck,this.getRandomNodeData);
+    this.router.get("/nodes/random", sessionCheck, this.getRandomNodeData);
   };
 
   /**
@@ -33,8 +33,9 @@ class NodeController implements Controller {
     const nodeAddress = String(req.query.address);
     const country = String(req.query.country);
     const city = String(req.query.city);
-    const planId= String(req.query?.plan_id);
-    const walletAddress=String(req.user?.wallet_address)
+    const planId = String(req.query?.plan_id);
+    const walletAddress = String(req.user?.wallet_address)
+    const protocolType = String(req.query?.protocol);
     const nodeListData = await nodeHelpers.nodeList(
       status,
       limit,
@@ -45,6 +46,7 @@ class NodeController implements Controller {
       country,
       city,
       planId,
+      protocolType,
       walletAddress
     );
 
@@ -56,11 +58,10 @@ class NodeController implements Controller {
    * @param res 
    * @returns 
    */
-  private getRandomNodeData = async (req:any,res: Response) => {
-    const wallet_address= String(req.user?.wallet_address);
-    console.log("🚀 ~ NodeController ~ wallet_address:", wallet_address)
+  private getRandomNodeData = async (req: any, res: Response) => {
+    const wallet_address = String(req.user?.wallet_address);
     const randomNodeResponse = await nodeHelpers.getRandomNode(wallet_address);
-    return sendResponse(res,randomNodeResponse);
+    return sendResponse(res, randomNodeResponse);
   };
 
 }

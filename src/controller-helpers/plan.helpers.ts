@@ -25,14 +25,13 @@ class PlanHelper {
         providerAddress: string
     ): Promise<ApiResponse> => {
         try {
-            if(!providerAddress || providerAddress===UNDEFINED){
+            if (!providerAddress || providerAddress === UNDEFINED) {
                 return errorHandler({
                     message: "Provider is mandatory",
-                    status: STATUS_CODES.BADREQUEST, 
-                  });
+                    status: STATUS_CODES.BADREQUEST,
+                });
             }
             const offset = (page - 1) * limit;
-            console.log("🚀 ~ PlanHelper ~ offset:", offset)
 
             const result = await postgresDataHelper.findDataFromJoinModels(
                 DATA_MODELS.Plans,
@@ -43,11 +42,12 @@ class PlanHelper {
                     "prices",
                     [sequelize.col("nodes.country"), "country"], // Correct alias
                     [sequelize.fn("COUNT", sequelize.col("nodes.id")), "node_count"], // Count nodes per country
+                    [sequelize.fn("MAX", sequelize.col("nodes.flag_url")), "flag_url"],
                 ],
                 [
                     {
                         model: Node,
-                        as: "nodes", 
+                        as: "nodes",
                         attributes: [],
                         required: false,
                     },
@@ -56,12 +56,10 @@ class PlanHelper {
                     limit,
                     offset,
                     raw: true,
-                    group: ["plans.plan_id", "nodes.country"], 
+                    group: ["plans.plan_id", "nodes.country"],
                     order: [["plan_id", "ASC"]],
                 }
             );
-
-            console.log("🚀 ~ PlanHelper ~ getAllPlans ~ result:", result);
 
             return successHandler({
                 status: STATUS_CODES.SUCCESS,
