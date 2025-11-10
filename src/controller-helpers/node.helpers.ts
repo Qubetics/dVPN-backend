@@ -37,6 +37,7 @@ class NodeHelper {
     country?: string,
     city?: string,
     planId?: string,
+    protocolType?: string,
     walletAddress?: string
   ): Promise<ApiResponse> => {
     try {
@@ -92,6 +93,9 @@ class NodeHelper {
           where.plan_id = String(planId);
         }
 
+        if (protocolType != UNDEFINED && protocolType != 'all') {
+          where.protocol = protocolType;
+        }
         const countries = await postgresDataHelper.findGroupedData(
           DATA_MODELS.Node,
           where,
@@ -102,6 +106,7 @@ class NodeHelper {
           ],
           "country"
         );
+        console.log("🚀 ~ NodeHelper ~ countries:", countries);
 
         return successHandler({
           data: { countries },
@@ -114,25 +119,29 @@ class NodeHelper {
       // Case : Country exists but no city → list cities
       if (country && country !== UNDEFINED && (!city || city === UNDEFINED)) {
 
-        // ✅ Build WHERE clause
+        //  Build WHERE clause
         const where: any = {
           country,
           node_status: ACTIVE,
         };
 
-        // ✅ Filter by plan directly on Node table (no join needed)
+        // Filter by plan directly on Node table (no join needed)
         if (planId) {
           where.plan_id = String(planId);
         }
 
-        // ✅ Define attributes for grouping by city
+        if (protocolType != UNDEFINED && protocolType != 'all') {
+          where.protocol = protocolType;
+        }
+
+        // Define attributes for grouping by city
         const attributes = [
           "city",
           [fn("COUNT", col("city")), "node_count"],
           [fn("MIN", col("flag_url")), "flag_url"],
         ];
 
-        // ✅ Fetch data directly from Node table
+        // Fetch data directly from Node table
         const cities = await postgresDataHelper.findGroupedData(
           DATA_MODELS.Node,
           where,
@@ -140,10 +149,10 @@ class NodeHelper {
           "city"
         );
 
-        // ✅ Handle optional flag_url (from first record)
+        // Handle optional flag_url (from first record)
         const flag_url = cities[0]?.flag_url || null;
 
-        // ✅ Success response
+        // Success response
         return successHandler({
           data: {
             country,
@@ -159,7 +168,6 @@ class NodeHelper {
       }
 
 
-
       // Case : Country + City provided → return nodes list
       const whereClause: any = { node_status: ACTIVE };
 
@@ -168,6 +176,10 @@ class NodeHelper {
 
       // Filter directly by planId (no join needed)
       if (planId) whereClause.plan_id = String(planId);
+
+      if (protocolType != UNDEFINED && protocolType != 'all') {
+        whereClause.protocol = protocolType;
+      }
 
       // Pagination & Sorting
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
@@ -211,7 +223,7 @@ class NodeHelper {
         });
       }
 
-      // ✅ Find user purchased plans
+      // Find user purchased plans
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node, // Base model
         { node_status: ACTIVE }, // Filter for active nodes
@@ -251,8 +263,6 @@ class NodeHelper {
       }
 
       const nodeData = result?.[0] || null;
-      console.log("🚀 ~ NodeHelper ~ nodeData:", nodeData)
-
 
       return successHandler({
         data: nodeData,

@@ -67,7 +67,6 @@ class UserSessionHelper {
           order: [['createdAt', sortOrder]], // ASC or DESC
         }
       );
-      console.log("🚀 ~ UserSessionHelper ~ results:", results)
 
       const flatResults = flattenNodeFields(results);
 
@@ -136,7 +135,6 @@ class UserSessionHelper {
           raw: true,
         }
       );
-      console.log("🚀 ~ UserSessionHelper ~ results:", results)
 
       const responseData: any = {
         nodes: results,

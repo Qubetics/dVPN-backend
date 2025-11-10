@@ -23,12 +23,13 @@ interface INode {
   lat: number;
   node_status: string;
   flag_url?: string;
+  protocol?: string;
   status_updated_at: Date;
   inactive_at: Date;
 }
 
 // Sequelize model instance type
-interface NodeInstance extends Model<INode, Optional<INode, "flag_url">>, INode {}
+interface NodeInstance extends Model<INode, Optional<INode, "flag_url">>, INode { }
 
 // Sequelize model definition
 const Node = sequelize.define<NodeInstance>(
@@ -93,6 +94,10 @@ const Node = sequelize.define<NodeInstance>(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    protocol: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     timestamps: true,
