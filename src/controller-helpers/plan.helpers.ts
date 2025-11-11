@@ -61,10 +61,38 @@ class PlanHelper {
                 }
             );
 
+            // Suppose `result` is the array you shared above
+            const mergedPlans = Object.values(
+                result.reduce((acc:any, row:any) => {
+                    const { plan_id, hours, prices, country, node_count, flag_url } = row;
+
+                    if (!acc[plan_id]) {
+                        acc[plan_id] = {
+                            plan_id,
+                            hours,
+                            prices,
+                            countries: []
+                        };
+                    }
+
+                    // Only add country info if exists
+                    if (country) {
+                        acc[plan_id].countries.push({
+                            country,
+                            node_count,
+                            flag_url
+                        });
+                    }
+
+                    return acc;
+                }, {})
+            );
+
+
             return successHandler({
                 status: STATUS_CODES.SUCCESS,
                 message: RESPONSE_MESSAGES.PLAN_FETCH_SUCCESS,
-                data: result,
+                data: mergedPlans,
             });
         } catch (error: any) {
             console.error("Error in getAllPlans:", error);
