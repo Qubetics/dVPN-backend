@@ -26,7 +26,7 @@ class ProviderHelper {
       const providerData = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Providers,
         {},
-        ["address", "identity", "website"], // Provider attributes
+        ["name","address", "identity", "website"], // Provider attributes
         [
           {
             model: Plans,
@@ -74,6 +74,7 @@ class ProviderHelper {
 
         //  Return formatted data
         return {
+          name: provider.name,
           address: provider.address,
           identity: provider.identity,
           website: provider.website,
@@ -109,7 +110,7 @@ class ProviderHelper {
       const providerRecentListData = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Providers,
         {},
-        ["address", "identity", "website"],
+        ["name","address", "identity", "website"],
         [
           {
             model: Plans,

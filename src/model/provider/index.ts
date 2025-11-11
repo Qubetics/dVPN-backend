@@ -4,6 +4,7 @@ const sequelize = DBConnectionHandler.sequelize;
 
 interface IProvider {
     id: string;
+    name: string;
     address: string;
     identity?: string;
     website?: string;
@@ -22,6 +23,10 @@ const Providers = sequelize.define<ProviderInstance>(
         unique: true,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4
+       },
+       name: {
+        type: DataTypes.STRING,
+        allowNull: true,
        },
        address: {
          type: DataTypes.STRING,
