@@ -214,7 +214,7 @@ class NodeHelper {
   /**
    * Fetch the details of the single random node
    */
-  public getRandomNode = async (walletAddress: string): Promise<ApiResponse> => {
+  public getRandomNode = async (walletAddress: string,protocol:string): Promise<ApiResponse> => {
     try {
       if (!walletAddress || walletAddress === UNDEFINED) {
         return errorHandler({
@@ -223,10 +223,16 @@ class NodeHelper {
         });
       }
 
+      let whereClause : any= { node_status: ACTIVE };
+
+      if(protocol!==UNDEFINED && protocol!=="all"){
+         whereClause={...whereClause,protocol:protocol};
+      }
+
       // Find user purchased plans
       const result = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node, // Base model
-        { node_status: ACTIVE }, // Filter for active nodes
+        whereClause, // Filter for active nodes
         [
           "id",
           "address",
@@ -236,6 +242,7 @@ class NodeHelper {
           "city",
           "node_status",
           "flag_url",
+          "protocol"
         ],
         [
           {
