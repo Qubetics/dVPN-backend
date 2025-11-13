@@ -248,7 +248,7 @@ class NodeHelper {
           {
             model: Subscriptions,
             as: "subscriptions",
-            attributes: ["wallet_address", "plan_id", "status", "start_at", "inactive_at"],
+            attributes: ["id","wallet_address", "plan_id", "status", "start_at", "inactive_at"],
             where: {
               wallet_address: walletAddress,
               status: ACTIVE, // only active subscriptions
