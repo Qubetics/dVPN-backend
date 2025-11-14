@@ -70,7 +70,7 @@ export const RESPONSE_MESSAGES = {
   BASE_ERROR_MESSAGE: "Failed",
 };
 
-export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
+export const SESSION_ATTRIBUTES = ['subscription_id','start_at', 'status_at', 'status'];
 
 export const NODE_ATTRIBUTES = ['flag_url', 'city', 'country', 'remote_url', 'address'];
 
@@ -88,7 +88,8 @@ export const NODE_LIST_ATTRIBUTES = [
   'createdAt',
   'updatedAt',
   'status_updated_at',
-  'inactive_at'
+  'inactive_at',
+  'protocol'
 ];
 
 export const UNDEFINED = "undefined";

@@ -188,13 +188,41 @@ class NodeHelper {
       const offset = (page - 1) * limit;
 
       // Fetch directly from Node table
-      const nodes = await postgresDataHelper.findAndQueryData(DATA_MODELS.Node, {
-        where: whereClause,
-        attributes: NODE_LIST_ATTRIBUTES,
-        limit,
-        offset,
-        order: [["address", sortOrder]],
-      });
+      const nodes = await postgresDataHelper.findDataFromJoinModels(
+        DATA_MODELS.Node,
+        whereClause, 
+        NODE_LIST_ATTRIBUTES, 
+        [
+          {
+            model: Plans,
+            as: "plans",
+            attributes: ["plan_id"],
+            include: [
+              {
+                model: Subscriptions,
+                as: "subscriptions",
+                attributes: [
+                  "id",
+                  "wallet_address",
+                  "status",
+                ],
+                required: false,                      
+                where: {
+                  ...(walletAddress ? { wallet_address: walletAddress } : {}),
+                  ...(planId ? { plan_id: String(planId) } : {})
+                }
+              }
+            ]
+          }
+        ],
+        {
+          limit,
+          offset,
+          order: [["address", sortOrder]],
+          raw: false,                                 
+        }
+      );
+
 
       // Success Response
       return successHandler({
@@ -214,7 +242,7 @@ class NodeHelper {
   /**
    * Fetch the details of the single random node
    */
-  public getRandomNode = async (walletAddress: string,protocol:string): Promise<ApiResponse> => {
+  public getRandomNode = async (walletAddress: string, protocol: string): Promise<ApiResponse> => {
     try {
       if (!walletAddress || walletAddress === UNDEFINED) {
         return errorHandler({
@@ -223,10 +251,10 @@ class NodeHelper {
         });
       }
 
-      let whereClause : any= { node_status: ACTIVE };
+      let whereClause: any = { node_status: ACTIVE };
 
-      if(protocol!==UNDEFINED && protocol!=="all"){
-         whereClause={...whereClause,protocol:protocol};
+      if (protocol !== UNDEFINED && protocol !== "all") {
+        whereClause = { ...whereClause, protocol: protocol };
       }
 
       // Find user purchased plans

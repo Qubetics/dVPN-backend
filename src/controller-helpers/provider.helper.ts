@@ -13,7 +13,7 @@ class ProviderHelper {
     (() => { })();
   }
 
-  public getProviderList = async (walletAddress: string): Promise<ApiResponse> => {
+  public getProviderList = async (walletAddress: string,subscribed: boolean): Promise<ApiResponse> => {
     try {
       if (!walletAddress || walletAddress === UNDEFINED) {
         return errorHandler({
@@ -50,10 +50,10 @@ class ProviderHelper {
       );
 
       // Transform data
-      const providerListData = providerData.map((provider: any) => {
-        // Get all plans
+      const providerListData = providerData
+      .map((provider: any) => {
         const plans = provider.plans || [];
-        // Determine if the user is subscribed to any plan
+    
         const subscribedPlans =
           plans
             .filter((plan: any) =>
@@ -62,17 +62,28 @@ class ProviderHelper {
               )
             )
             .map((plan: any) => plan.plan_id) ?? [];
-
+    
         const isUserSubscribed = subscribedPlans.length > 0;
-
-        // Count unique countries where provider has nodes
+    
         const allCountries = plans.flatMap(
           (plan: any) => plan.nodes?.map((n: any) => n.country) || []
         );
         const uniqueCountries = [...new Set(allCountries)];
         const countryCount = uniqueCountries.length;
-
-        //  Return formatted data
+    
+        if (subscribed) {
+          if (!isUserSubscribed) return null; 
+          return {
+            name: provider.name,
+            address: provider.address,
+            identity: provider.identity,
+            website: provider.website,
+            isUserSubscribed,
+            subscribedPlanIds: subscribedPlans,
+            countryCount,
+          };
+        }
+    
         return {
           name: provider.name,
           address: provider.address,
@@ -80,9 +91,11 @@ class ProviderHelper {
           website: provider.website,
           isUserSubscribed,
           ...(isUserSubscribed && { subscribedPlanIds: subscribedPlans }),
-          countryCount, // new field
+          countryCount,
         };
-      });
+      })
+      .filter(Boolean);  
+    
 
       return successHandler({
         status: STATUS_CODES.SUCCESS,
@@ -97,7 +110,6 @@ class ProviderHelper {
       });
     }
   };
-
 
   public getRecentProviderList = async (walletAddress: string): Promise<ApiResponse> => {
     try {
@@ -120,7 +132,7 @@ class ProviderHelper {
               {
                 model: Subscriptions,
                 as: "subscriptions",
-                attributes: [],
+                attributes: ["wallet_address", "status", "start_at"],
                 where: {
                   wallet_address: walletAddress,
                 },
@@ -132,12 +144,26 @@ class ProviderHelper {
         ],
         { raw: false }
       );
-      console.log("🚀 ~ ProviderHelper ~ providerRecentListData:", providerRecentListData)
+
+      const formattedData = providerRecentListData.map((provider : any) => {
+        const subscribedPlanIds = provider.plans
+          ?.filter((plan:any) => plan.subscriptions && plan.subscriptions.length > 0)
+          .map((plan:any) => plan.plan_id) || [];
+      
+        return {
+          name: provider.name,
+          address: provider.address,
+          identity: provider.identity,
+          website: provider.website,
+          isUserSubscribed: subscribedPlanIds.length > 0,
+          ...(subscribedPlanIds.length > 0 && { subscribedPlanIds }),
+        };
+      });
 
       return successHandler({
         status: STATUS_CODES.SUCCESS,
         message: RESPONSE_MESSAGES.PROVIDER_LIST_FETCH_SUCESSFULLY,
-        data: providerRecentListData
+        data: formattedData
       });
 
     } catch (error) {

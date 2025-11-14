@@ -21,7 +21,8 @@ class ProviderController implements Controller {
 
    private getProviderList=async (req:any,res:Response)=>{
     const {wallet_address}=req.user;
-     const providerListResponse= await providerHelper.getProviderList(String(wallet_address));
+    const isUserSubscribed = req.query.isUserSubscribed === "true" || req.query.isUserSubscribed === "1";
+     const providerListResponse= await providerHelper.getProviderList(String(wallet_address),isUserSubscribed);
     return sendResponse(res,providerListResponse);
    }
 

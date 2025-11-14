@@ -67,13 +67,12 @@ class UserSessionHelper {
           order: [['createdAt', sortOrder]], // ASC or DESC
         }
       );
-
-      const flatResults = flattenNodeFields(results);
+      // const flatResults = flattenNodeFields(results);
 
       return successHandler({
         data: {
-          sessions: flatResults ?? [],
-          total: flatResults?.length ?? 0,
+          sessions: results ?? [],
+          total: results?.length ?? 0,
         },
         status: STATUS_CODES.SUCCESS,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
