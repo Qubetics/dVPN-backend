@@ -20,8 +20,6 @@ class PlanHelper {
     }
 
     public getAllPlans = async (
-        page: number,
-        limit: number,
         providerAddress: string
     ): Promise<ApiResponse> => {
         try {
@@ -31,7 +29,6 @@ class PlanHelper {
                     status: STATUS_CODES.BADREQUEST,
                 });
             }
-            const offset = (page - 1) * limit;
 
             const result = await postgresDataHelper.findDataFromJoinModels(
                 DATA_MODELS.Plans,
@@ -53,8 +50,6 @@ class PlanHelper {
                     },
                 ],
                 {
-                    limit,
-                    offset,
                     raw: true,
                     group: ["plans.plan_id", "nodes.country"],
                     order: [["plan_id", "ASC"]],

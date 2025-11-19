@@ -60,7 +60,7 @@ class NodeController implements Controller {
    */
   private getRandomNodeData = async (req: any, res: Response) => {
     const wallet_address = String(req.user?.wallet_address);
-    const protocol = String(req.query.protocol);
+    const protocol = String(req.query?.protocol);
     const randomNodeResponse = await nodeHelpers.getRandomNode(wallet_address,protocol);
     return sendResponse(res, randomNodeResponse);
   };

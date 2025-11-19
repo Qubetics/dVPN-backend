@@ -41,18 +41,6 @@ Node.belongsTo(Plans, {
     as: "plans",
 });
 
-User.hasMany(Session, {
-    foreignKey: "acc_address",
-    sourceKey: "wallet_address",
-    as: "sessions",
-});
-
-Session.belongsTo(User, {
-    foreignKey: "acc_address",
-    targetKey: "wallet_address",
-    as: "user",
-});
-
 Node.hasMany(Session, {
     foreignKey: "node_address",
     sourceKey: "address",
