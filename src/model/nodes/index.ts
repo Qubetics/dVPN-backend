@@ -29,7 +29,7 @@ interface INode {
 }
 
 // Sequelize model instance type
-interface NodeInstance extends Model<INode, Optional<INode, "flag_url">>, INode { }
+interface NodeInstance extends Model<INode, Optional<INode, "flag_url" | "protocol">>, INode {}
 
 // Sequelize model definition
 const Node = sequelize.define<NodeInstance>(
@@ -37,14 +37,13 @@ const Node = sequelize.define<NodeInstance>(
   {
     id: {
       type: DataTypes.UUID,
-      primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
     address: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: false,
-      unique: true,
     },
     gigabyte_prices: {
       type: DataTypes.JSONB,
