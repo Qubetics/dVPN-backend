@@ -1,4 +1,4 @@
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
+import { ACTIVE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
 import { errorHandler } from "../error-handler/index";
 import { successHandler } from "../success-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -38,6 +38,7 @@ class ProviderHelper {
                 model: Subscriptions,
                 as: "subscriptions",
                 attributes: ["wallet_address", "status", "start_at"],
+                where: { status: ACTIVE }
               },
               {
                 model: Node,
@@ -187,7 +188,7 @@ class ProviderHelper {
       const formattedData = providerRecentListData.map((provider: any) => {
         const plans = provider?.plans ?? [];
 
-        const subscribedPlanIds = plans 
+        const subscribedPlanIds = plans
           .filter((plan: any) => plan?.subscriptions?.length > 0)
           .map((plan: any) => plan.plan_id);
 

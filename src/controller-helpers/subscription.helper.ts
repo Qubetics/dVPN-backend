@@ -34,7 +34,7 @@ class SubscriptionHelper {
 
       const flatResults = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Subscriptions,
-        { wallet_address: wallet_address, status: ACTIVE },
+        { wallet_address: wallet_address},
         [
           "id",
           "wallet_address",
