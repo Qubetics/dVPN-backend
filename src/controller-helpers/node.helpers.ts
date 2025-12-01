@@ -106,7 +106,6 @@ class NodeHelper {
           ],
           "country"
         );
-        console.log("🚀 ~ NodeHelper ~ countries:", countries);
 
         return successHandler({
           data: { countries },

@@ -17,7 +17,7 @@ require('dotenv').config();
 (async () => {
     try {
         await config.initiate();
-        const app = new App([new UserController(), new NodeController(), new UserSessionController(), new SubscriptionController(),new AppController(),new PlanController(),new ProviderController()]);
+        const app = new App([new UserController(), new NodeController(), new UserSessionController(), new SubscriptionController(), new AppController(), new PlanController(),new ProviderController()]);
 
         // connect to the postgres server
         const isDBconnected = await dbConnectionHandler.createDBConnection();
@@ -30,6 +30,12 @@ require('dotenv').config();
         // bind the post and listen for requests
         app.listen();
     } catch (err: any) {
-        log.red(REDIS_ERR_MSG.CONN_ERR, err.mesaage);
+        if (err.message === ERR.POSTGRES_CONN) {
+            log.red(ERR.POSTGRES_CONN, err.message);
+        } else if (err.message === REDIS_ERR_MSG.CONN_ERR) {
+            log.red(REDIS_ERR_MSG.CONN_ERR, err.message);
+        } else {
+            log.red(ERR.SERVER_ERROR, err.message);
+        }
     }
 })();
