@@ -3,12 +3,6 @@ import { log } from "./utils/helper.utils";
 import * as config from './config/index';
 import { EventEmitter } from "events";
 import { connections } from "../src/utils/constant.util";
-import Node from "../src/model/nodes/index";
-import UserSessions from "../src/model/user-session/index";
-import Sessions from "../src/model/session/index";
-import Subscriptions from "../src/model/subscriptions";
-import User from "../src/model/user/index";
-import Plans from "../src/model/plans/index";
 
 (async () => {
     await config.initiate();

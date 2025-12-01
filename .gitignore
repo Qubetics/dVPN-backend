@@ -2,7 +2,7 @@
 **/*.env
 dist/
 .vscode
-
+coverage/
 
 # Logs
 logs
