@@ -48,7 +48,10 @@ class ProviderHelper {
             ],
           },
         ],
-        { raw: false }
+        {
+          order: [['name', 'ASC']],
+          raw: false
+        }
       );
 
       // Transform data
