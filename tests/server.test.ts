@@ -97,4 +97,19 @@ describe("server.ts", () => {
 
         expect(log.red).not.toHaveBeenCalled();
     });
+
+    test("should log generic error when unexpected error occurs", async () => {
+        const config = require("../src/config");
+        config.initiate.mockRejectedValueOnce(new Error("Unexpected Error"));
+
+        const log = require("../src/utils/helper.utils").log;
+
+        await import("../src/server");
+        await flushPromises();
+
+        expect(log.red).toHaveBeenCalledWith(
+            expect.stringContaining("Server error"),
+            "Unexpected Error"
+        );
+    });
 });

@@ -98,6 +98,47 @@ describe('NodeHelper', () => {
                 error: false
             });
         });
+
+        it('should return success if walletAddress is provided and plan is purchased', async () => {
+            const mockNode = { address: 'node1' };
+            (postgresDataHelper.findOneData as jest.Mock)
+                .mockResolvedValueOnce({ id: 1 }) // hasPlan
+                .mockResolvedValueOnce(mockNode); // node
+
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1', undefined, 'wallet1');
+
+            expect(result).toEqual({
+                data: mockNode,
+                status: STATUS_CODES.SUCCESS,
+                message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
+                error: false
+            });
+        });
+
+        it('should return UNAUTHORIZED if nodeAddress provided but node not found', async () => {
+            (postgresDataHelper.findOneData as jest.Mock).mockResolvedValue(null);
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1');
+            expect(result).toEqual({
+                status: STATUS_CODES.BADREQUEST,
+                message: RESPONSE_MESSAGES.UNAUTHORIZED,
+                error: true
+            });
+        });
+
+        it('should handle protocolType filter', async () => {
+            const mockCountries = [{ country: 'US', node_count: 10 }];
+            (postgresDataHelper.findGroupedData as jest.Mock).mockResolvedValue(mockCountries);
+
+            await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'plan1', 'tcp');
+
+            expect(postgresDataHelper.findGroupedData).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({ protocol: 'tcp' }),
+                expect.anything(),
+                expect.anything()
+            );
+        });
+
     });
 
     describe('getRandomNode', () => {
@@ -130,6 +171,21 @@ describe('NodeHelper', () => {
                 message: "No nodes found for this wallet address",
                 error: true
             });
+        });
+
+        it('should handle protocol filter', async () => {
+            const mockNode = { address: 'node1' };
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue([mockNode]);
+
+            await NodeHelper.getRandomNode('wallet1', 'tcp');
+
+            expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
+                expect.anything(),
+                expect.objectContaining({ protocol: 'tcp' }),
+                expect.anything(),
+                expect.anything(),
+                expect.anything()
+            );
         });
     });
 });

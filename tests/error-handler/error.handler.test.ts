@@ -57,4 +57,27 @@ describe('errorHandler', () => {
         });
         expect(result.data).toBeUndefined();
     });
+    it('should use default status if not provided', () => {
+        const result = errorHandler({
+            message: 'Custom message'
+        } as any);
+
+        expect(result).toEqual({
+            error: true,
+            status: STATUS_CODES.INTERNALSERVER,
+            message: 'Custom message'
+        });
+    });
+
+    it('should use default message if not provided', () => {
+        const result = errorHandler({
+            status: STATUS_CODES.BADREQUEST
+        } as any);
+
+        expect(result).toEqual({
+            error: true,
+            status: STATUS_CODES.BADREQUEST,
+            message: RESPONSE_MESSAGES.BASE_SUCCESS_MESSAGE
+        });
+    });
 });

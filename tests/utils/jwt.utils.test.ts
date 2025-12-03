@@ -111,4 +111,25 @@ describe('JWT Utils', () => {
             expect(result).toBeNull();
         });
     });
+    describe('Initialization', () => {
+        it('should log error if initialization fails', async () => {
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+            jest.isolateModules(() => {
+                // Mock initiate to return false
+                jest.doMock('../../src/config/index', () => ({
+                    initiate: jest.fn().mockResolvedValue(false)
+                }));
+
+                // Re-require the module to trigger the IIFE
+                require('../../src/utils/jwt.utils');
+            });
+
+            // Wait for async IIFE to complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load environment config');
+            consoleErrorSpy.mockRestore();
+        });
+    });
 });

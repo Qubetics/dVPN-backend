@@ -108,7 +108,6 @@ class ProviderHelper {
         data: providerListData,
       });
     } catch (error: any) {
-      console.error("Error in getProviderList:", error);
       return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         status: STATUS_CODES.INTERNALSERVER,

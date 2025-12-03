@@ -66,6 +66,17 @@ describe('UserSessionHelper', () => {
                 error: false
             });
         });
+        it('should return error if exception occurs', async () => {
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            const result = await UserSessionHelper.UserSessionList('wallet1');
+
+            expect(result).toEqual({
+                status: STATUS_CODES.INTERNALSERVER,
+                message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+                error: true
+            });
+        });
     });
 
     describe('UserServerList', () => {
@@ -97,6 +108,18 @@ describe('UserSessionHelper', () => {
                 status: STATUS_CODES.SUCCESS,
                 message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
                 error: false
+            });
+        });
+
+        it('should return error if exception occurs', async () => {
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            const result = await UserSessionHelper.UserServerList('wallet1');
+
+            expect(result).toEqual({
+                status: STATUS_CODES.INTERNALSERVER,
+                message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+                error: true
             });
         });
     });

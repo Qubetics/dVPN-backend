@@ -15,6 +15,10 @@ describe('Logs Helper', () => {
         const log1 = require('../../src/utils/helper.utils').log;
         const log2 = require('../../src/utils/helper.utils').log;
         expect(log1).toBe(log2);
+
+        // Test the branch where instance already exists
+        const logInstance = (log1 as any).constructor.getInstance();
+        expect(logInstance).toBe(log1);
     });
 
     it('should log red colored messages', () => {

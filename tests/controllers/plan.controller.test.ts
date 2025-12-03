@@ -60,6 +60,16 @@ describe('PlanController', () => {
             expect(planHelpers.getAllNodeForPlan).toHaveBeenCalledWith('wallet1', 1, 10);
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
+
+        it('should use default limit and page if not provided', async () => {
+            req.query = {};
+            const mockResponse = { status: STATUS_CODES.SUCCESS, data: [] };
+            (planHelpers.getAllNodeForPlan as jest.Mock).mockResolvedValue(mockResponse);
+
+            await (planController as any).getAllNodeForPlan(req, res);
+
+            expect(planHelpers.getAllNodeForPlan).toHaveBeenCalledWith('wallet1', 1, 10);
+        });
     });
 
     describe('postForPlanId', () => {

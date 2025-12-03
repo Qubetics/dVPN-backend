@@ -197,6 +197,30 @@ describe('Redis Helper', () => {
             expect(mockClient.del).toHaveBeenCalledWith('token123');
             expect(result).toBe(1);
         });
+        it('should return null on error', async () => {
+            redisHelper.client = mockClient;
+            mockClient.del.mockImplementation(() => { throw new Error('Delete failed'); });
+
+            const result = await redisHelper.removeFromRedis('token123');
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('_bindRedisClientEvents', () => {
+        it('should handle error during event binding', async () => {
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+            // Mock client.on to throw error
+            mockClient.on.mockImplementation(() => {
+                throw new Error('Binding failed');
+            });
+
+            await redisHelper.connectRedis();
+
+            expect(consoleLogSpy).toHaveBeenCalled();
+            consoleLogSpy.mockRestore();
+        });
     });
 
     describe('updateRedisTime', () => {
@@ -222,6 +246,15 @@ describe('Redis Helper', () => {
 
             // Restore console.log
             consoleLogSpy.mockRestore();
+        });
+    });
+
+    describe('getInstance', () => {
+        it('should return same instance when called multiple times', () => {
+            const instance1 = (redisHelper as any).constructor.getInstance();
+            const instance2 = (redisHelper as any).constructor.getInstance();
+            expect(instance1).toBe(instance2);
+            expect(instance1).toBe(redisHelper);
         });
     });
 });

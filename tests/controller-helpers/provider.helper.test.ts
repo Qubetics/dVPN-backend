@@ -86,6 +86,38 @@ describe('ProviderHelper', () => {
                 error: false
             });
         });
+
+        it('should handle providers with no plans or nodes', async () => {
+            const mockProviders = [{
+                name: 'p1',
+                plans: null // No plans
+            }];
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockProviders);
+
+            const result = await ProviderHelper.getProviderList('wallet1', false);
+            expect(result).toEqual({
+                status: STATUS_CODES.SUCCESS,
+                message: RESPONSE_MESSAGES.PROVIDER_LIST_FETCH_SUCESSFULLY,
+                data: [{
+                    name: 'p1',
+                    isUserSubscribed: false,
+                    countryCount: 0
+                }],
+                error: false
+            });
+        });
+
+        it('should return error if exception occurs', async () => {
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            const result = await ProviderHelper.getProviderList('wallet1', false);
+
+            expect(result).toEqual({
+                status: STATUS_CODES.INTERNALSERVER,
+                message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+                error: true
+            });
+        });
     });
 
     describe('getRecentProviderList', () => {
@@ -94,6 +126,50 @@ describe('ProviderHelper', () => {
             expect(result).toEqual({
                 status: STATUS_CODES.UNAUTHORIZED,
                 message: RESPONSE_MESSAGES.UNAUTHORIZED,
+                error: true
+            });
+        });
+
+        it('should handle case where no recent session found', async () => {
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock)
+                .mockResolvedValueOnce([]) // No recent session
+                .mockResolvedValueOnce([{
+                    name: 'p1',
+                    plans: []
+                }]);
+
+            const result = await ProviderHelper.getRecentProviderList('wallet1');
+            expect(result).toEqual({
+                status: STATUS_CODES.SUCCESS,
+                message: RESPONSE_MESSAGES.PROVIDER_LIST_FETCH_SUCESSFULLY,
+                data: [{
+                    name: 'p1',
+                    isUserSubscribed: false
+                }],
+                error: false
+            });
+        });
+
+        it('should handle providers with undefined plans', async () => {
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock)
+                .mockResolvedValueOnce([])
+                .mockResolvedValueOnce([{
+                    name: 'p1',
+                    plans: undefined
+                }]);
+
+            const result = await ProviderHelper.getRecentProviderList('wallet1');
+            expect(result.data[0].isUserSubscribed).toBe(false);
+        });
+
+        it('should return error if exception occurs', async () => {
+            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+
+            const result = await ProviderHelper.getRecentProviderList('wallet1');
+
+            expect(result).toEqual({
+                status: STATUS_CODES.INTERNALSERVER,
+                message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
                 error: true
             });
         });

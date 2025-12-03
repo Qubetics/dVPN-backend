@@ -322,4 +322,56 @@ describe('PostgresDataHelper', () => {
             }).not.toThrow();
         });
     });
+
+    describe('_getModel', () => {
+        it('should return null for unknown model', () => {
+            const result = (postgresDataHelper as any)._getModel('UnknownModel');
+            expect(result).toBeNull();
+        });
+
+        it('should return User model for DATA_MODELS.User', () => {
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.User);
+            expect(result).toBe(User);
+        });
+
+        it('should return Node model for DATA_MODELS.Node', () => {
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.Node);
+            expect(result).toBe(Node);
+        });
+
+        it('should return Plans model for DATA_MODELS.Plans', () => {
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.Plans);
+            expect(result).toBe(Plans);
+        });
+
+        it('should return Subscriptions model for DATA_MODELS.Subscriptions', () => {
+            const Subscriptions = require('../../src/model/subscriptions/index').default;
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.Subscriptions);
+            expect(result).toBe(Subscriptions);
+        });
+
+        it('should return Sessions model for DATA_MODELS.Sessions', () => {
+            const Sessions = require('../../src/model/session/index').default;
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.Sessions);
+            expect(result).toBe(Sessions);
+        });
+
+        it('should return UserSessions model for DATA_MODELS.UserSession', () => {
+            const UserSessions = require('../../src/model/user-session/index').default;
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.UserSession);
+            expect(result).toBe(UserSessions);
+        });
+
+        it('should return PlanPurchase model for DATA_MODELS.PlanPurchase', () => {
+            const PlanPurchase = require('../../src/model/plan-purchase').default;
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.PlanPurchase);
+            expect(result).toBe(PlanPurchase);
+        });
+
+        it('should return Providers model for DATA_MODELS.Providers', () => {
+            const Providers = require('../../src/model/provider/index').default;
+            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.Providers);
+            expect(result).toBe(Providers);
+        });
+    });
 });

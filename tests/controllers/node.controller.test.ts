@@ -71,5 +71,33 @@ describe('NodeController', () => {
             expect(nodeHelpers.getRandomNode).toHaveBeenCalledWith('wallet1', 'tcp');
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
+
+        it('should handle missing user in request', async () => {
+            req.user = undefined;
+            req.query = { protocol: 'tcp' };
+            const mockResponse = { status: STATUS_CODES.SUCCESS, data: {} };
+            (nodeHelpers.getRandomNode as jest.Mock).mockResolvedValue(mockResponse);
+
+            await (nodeController as any).getRandomNodeData(req, res);
+
+            expect(nodeHelpers.getRandomNode).toHaveBeenCalledWith('undefined', 'tcp');
+        });
+    });
+
+    describe('getNodeList', () => {
+        it('should call nodeHelpers.nodeList with default parameters', async () => {
+            req.query = {};
+            // req.user is 'wallet1' from beforeEach
+
+            const mockResponse = { status: STATUS_CODES.SUCCESS, data: [] };
+            (nodeHelpers.nodeList as jest.Mock).mockResolvedValue(mockResponse);
+
+            await (nodeController as any).getNodeList(req, res);
+
+            expect(nodeHelpers.nodeList).toHaveBeenCalledWith(
+                'undefined', NaN, NaN, false, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined', 'undefined', 'wallet1'
+            );
+        });
+
     });
 });
