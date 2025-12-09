@@ -292,7 +292,7 @@ class ProviderHelper {
           status_at: provider.status_at,
   
           isSelected,
-          selectedPlanIds: purchasedPlanIds, // ✅ ALL PURCHASED PLAN IDs
+          selectedPlanIds: purchasedPlanIds, 
         };
       });
   
