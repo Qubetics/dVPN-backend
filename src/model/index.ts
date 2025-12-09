@@ -41,17 +41,17 @@ Node.belongsTo(Plans, {
     as: "plans",
 });
 
-// Node.hasMany(Session, {
-//     foreignKey: "node_address",
-//     sourceKey: "address",
-//     as: "sessions",
-// });
+Node.hasMany(Session, {
+    foreignKey: "node_address",
+    sourceKey: "address",
+    as: "sessions",
+});
 
-// Session.belongsTo(Node, {
-//     foreignKey: "node_address",
-//     targetKey: "address",
-//     as: "nodes",
-// });
+Session.belongsTo(Node, {
+    foreignKey: "node_address",
+    targetKey: "address",
+    as: "nodes",
+});
 
 Subscriptions.hasMany(Node, {
   foreignKey: "plan_id",
