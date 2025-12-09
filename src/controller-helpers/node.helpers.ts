@@ -48,6 +48,13 @@ class NodeHelper {
         });
       }
 
+      if (!country || country === UNDEFINED) {
+        return errorHandler({
+          status: STATUS_CODES.BADREQUEST,
+          message: "country is required to fetch nodes"
+        });
+      }
+
       // If wallet given, verify plan purchased
       if (walletAddress) {
         const hasPlan = await postgresDataHelper.findOneData(
@@ -189,8 +196,8 @@ class NodeHelper {
       // Fetch directly from Node table
       const nodes = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
-        whereClause, 
-        NODE_LIST_ATTRIBUTES, 
+        whereClause,
+        NODE_LIST_ATTRIBUTES,
         [
           {
             model: Plans,
@@ -205,7 +212,7 @@ class NodeHelper {
                   "wallet_address",
                   "status",
                 ],
-                required: false,                      
+                required: false,
                 where: {
                   ...(walletAddress ? { wallet_address: walletAddress } : {}),
                   ...(planId ? { plan_id: String(planId) } : {})
@@ -218,7 +225,7 @@ class NodeHelper {
           limit,
           offset,
           order: [["address", sortOrder]],
-          raw: false,                                 
+          raw: false,
         }
       );
 
@@ -275,7 +282,7 @@ class NodeHelper {
           {
             model: Subscriptions,
             as: "subscriptions",
-            attributes: ["id","wallet_address", "plan_id", "status", "start_at", "inactive_at"],
+            attributes: ["id", "wallet_address", "plan_id", "status", "start_at", "inactive_at"],
             where: {
               wallet_address: walletAddress,
               status: ACTIVE, // only active subscriptions
@@ -313,6 +320,69 @@ class NodeHelper {
     }
   };
 
+  /**
+   * Fetch the country detail of all the node and the user have bought the plan which having plan that have that coutnry's node
+   */
+  public getCountryListData = async (walletAddress: string) => {
+    try {
+      if (!walletAddress) {
+        return errorHandler({
+          status: STATUS_CODES.BADREQUEST,
+          message: "Wallet address is required",
+        });
+      }
+  
+      const result = await postgresDataHelper.findDataFromJoinModels(
+        DATA_MODELS.Node,  // base model
+        { node_status: ACTIVE },
+        [
+          "country",
+          // Count nodes in the country
+          [sequelize.fn("COUNT", sequelize.col("nodes.address")), "totalCount"],
+          // Count subscriptions for that country (0 or >0)
+          [sequelize.fn("COUNT", sequelize.col("subscriptions.plan_id")), "subscriptionCount"]
+        ],
+        [
+          {
+            model: Subscriptions,
+            as: "subscriptions",
+            required: false,  // LEFT JOIN → get all countries
+            attributes: [],
+            where: {
+              wallet_address: walletAddress,
+              status: ACTIVE
+            }
+          }
+        ],
+        {
+          group: ["nodes.country"],
+          raw: true
+        }
+      );
+      console.log("🚀 ~ NodeHelper ~ result:", result)
+  
+      // Build final JSON
+      const finalResult = result.map((row: any) => ({
+        country: row.country,
+        totalCount: Number(row.totalCount),
+        isSelected: Number(row.subscriptionCount) > 0  // true if user has plan for that country
+      }));
+  
+      return successHandler({
+        data: finalResult,
+        status: STATUS_CODES.SUCCESS,
+        message: "Country list fetched successfully"
+      });
+  
+    } catch (error) {
+      console.error(error);
+      return errorHandler({
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+        status: STATUS_CODES.INTERNALSERVER,
+      });
+    }
+  };
+  
 }
 
 

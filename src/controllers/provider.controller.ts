@@ -17,6 +17,7 @@ class ProviderController implements Controller {
    private initializeRoutes() {
     this.router.get(`${this.path}/`,sessionCheck,this.getProviderList);
     this.router.get(`${this.path}/recent`,sessionCheck,this.getRecentProviderList);
+    this.router.get(`${this.path}/country`,sessionCheck,this.getCountryProviderList);
    }
 
    private getProviderList=async (req:any,res:Response)=>{
@@ -30,6 +31,13 @@ class ProviderController implements Controller {
       const {wallet_address}=req.user;
       const providerListResponse= await providerHelper.getRecentProviderList(String(wallet_address));
      return sendResponse(res,providerListResponse);
+   }
+
+   private getCountryProviderList = async (req:any,res:Response)=>{
+      const {wallet_address}=req.user;
+      const country = String(req.query?.country);
+      const countryProviderListResponse= await providerHelper.getCountryProviderList(String(wallet_address),country);
+     return sendResponse(res,countryProviderListResponse);
    }
 }
 

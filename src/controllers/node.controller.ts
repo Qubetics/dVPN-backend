@@ -6,7 +6,7 @@ import nodeHelpers from "../controller-helpers/node.helpers";
 import { sessionCheck } from "../middleware/sessionCheck";
 
 class NodeController implements Controller {
-  public path = "";
+  public path = "/nodes";
   public router = express.Router();
 
   constructor() {
@@ -14,8 +14,9 @@ class NodeController implements Controller {
   }
 
   private initializeRoutes() {
-    this.router.get("/nodes", sessionCheck, this.getNodeList);
-    this.router.get("/nodes/random", sessionCheck, this.getRandomNodeData);
+    this.router.get(`${this.path}/`, sessionCheck, this.getNodeList);
+    this.router.get(`${this.path}/random`, sessionCheck, this.getRandomNodeData);
+    this.router.get(`${this.path}/country`,sessionCheck,this.getCountryListData);
   };
 
   /**
@@ -63,6 +64,17 @@ class NodeController implements Controller {
     const protocol = String(req.query?.protocol);
     const randomNodeResponse = await nodeHelpers.getRandomNode(wallet_address,protocol);
     return sendResponse(res, randomNodeResponse);
+  };
+  /**
+   * Retrieves country list from the node
+   * @param req
+   * @param res
+   * @returns
+   */
+  private getCountryListData = async (req:any,res:Response) => {
+     const wallet_address = String(req.user?.wallet_address);
+     const nodeCountryData = await nodeHelpers.getCountryListData(wallet_address);
+     return sendResponse(res,nodeCountryData);
   };
 
 }

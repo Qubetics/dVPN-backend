@@ -218,6 +218,99 @@ class ProviderHelper {
     }
   };
 
-}
+  public getCountryProviderList = async (
+    walletAddress: string,
+    country: string
+  ): Promise<ApiResponse> => {
+    try {
+      if (!walletAddress || !country) {
+        return errorHandler({
+          status: STATUS_CODES.BADREQUEST,
+          message: "Wallet address and country are required",
+        });
+      }
+  
+      const providers = await postgresDataHelper.findDataFromJoinModels(
+        DATA_MODELS.Providers,
+        {},
+        [
+          "name",
+          "address",
+          "identity",
+          "website",
+          "description",
+          "status",
+          "status_at",
+        ],
+        [
+          {
+            model: Plans,
+            as: "plans",
+            required: true,
+            attributes: ["plan_id"],
+            include: [
+              {
+                model: Node,
+                as: "nodes",
+                required: true,
+                attributes: ["plan_id", "address"],
+                where: { country },
+              },
+              {
+                model: Subscriptions,
+                as: "subscriptions",
+                required: false,
+                attributes: ["plan_id"],
+                where: { wallet_address: walletAddress },
+              },
+            ],
+          },
+        ],
+        {
+          raw: false,
+        }
+      );
+  
+      const finalResult = providers.map((provider: any) => {
+  
+        // All plan_ids that this user purchased under this provider
+        const purchasedPlanIds =
+          provider.plans
+            ?.filter((p: any) => p.subscriptions?.length > 0)
+            ?.map((p: any) => p.plan_id) || [];
+  
+        const isSelected = purchasedPlanIds.length > 0;
+  
+        return {
+          id: provider.id,
+          name: provider.name,
+          address: provider.address,
+          identity: provider.identity,
+          website: provider.website,
+          description: provider.description,
+          status: provider.status,
+          status_at: provider.status_at,
+  
+          isSelected,
+          selectedPlanIds: purchasedPlanIds, // ✅ ALL PURCHASED PLAN IDs
+        };
+      });
+  
+      return successHandler({
+        data: finalResult,
+        status: STATUS_CODES.SUCCESS,
+        message: "Provider list fetched successfully",
+      });
+  
+    } catch (error) {
+      console.error("Error in getCountryProviderList:", error);
+      return errorHandler({
+        status: STATUS_CODES.INTERNALSERVER,
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
+      });
+    }
+  };
+  
+}  
 
 export default new ProviderHelper();

@@ -22,8 +22,9 @@ class PlanController implements Controller {
 
     private getAllPlans = async (req: any, res: Response) => {
         // const walletAddress=String(req.user.wallet_address);
-        const provAddress=String(req.query.prov_address);
-        const plansResponse = await planHelpers.getAllPlans(provAddress);
+        const provAddress=String(req.query?.prov_address);
+        const country=String(req.query?.country);
+        const plansResponse = await planHelpers.getAllPlans(provAddress,country);
         return sendResponse(res, plansResponse);
     };
 
