@@ -152,57 +152,70 @@ class ProviderHelper {
       const latestProviderAddress =
         latestSession?.nodes?.plans?.provider_address || null;
 
-      const providerRecentListData = await postgresDataHelper.findDataFromJoinModels(
-        DATA_MODELS.Providers,
-        {},
-        ["name", "address", "identity", "website"],
-        [
-          {
-            model: Plans,
-            as: "plans",
-            attributes: ["plan_id"],
-            include: [
-              {
-                model: Subscriptions,
-                as: "subscriptions",
-                attributes: ["wallet_address", "status", "start_at"],
-                where: { wallet_address: walletAddress },
-                required: true,
-              },
-            ],
-            required: true,
-          },
-        ],
-        {
-          raw: false,
-          order: [
-            [
-              Sequelize.literal(
-                `CASE WHEN "providers"."address" = '${latestProviderAddress}' THEN 0 ELSE 1 END`
-              ),
-              "ASC",
-            ],
-            ["name", "ASC"],
+        const providerRecentListData = await postgresDataHelper.findDataFromJoinModels(
+          DATA_MODELS.Providers,
+          {},
+          ["name", "address", "identity", "website"],
+          [
+            {
+              model: Plans,
+              as: "plans",
+              attributes: ["plan_id"],
+              include: [
+                {
+                  model: Subscriptions,
+                  as: "subscriptions",
+                  attributes: ["wallet_address", "status", "start_at"],
+                  where: { wallet_address: walletAddress },
+                  required: true,
+                },
+                {
+                  model: Node,
+                  as: "nodes",
+                  attributes: ["country", "city", "plan_id"],
+                  required: false,
+                },
+              ],
+              required: true,
+            },
           ],
-        }
-      );
-
-      const formattedData = providerRecentListData.map((provider: any) => {
-        const plans = provider?.plans ?? [];
-
-        const subscribedPlanIds = plans
-          .filter((plan: any) => plan?.subscriptions?.length > 0)
-          .map((plan: any) => plan.plan_id);
-
-        return {
-          name: provider.name,
-          address: provider.address,
-          identity: provider.identity,
-          website: provider.website,
-          isUserSubscribed: subscribedPlanIds.length > 0,
-          ...(subscribedPlanIds.length > 0 && { subscribedPlanIds })
-        };
-      });
+          {
+            raw: false,
+            order: [
+              [
+                Sequelize.literal(
+                  `CASE WHEN "providers"."address" = '${latestProviderAddress}' THEN 0 ELSE 1 END`
+                ),
+                "ASC",
+              ],
+              ["name", "ASC"],
+            ],
+          }
+        );
+        
+        
+        // ⬇️ UPDATED FORMATTER WITH COUNTRY COUNT
+        const formattedData = providerRecentListData.map((provider: any) => {
+          const plans = provider?.plans ?? [];
+          const allNodes = plans.flatMap((plan: any) => plan.nodes || []);
+          const uniqueCountries = [...new Set(allNodes.map((node: any) => node.country))];
+          const countryCount = uniqueCountries.length;
+          const subscribedPlanIds = plans
+            .filter((plan: any) => plan?.subscriptions?.length > 0)
+            .map((plan: any) => plan.plan_id);
+        
+          return {
+            name: provider.name,
+            address: provider.address,
+            identity: provider.identity,
+            website: provider.website,
+            countryCount,
+            isUserSubscribed: subscribedPlanIds.length > 0,
+            ...(subscribedPlanIds.length > 0 && { subscribedPlanIds }),
+          };
+        });
+        
+        
 
       return successHandler({
         status: STATUS_CODES.SUCCESS,
