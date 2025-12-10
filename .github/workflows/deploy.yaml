@@ -1,30 +1,22 @@
-name: Deploy to EC2 via SSH
+name: '[prod] Deploy Dvpn Mobile Backend'
 
-on:
+on: 
   push:
-    branches:
-      - stage
+    branches: 
+      - mainnet
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-    - name: Deploy via SSH
-      run: |
-        ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd /root/dVPN-backend
-          git pull origin stage
-          docker-compose down
-          docker-compose up -d --build
-        EOF
+  dvpn-mobile-backend:
+    uses: Qubetics/argocd-qubetics/.github/workflows/deployment.yaml@prod
+    with:
+      SWR_ORGANIZATION: prod-qubetics
+      ARGOCD_BRANCH: prod
+      HUAWEI_REGION: 'ap-southeast-1'
+      ARGOCD_REPOSITORY: Qubetics/argocd-qubetics
+      DEPLOYMENT_PATH: Dvpn-mobile-backend/deployment.yaml
+      HUAWEI_IMAGE: prod-dvpn-mobile-backend
+      DOCKER_USERNAME: ap-southeast-1@HPUAJWWFSLCMD312AZSR
+      ENV: ${{ vars.PROD_DVPN_MOBILE_BACKEND }}
+    secrets:
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD_NEW }}
+      GIT_SSH_KEY: ${{ secrets.ARGOCD_SSH_KEY_NEW }}
