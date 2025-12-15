@@ -6,7 +6,7 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
 import Plans from "../model/plans/index";
 import Subscriptions from "../model/subscriptions/index";
 import Node from "../model/nodes/index"
-import { Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 class ProviderHelper {
 
@@ -37,13 +37,18 @@ class ProviderHelper {
               {
                 model: Subscriptions,
                 as: "subscriptions",
-                attributes: ["wallet_address", "status", "start_at"],
-                where: { status: ACTIVE }
+                attributes: ["wallet_address", "status", "start_at","inactive_at"],
+                where: {
+                  status: ACTIVE,
+                   inactive_at: {
+                    [Op.gt]: new Date()
+                  }
+                }
               },
               {
                 model: Node,
                 as: "nodes",
-                attributes: ["country"], // We'll use this to count countries
+                attributes: ["country"], 
               },
             ],
           },
@@ -117,7 +122,7 @@ class ProviderHelper {
 
   public getRecentProviderList = async (walletAddress: string): Promise<ApiResponse> => {
     try {
-      if (!walletAddress || walletAddress === "undefined") {
+      if (!walletAddress || walletAddress === UNDEFINED) {
         return errorHandler({
           status: STATUS_CODES.UNAUTHORIZED,
           message: RESPONSE_MESSAGES.UNAUTHORIZED
@@ -143,7 +148,7 @@ class ProviderHelper {
         {
           limit: 1,
           raw: false,
-          order: [["start_at", "DESC"]], // 👈 latest session first
+          order: [["start_at", "DESC"]], // latest session first
         }
       );
 
@@ -166,8 +171,19 @@ class ProviderHelper {
                 model: Subscriptions,
                 as: "subscriptions",
                 attributes: ["wallet_address", "status", "start_at"],
-                where: { wallet_address: walletAddress },
+                where: { wallet_address: walletAddress,
+                  status: ACTIVE,
+                  inactive_at: {
+                    [Op.gt]: new Date()
+                  }
+                 },
                 required: true,
+              },
+              {
+                model: Node,
+                as: "nodes",
+                attributes: ["country", "city", "plan_id"],
+                required: false,
               },
             ],
             required: true,
@@ -187,9 +203,12 @@ class ProviderHelper {
         }
       );
 
+      // UPDATED FORMATTER WITH COUNTRY COUNT
       const formattedData = providerRecentListData.map((provider: any) => {
         const plans = provider?.plans ?? [];
-
+        const allNodes = plans.flatMap((plan: any) => plan.nodes || []);
+        const uniqueCountries = [...new Set(allNodes.map((node: any) => node.country))];
+        const countryCount = uniqueCountries.length;
         const subscribedPlanIds = plans
           .filter((plan: any) => plan?.subscriptions?.length > 0)
           .map((plan: any) => plan.plan_id);
@@ -199,8 +218,9 @@ class ProviderHelper {
           address: provider.address,
           identity: provider.identity,
           website: provider.website,
+          countryCount,
           isUserSubscribed: subscribedPlanIds.length > 0,
-          ...(subscribedPlanIds.length > 0 && { subscribedPlanIds })
+          ...(subscribedPlanIds.length > 0 && { subscribedPlanIds }),
         };
       });
 
