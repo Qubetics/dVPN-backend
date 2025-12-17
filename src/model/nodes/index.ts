@@ -100,6 +100,7 @@ const Node = sequelize.define<NodeInstance>(
   },
   {
     timestamps: true,
+    paranoid: true,
   }
 );
 
