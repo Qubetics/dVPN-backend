@@ -1,6 +1,6 @@
 import * as express from "express";
 import { Controller } from "@interfaces";
-import {  Response } from "express";
+import { Response } from "express";
 import sendResponse from "../responses/response.helper";
 import nodeHelpers from "../controller-helpers/node.helpers";
 import { sessionCheck } from "../middleware/sessionCheck";
@@ -15,7 +15,7 @@ class NodeController implements Controller {
 
   private initializeRoutes() {
     this.router.get("/nodes", sessionCheck, this.getNodeList);
-    this.router.get("/nodes/random",sessionCheck,this.getRandomNodeData);
+    this.router.get("/nodes/random", sessionCheck, this.getRandomNodeData);
   };
 
   /**
@@ -33,7 +33,9 @@ class NodeController implements Controller {
     const nodeAddress = String(req.query.address);
     const country = String(req.query.country);
     const city = String(req.query.city);
-    const planId= Number(req.query?.plan_id);
+    const planId = String(req.query?.plan_id);
+    const walletAddress = String(req.user?.wallet_address)
+    const protocolType = String(req.query?.protocol);
     const nodeListData = await nodeHelpers.nodeList(
       status,
       limit,
@@ -43,7 +45,9 @@ class NodeController implements Controller {
       nodeAddress,
       country,
       city,
-      planId
+      planId,
+      protocolType,
+      walletAddress
     );
 
     return sendResponse(res, nodeListData);
@@ -54,10 +58,11 @@ class NodeController implements Controller {
    * @param res 
    * @returns 
    */
-  private getRandomNodeData = async (req:any,res: Response) => {
-    const planId= String(req.query?.plan_id);
-    const randomNodeResponse = await nodeHelpers.getRandomNode(planId);
-    return sendResponse(res,randomNodeResponse);
+  private getRandomNodeData = async (req: any, res: Response) => {
+    const wallet_address = String(req.user?.wallet_address);
+    const protocol = String(req.query?.protocol);
+    const randomNodeResponse = await nodeHelpers.getRandomNode(wallet_address,protocol);
+    return sendResponse(res, randomNodeResponse);
   };
 
 }

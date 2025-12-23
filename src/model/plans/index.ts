@@ -9,9 +9,9 @@ interface Price {
 }
 
 interface IPlans {
-    planId: string;
-    providerAddress: string;
-    nodeAddress: string,
+    id: string;
+    plan_id: string;
+    provider_address: string;
     hours: string;
     gigabytes: string;
     prices: Price[];
@@ -24,19 +24,25 @@ interface PlansInstance extends Model<IPlans>, IPlans { }
 const Plans = sequelize.define<PlansInstance>(
     "plans",
     {
-      planId: {
+      id: {
+        type: DataTypes.UUID,
+        unique: true,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      plan_id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+        allowNull: false,
+      },
+      provider_address: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      providerAddress: {
+      hours: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
-      nodeAddress: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      hours: DataTypes.STRING,
       gigabytes: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -56,12 +62,6 @@ const Plans = sequelize.define<PlansInstance>(
     },
     {
       timestamps: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ["planId", "providerAddress", "nodeAddress"],
-        },
-      ],
     }
   );
   

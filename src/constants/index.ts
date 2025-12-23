@@ -31,11 +31,13 @@ export const DATA_MODELS = {
   Subscriptions: "Subscriptions",
   Sessions: "Sessions",
   UserSession: "UserSession",
-  PlanPurchase: "PlanPurchase"
+  PlanPurchase: "PlanPurchase",
+  Providers: "Providers"
 };
 
 // Response messages
 export const RESPONSE_MESSAGES = {
+  PROVIDER_LIST_FETCH_SUCESSFULLY:"provider list is successfully fetched",
   PLAN_ID_IS_NOT_PRESENT:"You need to purchase the plan first",
   PLAN_ID_FETCH:"Plan Id fetch successfully",
   PLAN_ID_SUCCESS:"Plan ID saved successfully",
@@ -68,7 +70,7 @@ export const RESPONSE_MESSAGES = {
   BASE_ERROR_MESSAGE: "Failed",
 };
 
-export const SESSION_ATTRIBUTES = ['start_at', 'status_at', 'status'];
+export const SESSION_ATTRIBUTES = ['subscription_id','start_at', 'status_at', 'status'];
 
 export const NODE_ATTRIBUTES = ['flag_url', 'city', 'country', 'remote_url', 'address'];
 
@@ -76,7 +78,7 @@ export const NODE_LIST_ATTRIBUTES = [
   'address',
   'country',
   'city',
-  'status',
+  'node_status',
   'gigabyte_prices',
   'hourly_prices',
   'remote_url',
@@ -85,8 +87,9 @@ export const NODE_LIST_ATTRIBUTES = [
   'flag_url',
   'createdAt',
   'updatedAt',
-  'status_at',
-  'inactive_at'
+  'status_updated_at',
+  'inactive_at',
+  'protocol'
 ];
 
 export const UNDEFINED = "undefined";

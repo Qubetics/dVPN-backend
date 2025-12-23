@@ -15,15 +15,15 @@ class PlanController implements Controller {
 
     private initializeRoutes() {
         this.router.get(`${this.path}/`, sessionCheck, this.getAllPlans);
-        this.router.get(`${this.path}/node`, sessionCheck,this.getAllNodeForPlan);
-        this.router.post(`${this.path}/id`,sessionCheck,this.postForPlanId);
-        this.router.get(`${this.path}/id`,sessionCheck,this.getPlanId);
+        // this.router.get(`${this.path}/node`, sessionCheck,this.getAllNodeForPlan);
+        // this.router.post(`${this.path}/id`,sessionCheck,this.postForPlanId);
+        // this.router.get(`${this.path}/id`,sessionCheck,this.getPlanId);
     };
 
     private getAllPlans = async (req: any, res: Response) => {
-        const limit = Number(req.query?.limit) || 10;
-        const page = Number(req.query?.page) || 1;
-        const plansResponse = await planHelpers.getAllPlans(page, limit);
+        // const walletAddress=String(req.user.wallet_address);
+        const provAddress=String(req.query.prov_address);
+        const plansResponse = await planHelpers.getAllPlans(provAddress);
         return sendResponse(res, plansResponse);
     };
 
@@ -47,6 +47,12 @@ class PlanController implements Controller {
         const resPlanID=await planHelpers.getPlanId(walletAddress);
         return sendResponse(res,resPlanID); 
     };
+
+    private getUserPurchasedPlans = async (req:any,res:Response)=>{
+        const walletAddress=String(req.user.wallet_address);
+        const getUserPurchasedPlanList=await planHelpers.getPlanId(walletAddress);
+        return sendResponse(res,getUserPurchasedPlanList);
+    }
 
 }
 

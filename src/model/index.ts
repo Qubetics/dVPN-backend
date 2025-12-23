@@ -1,18 +1,69 @@
-import Node from "./nodes/index";
-import Sessions from "./session/index";
 import Plans from "./plans/index";
+import User from "./user/index";
+import Session from "./session/index";
+import Node from "./nodes/index";
+import Providers from "./provider/index";
+import Subscriptions from "./subscriptions/index";
 
-Sessions.belongsTo(Node, { foreignKey: 'node_address', targetKey: 'address' });
-Node.hasMany(Sessions, { foreignKey: 'node_address', sourceKey: 'address' });
-
-// Each Plan belongs to one Node via nodeAddress → address
-Plans.belongsTo(Node, {
-    foreignKey: 'nodeAddress',
-    targetKey: 'address',
+Plans.hasMany(Subscriptions, {
+    foreignKey: "plan_id",
+    sourceKey: "plan_id",
+    as: "subscriptions",
 });
 
-// A Node can have many Plans
-Node.hasMany(Plans, {
-    foreignKey: 'nodeAddress',
-    sourceKey: 'address',
+Subscriptions.belongsTo(Plans, {
+    foreignKey: "plan_id",
+    targetKey: "plan_id",
+    as: "plans",
 });
+
+Providers.hasMany(Plans, {
+    foreignKey: "provider_address",
+    sourceKey: "address",
+    as: "plans",
+});
+
+Plans.belongsTo(Providers, {
+    foreignKey: "provider_address",
+    targetKey: "address",
+    as: "providers",
+});
+
+Plans.hasMany(Node, {
+    foreignKey: "plan_id",
+    sourceKey: "plan_id",
+    as: "nodes",
+});
+
+Node.belongsTo(Plans, {
+    foreignKey: "plan_id",
+    targetKey: "plan_id",
+    as: "plans",
+});
+
+Node.hasMany(Session, {
+    foreignKey: "node_address",
+    sourceKey: "address",
+    as: "sessions",
+});
+
+Session.belongsTo(Node, {
+    foreignKey: "node_address",
+    targetKey: "address",
+    as: "nodes",
+});
+
+Subscriptions.hasMany(Node, {
+  foreignKey: "plan_id",
+  sourceKey: "plan_id",
+  as: "nodes",
+});
+
+Node.belongsTo(Subscriptions, {
+  foreignKey: "plan_id",
+  targetKey: "plan_id",
+  as: "subscriptions",
+});
+
+
+// export { Plans, Node, User, Session, Providers, Subscriptions };
