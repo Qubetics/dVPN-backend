@@ -36,8 +36,10 @@ const PlanPurchase = sequelize.define<PlanPurchaseInstance>(
 );
 
 // Sync table with DB
+if (process.env.NODE_ENV == 'development') {
 PlanPurchase.sync({ alter: true }).catch((err: any) => {
   console.error("Error syncing PlanPurchase table:", err);
 });
+}
 
 export default PlanPurchase;

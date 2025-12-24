@@ -10,7 +10,7 @@ interface Price {
 
 interface ISubscription {
     id: string;
-    acc_address: string;
+    wallet_address: string;
     plan_id: string;
     price: Price;
     renewal_price_policy: string;
@@ -29,7 +29,7 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
             type: DataTypes.STRING,
             primaryKey: true,
         },
-        acc_address: {
+        wallet_address: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -67,8 +67,10 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
     }
 );
 
+if (process.env.NODE_ENV == 'development') {
 Subscriptions.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing subscriptions table:", error);
 });
+}
 
 export default Subscriptions;

@@ -1,4 +1,4 @@
-import { DATA_MODELS, NODE_LIST_ATTRIBUTES, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
+import { DATA_MODELS, NODE_LIST_ATTRIBUTES, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -7,6 +7,7 @@ import axios from "axios";
 import { Sequelize } from "sequelize";
 import dbConnectionHandler from "../connection";
 import Node from "../model/nodes/index";
+import Subscriptions from "../model/subscriptions/index";
 require('dotenv').config();
 
 const BASE_API = process.env.BASE_API_URL;
@@ -18,43 +19,85 @@ class PlanHelper {
         (() => { })();
     }
 
-    public getAllPlans = async (page: number, limit: number): Promise<ApiResponse> => {
+    public getAllPlans = async (
+        providerAddress: string
+    ): Promise<ApiResponse> => {
         try {
-            const offset = (page - 1) * limit;
+            if (!providerAddress || providerAddress === UNDEFINED) {
+                return errorHandler({
+                    message: "Provider is mandatory",
+                    status: STATUS_CODES.BADREQUEST,
+                });
+            }
 
-            const result = await postgresDataHelper.findAndQueryData(
+            const result = await postgresDataHelper.findDataFromJoinModels(
                 DATA_MODELS.Plans,
+                { provider_address: providerAddress }, // Only this provider’s plans
+                [
+                    "plan_id",
+                    "hours",
+                    "prices",
+                    [sequelize.col("nodes.country"), "country"], // Correct alias
+                    [sequelize.fn("COUNT", sequelize.col("nodes.id")), "node_count"], // Count nodes per country
+                    [sequelize.fn("MAX", sequelize.col("nodes.flag_url")), "flag_url"],
+                ],
+                [
+                    {
+                        model: Node,
+                        as: "nodes",
+                        attributes: [],
+                        required: false,
+                    },
+                ],
                 {
-                    attributes: ["planId", "hours", "prices"],
-                    order: [
-                        ["planId", "ASC"],
-                        ["createdAt", "DESC"] // pick latest row per planId
-                    ],
-                    distinct: true,
+                    raw: true,
+                    group: ["plans.plan_id", "nodes.country"],
+                    order: [["plan_id", "ASC"]],
                 }
             );
 
-            const plan = result[0];
+            // Suppose `result` is the array you shared above
+            const mergedPlans = Object.values(
+                result.reduce((acc:any, row:any) => {
+                    const { plan_id, hours, prices, country, node_count, flag_url } = row;
 
-            const transformed = {
-                planId: plan.planId,
-                hoursInDays: Number(plan.hours) / 24,
-                quoteValue: plan.prices?.[0]?.quote_value || null,
-            };
+                    if (!acc[plan_id]) {
+                        acc[plan_id] = {
+                            plan_id,
+                            hours,
+                            prices,
+                            countries: []
+                        };
+                    }
+
+                    // Only add country info if exists
+                    if (country) {
+                        acc[plan_id].countries.push({
+                            country,
+                            node_count,
+                            flag_url
+                        });
+                    }
+
+                    return acc;
+                }, {})
+            );
+
 
             return successHandler({
                 status: STATUS_CODES.SUCCESS,
                 message: RESPONSE_MESSAGES.PLAN_FETCH_SUCCESS,
-                data: transformed,
+                data: mergedPlans,
             });
-
         } catch (error: any) {
+            console.error("Error in getAllPlans:", error);
             return errorHandler({
                 message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
-                status: STATUS_CODES.INTERNALSERVER
+                status: STATUS_CODES.INTERNALSERVER,
             });
         }
     };
+
 
     public getAllNodeForPlan = async (walletAddress: string, page: number, limit: number): Promise<ApiResponse> => {
         try {

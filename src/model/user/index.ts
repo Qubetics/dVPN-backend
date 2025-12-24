@@ -1,20 +1,21 @@
+import dbConnectionHandler from "../../connection";
 import { DataTypes,Model } from "sequelize";
-import DBConnectionHandler from "../../connection";
-const sequelize = DBConnectionHandler.sequelize;
+const sequeslize=dbConnectionHandler.sequelize;
 
- interface IUser {
+export interface IUser {
     id: string;
     wallet_address: string;
     status: boolean
 }
 
 interface UserInstance extends Model<IUser>, IUser {}
-const User = sequelize.define<UserInstance>(
+const User = sequeslize.define<UserInstance>(
     "user",
     {
         id: {
             type:DataTypes.UUID,
-            unique: true
+            unique: true,
+            defaultValue:DataTypes.UUIDV4
         },
         wallet_address: {
             type: DataTypes.STRING,
@@ -30,8 +31,10 @@ const User = sequelize.define<UserInstance>(
     }
 );
 
+if (process.env.NODE_ENV == 'development') {
 User.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing table:", error);
   });
+}
   
   export default User;

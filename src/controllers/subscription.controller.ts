@@ -15,6 +15,7 @@ class SubscriptionController implements Controller {
 
     private initializeRoutes() {
         this.router.get(`${this.path}/`, sessionCheck, this.getSubscritptionsList);
+        this.router.get(`${this.path}/renew`, sessionCheck, this.getRenewSubscriptions);
     };
 
     private getSubscritptionsList = async (req: any, res: Response) => {
@@ -24,6 +25,21 @@ class SubscriptionController implements Controller {
         const wallet_address = String(req.user.wallet_address);
 
         const subscritpionListRespose=await subscriptionHelper.getSubscritptionsList(wallet_address,
+            limit,
+            page,
+            order
+        );
+
+        return sendResponse(res,subscritpionListRespose);
+    };
+
+    private getRenewSubscriptions = async (req: any, res: Response) => {
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const order = String(req.query.order);
+        const wallet_address = String(req.user.wallet_address);
+
+        const subscritpionListRespose=await subscriptionHelper.getRenewSubscriptions(wallet_address,
             limit,
             page,
             order

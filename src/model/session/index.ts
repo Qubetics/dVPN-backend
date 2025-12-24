@@ -18,7 +18,7 @@ interface ISession {
     duration: string;
     max_duration: string;
     status: string;
-    inactive_at: string;
+    end_at: string;
     start_at: string;
     status_at: string;
     price: Price;
@@ -70,7 +70,7 @@ const Sessions = sequelize.define<SessionInstance>(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        inactive_at: {
+        end_at: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -92,10 +92,10 @@ const Sessions = sequelize.define<SessionInstance>(
     }
 );
 
-
-
+if (process.env.NODE_ENV == 'development') {
 Sessions.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing Sessions table:", error);
 });
+}
 
 export default Sessions;

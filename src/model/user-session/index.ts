@@ -42,8 +42,10 @@ const UserSessions = sequelize.define<UserSessionInstance>(
   }
 );
 
+if (process.env.NODE_ENV == 'development') {
 UserSessions.sync({ alter: true }).catch((error: any) => {
   console.error("Error syncing UserSessions table:", error);
 });
+}
 
 export default UserSessions;

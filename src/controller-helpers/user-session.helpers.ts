@@ -57,6 +57,7 @@ class UserSessionHelper {
         [
           {
             model: Node,
+            as: 'nodes',
             attributes: NODE_ATTRIBUTES,
           },
         ],
@@ -66,13 +67,12 @@ class UserSessionHelper {
           order: [['createdAt', sortOrder]], // ASC or DESC
         }
       );
-
-      const flatResults = flattenNodeFields(results);
+      // const flatResults = flattenNodeFields(results);
 
       return successHandler({
         data: {
-          sessions: flatResults ?? [],
-          total: flatResults?.length ?? 0,
+          sessions: results ?? [],
+          total: results?.length ?? 0,
         },
         status: STATUS_CODES.SUCCESS,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
@@ -113,21 +113,21 @@ class UserSessionHelper {
           acc_address: wallet_address,
         },
         [
-          [sequelize.literal('DISTINCT ON ("node"."address") "node"."address"'), 'address'],
-          [sequelize.col("node.city"), "city"],
-          [sequelize.col("node.country"), "country"],
+          [sequelize.literal('DISTINCT ON ("nodes"."address") "nodes"."address"'), 'address'],
+          [sequelize.col("nodes.city"), "city"],
+          [sequelize.col("nodes.country"), "country"],
         ],
         [
           {
             model: Node,
-            as: "node",
+            as: "nodes",
             attributes: [],
             required: true,
           },
         ],
         {
           order: [
-            [sequelize.literal('"node"."address"'), sortOrder],
+            [sequelize.literal('"nodes"."address"'), sortOrder],
           ],
           limit,
           offset,
