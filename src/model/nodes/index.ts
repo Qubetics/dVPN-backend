@@ -105,8 +105,10 @@ const Node = sequelize.define<NodeInstance>(
 );
 
 // Sync table
+if (process.env.NODE_ENV == 'development') {
 Node.sync({ alter: true }).catch((error: any) => {
   console.error("Error syncing Node table:", error);
 });
+}
 
 export default Node;

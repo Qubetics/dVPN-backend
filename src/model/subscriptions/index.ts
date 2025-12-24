@@ -67,8 +67,10 @@ const Subscriptions = sequelize.define<SubscriptionInstance>(
     }
 );
 
+if (process.env.NODE_ENV == 'development') {
 Subscriptions.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing subscriptions table:", error);
 });
+}
 
 export default Subscriptions;

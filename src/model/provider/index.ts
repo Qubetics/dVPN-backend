@@ -59,8 +59,10 @@ const Providers = sequelize.define<ProviderInstance>(
     }
 );
 
+if (process.env.NODE_ENV == 'development') {
 Providers.sync({alter: true}).catch((error: any)=>{
     console.error("error syncing provider table: ",error);
 });
+}
 
 export default Providers;
