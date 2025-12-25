@@ -4,8 +4,6 @@ import Node from "../model/nodes/index"
 import Plans from "../model/plans/index";
 import Subscriptions from "../model/subscriptions/index";
 import Sessions from "../model/session/index";
-import UserSessions from "../model/user-session/index";
-import PlanPurchase from "../model/plan-purchase";
 import Providers  from "../model/provider/index";
 
 class PostgresDataHelper {
@@ -255,10 +253,6 @@ public findGroupedData = async (
         return Subscriptions;
       case DATA_MODELS.Sessions:
         return Sessions;
-      case DATA_MODELS.UserSession:
-        return UserSessions;
-      case DATA_MODELS.PlanPurchase:
-        return PlanPurchase;
       case DATA_MODELS.Providers:
         return Providers
       default: 
