@@ -31,8 +31,10 @@ const User = sequeslize.define<UserInstance>(
     }
 );
 
+if (process.env.NODE_ENV == 'development') {
 User.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing table:", error);
   });
+}
   
   export default User;

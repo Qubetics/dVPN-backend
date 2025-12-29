@@ -92,8 +92,10 @@ const Sessions = sequelize.define<SessionInstance>(
     }
 );
 
+if (process.env.NODE_ENV == 'development') {
 Sessions.sync({ alter: true }).catch((error: any) => {
     console.error("Error syncing Sessions table:", error);
 });
+}
 
 export default Sessions;

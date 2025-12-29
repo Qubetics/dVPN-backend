@@ -1,0 +1,22 @@
+name: '[testnet] Deploy dvpn backend'
+
+on: 
+  push:
+    branches: 
+      - testnet
+
+jobs:
+  dvpn-backend:
+    uses: Qubetics/argocd-qubetics/.github/workflows/deployment.yaml@testnet
+    with:
+      SWR_ORGANIZATION: testnet-qubetics
+      ARGOCD_BRANCH: testnet
+      HUAWEI_REGION: 'ap-southeast-3'
+      ARGOCD_REPOSITORY: Qubetics/argocd-qubetics
+      DEPLOYMENT_PATH: Dvpn-backend/deployment.yaml
+      HUAWEI_IMAGE: dvpn-backend
+      DOCKER_USERNAME: ap-southeast-3@HPUAJWWFSLCMD312AZSR
+      ENV: ${{ vars.TESTNET_DVPN_BACKEND }}
+    secrets:
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD_NEW }}
+      GIT_SSH_KEY: ${{ secrets.ARGOCD_SSH_KEY_NEW }} 

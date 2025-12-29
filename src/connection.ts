@@ -87,7 +87,9 @@ class DBConnectionHandler {
                     }
                 });
 
-            await this.sequelize.sync({ alter: true });
+            if (process.env.NODE_ENV == 'development') {
+                await this.sequelize.sync({ alter: true });
+            }
 
             return true;
 
