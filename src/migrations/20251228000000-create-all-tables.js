@@ -300,7 +300,7 @@ module.exports = {
         });
 
         // 6. Users
-        await queryInterface.createTable({tableName:'user',schema}, {
+        await queryInterface.createTable({tableName:'users',schema}, {
             id: {
                 type: Sequelize.UUID,
                 unique: true,
@@ -329,7 +329,7 @@ module.exports = {
         const schema = process.env.DB_SCHEMA;
     
         // Drop tables in reverse order of creation
-        await queryInterface.dropTable({ tableName: 'user', schema });
+        await queryInterface.dropTable({ tableName: 'users', schema });
         await queryInterface.dropTable({ tableName: 'sessions', schema });
         await queryInterface.dropTable({ tableName: 'subscriptions', schema });
         await queryInterface.dropTable({ tableName: 'nodes', schema });
