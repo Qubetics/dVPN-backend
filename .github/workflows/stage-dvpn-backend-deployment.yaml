@@ -13,10 +13,10 @@ jobs:
       ARGOCD_BRANCH: dev
       HUAWEI_REGION: 'ap-southeast-3'
       ARGOCD_REPOSITORY: Qubetics/argocd-qubetics
-      DEPLOYMENT_PATH: stage-dvpn-backend/deployment.yaml
-      HUAWEI_IMAGE: stage-dvpn-backend
+      DEPLOYMENT_PATH: Dvpn-backend/deployment.yaml
+      HUAWEI_IMAGE: dvpn-backend
       DOCKER_USERNAME: ap-southeast-3@HPUAJWWFSLCMD312AZSR
-      ENV: ${{ vars.STAGE_DVPN_BACKEND }}
+      ENV: ${{ vars.DVPN_BACKEND }}
     secrets:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD_NEW }}
       GIT_SSH_KEY: ${{ secrets.ARGOCD_SSH_KEY_NEW }}
