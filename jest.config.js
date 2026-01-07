@@ -7,6 +7,7 @@ module.exports = {
         '^.+\\.ts$': 'ts-jest',
     },
     testMatch: ['**/tests/**/*.test.ts'],
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     coveragePathIgnorePatterns: [
         '/node_modules/',
         '/src/model/',

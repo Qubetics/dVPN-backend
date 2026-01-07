@@ -48,7 +48,10 @@ describe("App Class", () => {
 
     test("listen() should start server without crashing", () => {
         const mockListen = jest.spyOn(appInstance.app, "listen").mockImplementation(() => {
-            return { close: jest.fn() } as any;
+            return {
+                close: jest.fn(),
+                on: jest.fn().mockReturnThis()
+            } as any;
         });
 
         appInstance.listen();
@@ -61,7 +64,10 @@ describe("App Class", () => {
 
         const mockListen = jest.spyOn(appInstance.app, "listen").mockImplementation((port: any, callback: any) => {
             if (callback) callback();
-            return { close: jest.fn() } as any;
+            return {
+                close: jest.fn(),
+                on: jest.fn().mockReturnThis()
+            } as any;
         });
 
         const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
@@ -69,7 +75,8 @@ describe("App Class", () => {
         appInstance.listen();
 
         expect(mockListen).toHaveBeenCalledWith(7200, expect.any(Function));
-        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('7200'), undefined);
+        // log.green uses ANSI color codes, so the actual call is: console.log('\x1b[32m', 'App listening on port 7200', '\x1b[39m')
+        expect(consoleSpy).toHaveBeenCalledWith('\x1b[32m', 'App listening on port 7200', '\x1b[39m');
 
         process.env.PORT = originalPort;
         consoleSpy.mockRestore();
