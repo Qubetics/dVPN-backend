@@ -1,4 +1,4 @@
-import express, { request } from "express";
+import express from "express";
 import cors from "cors";
 import { Response,Request,NextFunction } from "express";
 import cookieParser from "cookie-parser";
@@ -6,13 +6,11 @@ import { Controller } from "@interfaces";
 import './model/index';
 import sendResponse from "./responses/response.helper";
 import { RESPONSE_MESSAGES, STATUS_CODES } from "../src/constants/index";
+import { log } from "./utils/helper.utils";
 require('dotenv').config();
 
 class App {
     public app:express.Application;
-    public req:express.Request;
-    public res:express.Response;
-    public next:express.NextFunction;
 
     constructor(controllers: Controller[]){
         this.app=express();
@@ -22,10 +20,17 @@ class App {
     /**
      * bind the port and start listening for requests
      */
-    public listen(){
-      this.app.listen(process.env.PORT? Number(process.env.PORT):7200,(err)=>{
-        console.log(`App listing on the port ${process.env.PORT? process.env.PORT:7200}`,err);
-      });
+    public listen(): void {
+      const port = process.env.PORT ? Number(process.env.PORT) : 7200;
+
+      this.app
+        .listen(port, () => {
+          log.green(`App listening on port ${port}`);
+        })
+        .on('error', (err: any) => {
+          log.red(`Failed to start server on port ${port}:`, err);
+          process.exit(1);
+        });
     }
 
     /**
@@ -39,7 +44,7 @@ class App {
     private initializeMiddlewares() {
         this.app.use(
             cors({
-               credential: true,
+               credentials: true,
                origin: process.env.ORIGIN?.split(','),
                methods:["GET","POST","PUT","DELETE", "OPTIONS", "HEAD"],
                preflightContinue: false,

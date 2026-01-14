@@ -3,11 +3,12 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { initiate } from '../config/index';
 import { AccessTokenPayload } from 'interfaces/user.helpers.interfaces';
+import { log } from './helper.utils';
 
 (async () => {
   const success = await initiate();
   if (!success) {
-    console.error('Failed to load environment config');
+    log.red('Failed to load environment config');
   }
 })();
 

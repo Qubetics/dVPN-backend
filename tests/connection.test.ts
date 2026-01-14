@@ -1,5 +1,3 @@
-import { Sequelize } from "sequelize";
-
 // Mock Sequelize BEFORE loading the connection file
 jest.mock("sequelize", () => {
     return {
