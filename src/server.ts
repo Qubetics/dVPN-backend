@@ -27,7 +27,7 @@ require('dotenv').config();
         const isRedisConnected = await redisHelper.connectRedis();
         if (!isRedisConnected) throw new Error(REDIS_ERR_MSG.CONN_ERR);
 
-        // bind the post and listen for requests
+        // bind the port and listen for requests
         app.listen();
     } catch (err: any) {
         if (err.message === ERR.POSTGRES_CONN) {

@@ -82,7 +82,7 @@ public updateRedisTime = async (
     const result = await this.client.expire(token, expiryTimeInSeconds);
     return result;
   } catch (error) {
-    console.log("error ", error);
+    log.red("error ", error);
 
     return null;
   }
