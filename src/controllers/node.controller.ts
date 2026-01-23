@@ -25,10 +25,8 @@ class NodeController implements Controller {
    * @returns
    */
   private getNodeList = async (req: any, res: Response) => {
-    const status = String(req.query.status);
     const limit = Number(req.query.limit);
     const page = Number(req.query.page);
-    const countTotal = Boolean(req.query.count_total);
     const order = String(req.query.order);
     const nodeAddress = String(req.query.address);
     const country = String(req.query.country);
@@ -37,10 +35,8 @@ class NodeController implements Controller {
     const walletAddress = String(req.user?.wallet_address)
     const protocolType = String(req.query?.protocol);
     const nodeListData = await nodeHelpers.nodeList(
-      status,
       limit,
       page,
-      countTotal,
       order,
       nodeAddress,
       country,

@@ -27,10 +27,8 @@ class NodeHelper {
  * @returns ApiResponse containing the relevant node(s) or metadata
  */
   public nodeList = async (
-    status?: string,
     limit?: number,
     page?: number,
-    countTotal?: boolean,
     order?: string,
     nodeAddress?: string,
     country?: string,

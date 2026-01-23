@@ -58,7 +58,7 @@ class App {
           // and optionally displayed to the user for support.
           res.statusCode = 500;
           res.end(res.sentry + "\n");
-          next();
+          return;
         });
     }
 
