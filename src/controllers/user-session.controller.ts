@@ -27,14 +27,12 @@ class UserSessionController implements Controller {
   private getSessionsList = async (req: any, res: Response) => {
     const limit = Number(req.query.limit);
     const page = Number(req.query.page);
-    const countTotal = Boolean(req.query.count_total);
     const order = String(req.query.order);
     const wallet_address = String(req.user.wallet_address);
     const sessions = await UserSessionHelper.UserSessionList(
       wallet_address,
       limit,
       page,
-      countTotal,
       order
     );
 

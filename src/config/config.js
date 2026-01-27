@@ -8,12 +8,9 @@ module.exports = {
         host: process.env.DB_WRITE_HOST,
         port: Number(process.env.DB_WRITE_PORT),
         dialect: 'postgres',
-        dialectOptions: {
-            ssl: process.env.DB_SSL === 'true' ? {
-                require: true,
-                rejectUnauthorized: false
-            } : false
-        },
+        dialectOptions: process.env.NODE_ENV === 'production' && process.env.DB_SSL === 'true'
+        ? { ssl: { require: true, rejectUnauthorized: false } }
+        : {},
         logging: false
     },
     testnet: {
@@ -23,12 +20,9 @@ module.exports = {
         host: process.env.DB_WRITE_HOST,
         port: Number(process.env.DB_WRITE_PORT),
         dialect: 'postgres',
-        dialectOptions: {
-            ssl: process.env.DB_SSL === 'true' ? {
-                require: true,
-                rejectUnauthorized: false
-            } : false
-        },
+        dialectOptions: process.env.NODE_ENV === 'production' && process.env.DB_SSL === 'true'
+        ? { ssl: { require: true, rejectUnauthorized: false } }
+        : {},
         logging: false
     },
     production: {
@@ -38,12 +32,9 @@ module.exports = {
         host: process.env.DB_WRITE_HOST,
         port: Number(process.env.DB_WRITE_PORT),
         dialect: 'postgres',
-        dialectOptions: {
-            ssl: process.env.DB_SSL === 'true' ? {
-                require: true,
-                rejectUnauthorized: false
-            } : false
-        },
+        dialectOptions: process.env.NODE_ENV === 'production' && process.env.DB_SSL === 'true'
+        ? { ssl: { require: true, rejectUnauthorized: false } }
+        : {},
         logging: false
     }
 };

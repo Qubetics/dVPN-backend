@@ -250,6 +250,9 @@ class UserHelper {
         ),
       ]);
 
+      // remove the please the previous token from the redis
+      await redisHelper.client.del(refresh_uuid);
+
       return successHandler({
         data: {
           accessToken: new_access_token,
