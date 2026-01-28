@@ -57,7 +57,7 @@ export const verifyKeplrSignature = (
   try {
     const decoded = bech32.decode(address);
     const addressPrefix = decoded.prefix;
-    const derivedAddress = pubKeyToCosmosAddress(pubKey, addressPrefix);
+    const derivedAddress = pubKeyToCosmosAddress(signature?.pub_key?.value, addressPrefix);
 
     if (derivedAddress !== address) {
       console.log("Address-public key binding verification failed: derived address does not match claimed address");
