@@ -1,6 +1,7 @@
 import DBConnectionHandler from "../connection";
 
 const sequelize = DBConnectionHandler.sequelize;
+const schema=process.env.DB_SCHEMA || 'public';
 
 async function up() {
   try {
@@ -12,7 +13,7 @@ async function up() {
       // ===============================
       await sequelize.query(
         `
-        INSERT INTO subscriptions (
+        INSERT INTO ${schema}.subscriptions (
           id,
           wallet_address,
           plan_id,
@@ -37,9 +38,9 @@ async function up() {
           sf.status_at,
           NOW(),
           NOW()
-        FROM subscriptionsfallbacks sf
+        FROM ${schema}.subscriptionsfallbacks sf
         WHERE NOT EXISTS (
-          SELECT 1 FROM subscriptions s WHERE s.id = sf.id
+          SELECT 1 FROM ${schema}.subscriptions s WHERE s.id = sf.id
         );
         `,
         { transaction }
@@ -51,7 +52,7 @@ async function up() {
       // ===============================
       await sequelize.query(
         `
-        INSERT INTO sessions (
+        INSERT INTO ${schema}.sessions (
           id,
           subscription_id,
           acc_address,
@@ -86,9 +87,9 @@ async function up() {
           sf.price,
           NOW(),
           NOW()
-        FROM sessionsfallbacks sf
+        FROM ${schema}.sessionsfallbacks sf
         WHERE NOT EXISTS (
-          SELECT 1 FROM sessions s WHERE s.id = sf.id
+          SELECT 1 FROM ${schema}.sessions s WHERE s.id = sf.id
         );
         `,
         { transaction }
