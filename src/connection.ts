@@ -42,14 +42,9 @@ class DBConnectionHandler {
 
         },
         dialect: "postgres",
-        dialectOptions: {
-            ssl: process.env.DB_SSL
-                ? null
-                : {
-                    require: true,
-                    rejectUnauthorized: false,
-                },
-        },
+        dialectOptions: process.env.NODE_ENV === 'production' && process.env.DB_SSL === 'true'
+        ? { ssl: { require: true, rejectUnauthorized: false } }
+        : {},
         logging: false,
         pool: {
             max: 100,

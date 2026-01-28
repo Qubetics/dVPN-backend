@@ -92,6 +92,17 @@ export const NODE_LIST_ATTRIBUTES = [
   'protocol'
 ];
 
+export const SUBSCRIPTION_LIST_ATTRIBUTE=[
+  "id",
+  "wallet_address",
+  "plan_id",
+  "price",
+  "renewal_price_policy",
+  "status",
+  "inactive_at",
+  "start_at"
+];
+
 export const UNDEFINED = "undefined";
 export const ACTIVE = "active";
 export const INACTIVE = "inactive";
