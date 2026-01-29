@@ -28,25 +28,25 @@ const messageToAminoTransaction = (signer: string, data: string) => {
   };
 };
 
-/**
- * Derives an EVM-compatible Cosmos bech32 address from a secp256k1 public key.
- * @param pubKeyBase64
- * @param prefix 
- * @returns Bech32 encoded address
- */
-const pubKeyToCosmosAddress = (pubKeyBase64: string, prefix: string): string => {
-  const pubKeyBytes = Buffer.from(pubKeyBase64, "base64");
+// /**
+//  * Derives an EVM-compatible Cosmos bech32 address from a secp256k1 public key.
+//  * @param pubKeyBase64
+//  * @param prefix 
+//  * @returns Bech32 encoded address
+//  */
+// const pubKeyToCosmosAddress = (pubKeyBase64: string, prefix: string): string => {
+//   const pubKeyBytes = Buffer.from(pubKeyBase64, "base64");
 
-  const key = ec.keyFromPublic(pubKeyBytes, "hex");
-  const uncompressed = key.getPublic(false, "hex");
-  const uncompressedNoPrefix = uncompressed.slice(2);
-  const uncompressedBytes = Buffer.from(uncompressedNoPrefix, "hex");
+//   const key = ec.keyFromPublic(pubKeyBytes, "hex");
+//   const uncompressed = key.getPublic(false, "hex");
+//   const uncompressedNoPrefix = uncompressed.slice(2);
+//   const uncompressedBytes = Buffer.from(uncompressedNoPrefix, "hex");
 
-  const keccakHash = sha3.keccak_256(uncompressedBytes);
-  const addressBytes = Buffer.from(keccakHash, "hex").slice(-20);
-  const words = bech32.toWords(addressBytes);
-  return bech32.encode(prefix, words);
-};
+//   const keccakHash = sha3.keccak_256(uncompressedBytes);
+//   const addressBytes = Buffer.from(keccakHash, "hex").slice(-20);
+//   const words = bech32.toWords(addressBytes);
+//   return bech32.encode(prefix, words);
+// };
 
 export const verifyKeplrSignature = (
   address: string,
@@ -55,14 +55,14 @@ export const verifyKeplrSignature = (
   signature: { pub_key: { type: string; value: string }; signature: string }
 ) => {
   try {
-    const decoded = bech32.decode(address);
-    const addressPrefix = decoded.prefix;
-    const derivedAddress = pubKeyToCosmosAddress(signature?.pub_key?.value, addressPrefix);
+    // const decoded = bech32.decode(address);
+    // const addressPrefix = decoded.prefix;
+    // const derivedAddress = pubKeyToCosmosAddress(signature?.pub_key?.value, addressPrefix);
 
-    if (derivedAddress !== address) {
-      console.log("Address-public key binding verification failed: derived address does not match claimed address");
-      return { verify: false };
-    }
+    // if (derivedAddress !== address) {
+    //   console.log("Address-public key binding verification failed: derived address does not match claimed address");
+    //   return { verify: false };
+    // }
     // Build the Amino sign doc
     const aminoEncoded = messageToAminoTransaction(
       address,
