@@ -17,6 +17,7 @@
     "@cosmjs/amino": "^0.33.1",
     "@cosmjs/crypto": "^0.33.1",
     "@cosmjs/encoding": "^0.33.1",
+    "@cosmjs/launchpad": "^0.27.1",
     "@ethersproject/bytes": "^5.8.0",
     "@hanchon/signature-to-pubkey": "^1.0.1",
     "@noble/hashes": "^1.8.0",
