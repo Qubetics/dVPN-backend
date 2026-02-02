@@ -1,12 +1,12 @@
 import sha3 from "js-sha3";
 const { bech32 } = require("bech32");
-import { arrayify } from "@ethersproject/bytes";
 import { serializeSignDoc } from "@cosmjs/amino";
-import { Secp256k1, ExtendedSecp256k1Signature } from "@cosmjs/crypto";
+import { Secp256k1, Secp256k1Signature } from "@cosmjs/crypto";
 const EC = require("elliptic").ec;
 const ec = new EC("secp256k1");
+import { fromBase64 } from "@cosmjs/encoding";
 
-const messageToAminoTransaction = (signer: string, data: string) => {
+export const createSignDoc = (address: string, message: string) => {
   return {
     chain_id: "",
     account_number: "0",
@@ -19,8 +19,8 @@ const messageToAminoTransaction = (signer: string, data: string) => {
       {
         type: "sign/MsgSignData",
         value: {
-          signer,
-          data,
+          signer: address,
+          data: Buffer.from(message).toString("base64"),
         },
       },
     ],
@@ -28,70 +28,48 @@ const messageToAminoTransaction = (signer: string, data: string) => {
   };
 };
 
-// /**
-//  * Derives an EVM-compatible Cosmos bech32 address from a secp256k1 public key.
-//  * @param pubKeyBase64
-//  * @param prefix 
-//  * @returns Bech32 encoded address
-//  */
-// const pubKeyToCosmosAddress = (pubKeyBase64: string, prefix: string): string => {
-//   const pubKeyBytes = Buffer.from(pubKeyBase64, "base64");
-
-//   const key = ec.keyFromPublic(pubKeyBytes, "hex");
-//   const uncompressed = key.getPublic(false, "hex");
-//   const uncompressedNoPrefix = uncompressed.slice(2);
-//   const uncompressedBytes = Buffer.from(uncompressedNoPrefix, "hex");
-
-//   const keccakHash = sha3.keccak_256(uncompressedBytes);
-//   const addressBytes = Buffer.from(keccakHash, "hex").slice(-20);
-//   const words = bech32.toWords(addressBytes);
-//   return bech32.encode(prefix, words);
-// };
-
-export const verifyKeplrSignature = (
+export const verifyKeplrSignature = async (
   address: string,
-  pubKey: string,
   message: string,
   signature: { pub_key: { type: string; value: string }; signature: string }
 ) => {
   try {
-    // const decoded = bech32.decode(address);
-    // const addressPrefix = decoded.prefix;
-    // const derivedAddress = pubKeyToCosmosAddress(signature?.pub_key?.value, addressPrefix);
+    const decoded = bech32.decode(address);
+    const bech32Prefix = decoded.prefix;
 
-    // if (derivedAddress !== address) {
-    //   console.log("Address-public key binding verification failed: derived address does not match claimed address");
-    //   return { verify: false };
-    // }
-    // Build the Amino sign doc
-    const aminoEncoded = messageToAminoTransaction(
-      address,
-      Buffer.from(message).toString("base64")
+    const pubKeyBytes = fromBase64(signature?.pub_key?.value);
+    const signatureBytes = fromBase64(signature?.signature);
+
+    const signDoc = createSignDoc(address, message);
+
+    const serialized = serializeSignDoc(signDoc);
+    const messageKeccakHash = sha3.keccak_256(serialized);
+    const messageHash = Buffer.from(messageKeccakHash, "hex");
+
+    const signatureObject = Secp256k1Signature.fromFixedLength(signatureBytes);
+    const isValidSignature = await Secp256k1.verifySignature(
+      signatureObject,
+      messageHash,
+      pubKeyBytes
     );
 
-    // Serialize the doc
-    const serialized = serializeSignDoc(aminoEncoded);
+    if (!isValidSignature) {
+      console.error("Signature verification failed");
+      return { verify: false };
+    }
 
-    // Hash with Keccak-256
-    const hashed = sha3.keccak_256(arrayify(serialized));
+    const key = ec.keyFromPublic(pubKeyBytes);
+    const uncompressed = key.getPublic(false, "hex");
+    const uncompressedNoPrefix = uncompressed.slice(2);
+    const uncompressedBytes = Buffer.from(uncompressedNoPrefix, "hex");
 
-    // Decode base64 signature to raw bytes
-    const signatureBytes = Buffer.from(signature.signature, "base64");
+    const keccakHash = sha3.keccak_256(uncompressedBytes);
+    const addressBytes = Buffer.from(keccakHash, "hex").slice(-20);
 
-    // Parse into ExtendedSecp256k1Signature
-    const extSig = ExtendedSecp256k1Signature.fromFixedLength(signatureBytes);
-
-    // Recover public key
-    const pubkeyRecovered = Secp256k1.recoverPubkey(
-      extSig,
-      Buffer.from(hashed, "hex")
-    );
-
-    // Convert recovered pubkey to base64
-    const pubkeyRecoveredBase64 = Buffer.from(pubkeyRecovered).toString("base64");
-
+    const words = bech32.toWords(addressBytes);
+    const derivedAddress = bech32.encode(bech32Prefix, words);
     return {
-      verify: pubkeyRecoveredBase64 === pubKey,
+      verify: derivedAddress === address,
     };
   } catch (e) {
     return {

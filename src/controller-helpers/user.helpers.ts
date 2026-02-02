@@ -32,11 +32,10 @@ class UserHelper {
    * @param {KeplrSignature} signature
    * @returns
    */
-  public connectWallet = async (wallet_address: string, pubKey: string, signature: KeplrSignature): Promise<ApiResponse> => {
+  public connectWallet = async (wallet_address: string, signature: KeplrSignature): Promise<ApiResponse> => {
     try {
-      const isSignatureValid = verifyKeplrSignature(
+      const isSignatureValid = await verifyKeplrSignature(
         wallet_address,
-        pubKey,
         wallet_address,
         signature
       );
@@ -156,7 +155,7 @@ class UserHelper {
         redisHelper.removeFromRedis(refresh_uuid),
         redisHelper.removeFromRedis(access_uuid),
       ]);
-    
+
       return successHandler({
         message: RESPONSE_MESSAGES.LOGOUT,
         status: Number(STATUS_CODES.SUCCESS),
