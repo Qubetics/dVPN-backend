@@ -11,6 +11,11 @@ const loginValidation = (req: Request, res: any, next: NextFunction) => {
       "any.required": "Wallet address is required",
     }),
 
+    pubKey: Joi.string().base64().required().messages({
+      "string.base64": "Public key must be base64 encoded",
+      "any.required": "Public key is required",
+    }),
+
     signature: Joi.object({
       pub_key: Joi.object({
         type: Joi.string().required(),
