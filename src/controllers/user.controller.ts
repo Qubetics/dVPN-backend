@@ -28,11 +28,9 @@ class UserController implements Controller {
    */
   private connectWallet = async (req: Request, res: Response) => {
     const wallet_address = String(req.body.wallet_address);
-    const pubKey = String(req.body.pubKey);
     const signature = req.body.signature;
     const result = await UserHelper.connectWallet(
       wallet_address,
-      pubKey,
       signature,
     );
     return sendResponse(res, result);

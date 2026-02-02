@@ -39,7 +39,7 @@ describe('NodeHelper', () => {
 
         it('should return error if walletAddress is provided but plan not purchased', async () => {
             (postgresDataHelper.findOneData as jest.Mock).mockResolvedValue(null);
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'plan1', undefined, 'wallet1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, 'plan1', undefined, 'wallet1');
             expect(result).toEqual({
                 status: STATUS_CODES.BADREQUEST,
                 message: "You need to buy this plan first",
@@ -50,7 +50,7 @@ describe('NodeHelper', () => {
         it('should return node if nodeAddress is provided', async () => {
             const mockNode = { address: 'node1' };
             (postgresDataHelper.findOneData as jest.Mock).mockResolvedValue(mockNode);
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1');
             expect(result).toEqual({
                 data: mockNode,
                 status: STATUS_CODES.SUCCESS,
@@ -62,7 +62,7 @@ describe('NodeHelper', () => {
         it('should return countries list if no country/city provided', async () => {
             const mockCountries = [{ country: 'US', node_count: 10 }];
             (postgresDataHelper.findGroupedData as jest.Mock).mockResolvedValue(mockCountries);
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'plan1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, 'plan1');
             expect(result).toEqual({
                 data: { countries: mockCountries },
                 status: STATUS_CODES.SUCCESS,
@@ -74,7 +74,7 @@ describe('NodeHelper', () => {
         it('should return cities list if country provided but no city', async () => {
             const mockCities = [{ city: 'NY', node_count: 5, flag_url: 'url' }];
             (postgresDataHelper.findGroupedData as jest.Mock).mockResolvedValue(mockCities);
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, 'US', undefined, 'plan1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, 'US', undefined, 'plan1');
             expect(result).toEqual({
                 data: {
                     country: 'US',
@@ -90,7 +90,7 @@ describe('NodeHelper', () => {
         it('should return nodes list if country and city provided', async () => {
             const mockNodes = [{ address: 'node1' }];
             (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockNodes);
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, 'US', 'NY', 'plan1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, 'US', 'NY', 'plan1');
             expect(result).toEqual({
                 data: { nodes: mockNodes },
                 status: STATUS_CODES.SUCCESS,
@@ -105,7 +105,7 @@ describe('NodeHelper', () => {
                 .mockResolvedValueOnce({ id: 1 }) // hasPlan
                 .mockResolvedValueOnce(mockNode); // node
 
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1', undefined, 'wallet1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1', undefined, 'wallet1');
 
             expect(result).toEqual({
                 data: mockNode,
@@ -117,7 +117,7 @@ describe('NodeHelper', () => {
 
         it('should return UNAUTHORIZED if nodeAddress provided but node not found', async () => {
             (postgresDataHelper.findOneData as jest.Mock).mockResolvedValue(null);
-            const result = await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1');
+            const result = await NodeHelper.nodeList(undefined, undefined, undefined, 'node1', undefined, undefined, 'plan1');
             expect(result).toEqual({
                 status: STATUS_CODES.BADREQUEST,
                 message: RESPONSE_MESSAGES.UNAUTHORIZED,
@@ -129,7 +129,7 @@ describe('NodeHelper', () => {
             const mockCountries = [{ country: 'US', node_count: 10 }];
             (postgresDataHelper.findGroupedData as jest.Mock).mockResolvedValue(mockCountries);
 
-            await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 'plan1', 'tcp');
+            await NodeHelper.nodeList(undefined, undefined, undefined, undefined, undefined, undefined, 'plan1', 'tcp');
 
             expect(postgresDataHelper.findGroupedData).toHaveBeenCalledWith(
                 expect.anything(),
