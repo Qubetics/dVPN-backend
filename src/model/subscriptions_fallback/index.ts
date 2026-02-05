@@ -23,7 +23,7 @@ interface ISubscriptionsFallback {
 interface SubscriptionsFallbackInstance extends Model<ISubscriptionsFallback>, ISubscriptionsFallback { }
 
 const SubscriptionsFallback = sequelize.define<SubscriptionsFallbackInstance>(
-    "subscriptionsfallback",
+    "subscriptionsfallbacks",
     {
         id: {
             type: DataTypes.STRING,

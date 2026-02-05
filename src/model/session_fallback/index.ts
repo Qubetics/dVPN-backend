@@ -27,7 +27,7 @@ interface ISessionsFallback {
 interface SessionsFallbackInstance extends Model<ISessionsFallback>, ISessionsFallback { }
 
 const SessionsFallback = sequelize.define<SessionsFallbackInstance>(
-    "sessionsfallback",
+    "sessionsfallbacks",
     {
         subscription_id: {
             type: DataTypes.STRING,
