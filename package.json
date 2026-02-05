@@ -7,7 +7,9 @@
     "test:watch": "jest --watchAll",
     "test:coverage": "jest --coverage --detectOpenHandles",
     "start": "ts-node ./src/server.ts",
-    "dev": "nodemon ./src/server.ts"
+    "dev": "nodemon ./src/server.ts",
+    "migrate:table": "ts-node ./src/custom-migrations/20260115-sync-sessions-subscriptions-from-fallback.ts",
+    "rollback:table": "ts-node ./src/custom-migrations/20260115-sync-sessions-subscriptions-from-fallback.ts down" 
   },
   "keywords": [],
   "author": "",
