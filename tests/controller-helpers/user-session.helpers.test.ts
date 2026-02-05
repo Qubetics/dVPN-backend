@@ -5,6 +5,7 @@ import { RESPONSE_MESSAGES, STATUS_CODES } from '../../src/constants/index';
 // Mock postgresDataHelper
 jest.mock('../../src/helpers/postgres.data.helper', () => ({
     findDataFromJoinModels: jest.fn(),
+    findAndCountFromJoinModels: jest.fn(),
 }));
 
 // Mock connection
@@ -38,7 +39,7 @@ describe('UserSessionHelper', () => {
 
         it('should return session list', async () => {
             const mockSessions = [{ id: 1, acc_address: 'wallet1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockSessions);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockSessions, total: 1 });
 
             const result = await UserSessionHelper.UserSessionList('wallet1');
             expect(result).toEqual({
@@ -53,7 +54,7 @@ describe('UserSessionHelper', () => {
         });
 
         it('should return empty list if no sessions found', async () => {
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue([]);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: [], total: 0 });
 
             const result = await UserSessionHelper.UserSessionList('wallet1');
             expect(result).toEqual({
@@ -67,7 +68,7 @@ describe('UserSessionHelper', () => {
             });
         });
         it('should return error if exception occurs', async () => {
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
             const result = await UserSessionHelper.UserSessionList('wallet1');
 
@@ -82,7 +83,7 @@ describe('UserSessionHelper', () => {
     describe('UserServerList', () => {
         it('should return server list', async () => {
             const mockServers = [{ address: 'node1', city: 'City1', country: 'Country1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockServers);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockServers, total: 1 });
 
             const result = await UserSessionHelper.UserServerList('wallet1', 10, 1, true);
             expect(result).toEqual({
@@ -98,7 +99,7 @@ describe('UserSessionHelper', () => {
 
         it('should return server list without total if countTotal is false', async () => {
             const mockServers = [{ address: 'node1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockServers);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockServers, total: 1 });
 
             const result = await UserSessionHelper.UserServerList('wallet1', 10, 1, false);
             expect(result).toEqual({
@@ -112,7 +113,7 @@ describe('UserSessionHelper', () => {
         });
 
         it('should return error if exception occurs', async () => {
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
             const result = await UserSessionHelper.UserServerList('wallet1');
 
