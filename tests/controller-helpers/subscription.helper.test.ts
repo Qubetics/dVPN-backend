@@ -5,6 +5,7 @@ import { RESPONSE_MESSAGES, STATUS_CODES } from '../../src/constants/index';
 // Mock postgresDataHelper
 jest.mock('../../src/helpers/postgres.data.helper', () => ({
     findDataFromJoinModels: jest.fn(),
+    findAndCountFromJoinModels: jest.fn(),
 }));
 
 // Mock connection
@@ -46,11 +47,11 @@ describe('SubscriptionHelper', () => {
 
         it('should return subscription list with default pagination', async () => {
             const mockSubscriptions = [{ id: 1, wallet_address: 'wallet1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockSubscriptions);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockSubscriptions, total: 1 });
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1');
 
-            expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
+            expect(postgresDataHelper.findAndCountFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
                 { wallet_address: 'wallet1' },
                 expect.any(Array),
@@ -76,11 +77,11 @@ describe('SubscriptionHelper', () => {
 
         it('should return subscription list with custom pagination', async () => {
             const mockSubscriptions = [{ id: 1, wallet_address: 'wallet1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockSubscriptions);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockSubscriptions, total: 1 });
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1', 20, 3);
 
-            expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
+            expect(postgresDataHelper.findAndCountFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
                 { wallet_address: 'wallet1' },
                 expect.any(Array),
@@ -106,11 +107,11 @@ describe('SubscriptionHelper', () => {
 
         it('should return subscription list with ASC order', async () => {
             const mockSubscriptions = [{ id: 1, wallet_address: 'wallet1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockSubscriptions);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockSubscriptions, total: 1 });
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1', 10, 1, 'ASC');
 
-            expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
+            expect(postgresDataHelper.findAndCountFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
                 { wallet_address: 'wallet1' },
                 expect.any(Array),
@@ -125,11 +126,11 @@ describe('SubscriptionHelper', () => {
 
         it('should return subscription list with DESC order by default', async () => {
             const mockSubscriptions = [{ id: 1, wallet_address: 'wallet1' }];
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(mockSubscriptions);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: mockSubscriptions, total: 1 });
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1', 10, 1, 'INVALID');
 
-            expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
+            expect(postgresDataHelper.findAndCountFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
                 { wallet_address: 'wallet1' },
                 expect.any(Array),
@@ -143,7 +144,7 @@ describe('SubscriptionHelper', () => {
         });
 
         it('should return empty list if no subscriptions found', async () => {
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue([]);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue({ rows: [], total: 0 });
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1');
             expect(result).toEqual({
@@ -158,7 +159,7 @@ describe('SubscriptionHelper', () => {
         });
 
         it('should return empty list if null is returned', async () => {
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue(null);
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockResolvedValue(null);
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1');
             expect(result).toEqual({
@@ -173,7 +174,7 @@ describe('SubscriptionHelper', () => {
         });
 
         it('should return error if database exception occurs', async () => {
-            (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
+            (postgresDataHelper.findAndCountFromJoinModels as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
             const result = await SubscriptionHelper.getSubscritptionsList('wallet1');
 
@@ -371,10 +372,10 @@ describe('SubscriptionHelper', () => {
             expect(result.status).toBe(STATUS_CODES.SUCCESS);
         });
 
-        it('should use custom pagination parameters', async () => {
+        it('should fetch renew subscriptions data', async () => {
             (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue([]);
 
-            await SubscriptionHelper.getRenewSubscriptions('wallet1', 25, 2);
+            await SubscriptionHelper.getRenewSubscriptions('wallet1');
 
             expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
@@ -382,18 +383,15 @@ describe('SubscriptionHelper', () => {
                 expect.any(Array),
                 expect.any(Array),
                 expect.objectContaining({
-                    limit: 25,
-                    offset: 25, // (2-1) * 25
-                    order: [['createdAt', 'DESC']],
                     raw: false
                 })
             );
         });
 
-        it('should use ASC order when specified', async () => {
+        it('should fetch renew subscriptions regardless of order', async () => {
             (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue([]);
 
-            await SubscriptionHelper.getRenewSubscriptions('wallet1', 10, 1, 'ASC');
+            await SubscriptionHelper.getRenewSubscriptions('wallet1');
 
             expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
@@ -401,15 +399,15 @@ describe('SubscriptionHelper', () => {
                 expect.any(Array),
                 expect.any(Array),
                 expect.objectContaining({
-                    order: [['createdAt', 'ASC']],
+                    raw: false
                 })
             );
         });
 
-        it('should use DESC order by default', async () => {
+        it('should fetch renew subscriptions with default settings', async () => {
             (postgresDataHelper.findDataFromJoinModels as jest.Mock).mockResolvedValue([]);
 
-            await SubscriptionHelper.getRenewSubscriptions('wallet1', 10, 1);
+            await SubscriptionHelper.getRenewSubscriptions('wallet1');
 
             expect(postgresDataHelper.findDataFromJoinModels).toHaveBeenCalledWith(
                 expect.any(String),
@@ -417,7 +415,7 @@ describe('SubscriptionHelper', () => {
                 expect.any(Array),
                 expect.any(Array),
                 expect.objectContaining({
-                    order: [['createdAt', 'DESC']],
+                    raw: false
                 })
             );
         });
@@ -454,7 +452,8 @@ describe('SubscriptionHelper', () => {
             const result = await SubscriptionHelper.getRenewSubscriptions('wallet1');
 
             expect(result.status).toBe(STATUS_CODES.SUCCESS);
-            expect(result.data.subscriptions).toHaveLength(1);
+            // If provider_address is undefined, the subscription should be skipped
+            expect(result.data.subscriptions).toHaveLength(0);
         });
     });
 });

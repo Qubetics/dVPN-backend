@@ -241,7 +241,51 @@ class PostgresDataHelper {
     }
   };
 
-  // get the selected moongose model
+  public findAndCountFromJoinModels = async (
+    modelName: string,
+    whereClause: any,
+    attributes: any[],
+    include: any[],
+    options: {
+      limit?: number;
+      offset?: number;
+      order?: any;
+      group?: string[] | string;
+      raw?: boolean;
+    }
+  ) => {
+    try {
+      this._checkModel(modelName);
+  
+      const result = await this._getModel(modelName).findAndCountAll({
+        where: whereClause,
+        attributes,
+        include: include.map((inc) => ({
+          ...inc,
+          required: true, // INNER JOIN (mandatory relationship)
+        })),
+        limit: options.limit,
+        offset: options.offset,
+        order: options.order,
+        distinct: true,  
+        subQuery: false,  
+        raw: options.raw ?? false,
+      });
+  
+      return {
+        rows: result.rows,
+        total: result.count,
+      };
+    } catch (error) {
+      log.red(
+        "Error while finding joined models with count:\n",
+        error
+      );
+      return null;
+    }
+  };
+
+// get the selected moongose model
   _getModel = (model: string): any => {
     switch (model) {
       case DATA_MODELS.User:
