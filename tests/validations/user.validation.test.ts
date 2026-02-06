@@ -18,7 +18,6 @@ describe('User Validation', () => {
         it('should pass validation with valid data', () => {
             req.body = {
                 wallet_address: 'sent1abc123',
-                pubKey: Buffer.from('test-pubkey').toString('base64'),
                 signature: {
                     pub_key: {
                         type: 'tendermint/PubKeySecp256k1',
@@ -35,7 +34,6 @@ describe('User Validation', () => {
 
         it('should fail validation when wallet_address is missing', () => {
             req.body = {
-                pubKey: Buffer.from('test-pubkey').toString('base64'),
                 signature: {
                     pub_key: {
                         type: 'tendermint/PubKeySecp256k1',
@@ -53,14 +51,10 @@ describe('User Validation', () => {
             expect(next).not.toHaveBeenCalled();
         });
 
-        it('should fail validation when pubKey is missing', () => {
+        it('should fail validation when pub_key is missing from signature', () => {
             req.body = {
                 wallet_address: 'sent1abc123',
                 signature: {
-                    pub_key: {
-                        type: 'tendermint/PubKeySecp256k1',
-                        value: Buffer.from('test-value').toString('base64')
-                    },
                     signature: Buffer.from('test-signature').toString('base64')
                 }
             };
@@ -72,8 +66,7 @@ describe('User Validation', () => {
 
         it('should fail validation when signature is missing', () => {
             req.body = {
-                wallet_address: 'sent1abc123',
-                pubKey: Buffer.from('test-pubkey').toString('base64')
+                wallet_address: 'sent1abc123'
             };
 
             loginValidation(req, res, next);
@@ -81,14 +74,13 @@ describe('User Validation', () => {
             expect(next).not.toHaveBeenCalled();
         });
 
-        it('should fail validation when pubKey is not base64', () => {
+        it('should fail validation when pub_key value is not base64', () => {
             req.body = {
                 wallet_address: 'sent1abc123',
-                pubKey: 'not-base64!@#$',
                 signature: {
                     pub_key: {
                         type: 'tendermint/PubKeySecp256k1',
-                        value: Buffer.from('test-value').toString('base64')
+                        value: 'not-base64!@#$'
                     },
                     signature: Buffer.from('test-signature').toString('base64')
                 }
