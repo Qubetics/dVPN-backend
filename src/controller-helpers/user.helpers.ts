@@ -32,11 +32,10 @@ class UserHelper {
    * @param {KeplrSignature} signature
    * @returns
    */
-  public connectWallet = async (wallet_address: string, pubKey: string, signature: KeplrSignature): Promise<ApiResponse> => {
+  public connectWallet = async (wallet_address: string, signature: KeplrSignature): Promise<ApiResponse> => {
     try {
-      const isSignatureValid = verifyKeplrSignature(
+      const isSignatureValid = await verifyKeplrSignature(
         wallet_address,
-        pubKey,
         wallet_address,
         signature
       );
@@ -93,17 +92,18 @@ class UserHelper {
         access_token_uuid: access_uuid,
       };
       // set in the redis both the token
-      await redisHelper.client.set(access_uuid, JSON.stringify(setDataAccess), {
-        EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
-      });
-
-      await redisHelper.client.set(
-        refresh_uuid,
-        JSON.stringify(setDataRefresh),
-        {
-          EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
-        }
-      );
+      await Promise.all([
+        redisHelper.client.set(access_uuid, JSON.stringify(setDataAccess), {
+          EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
+        }),
+        redisHelper.client.set(
+          refresh_uuid,
+          JSON.stringify(setDataRefresh),
+          {
+            EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
+          }
+        ),
+      ]);
 
       return successHandler({
         data: {
@@ -151,8 +151,10 @@ class UserHelper {
       const parsedValues = JSON.parse(String(values));
       const access_uuid = parsedValues.access_token_uuid;
 
-      await redisHelper.removeFromRedis(refresh_uuid);
-      await redisHelper.removeFromRedis(access_uuid);
+      await Promise.all([
+        redisHelper.removeFromRedis(refresh_uuid),
+        redisHelper.removeFromRedis(access_uuid),
+      ]);
 
       return successHandler({
         message: RESPONSE_MESSAGES.LOGOUT,
@@ -234,17 +236,21 @@ class UserHelper {
 
       // set in the redis both the token
 
-      await redisHelper.client.set(access_uuid, JSON.stringify(setDataAccess), {
-        EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
-      });
+      await Promise.all([
+        redisHelper.client.set(access_uuid, JSON.stringify(setDataAccess), {
+          EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
+        }),
+        redisHelper.client.set(
+          refresh_uuidd,
+          JSON.stringify(setDataRefresh),
+          {
+            EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
+          }
+        ),
+      ]);
 
-      await redisHelper.client.set(
-        refresh_uuidd,
-        JSON.stringify(setDataRefresh),
-        {
-          EX: REDIS_REFRESH_TOKEN_EXP_TIME.EXPIRE,
-        }
-      );
+      // remove the please the previous token from the redis
+      await redisHelper.client.del(refresh_uuid);
 
       return successHandler({
         data: {

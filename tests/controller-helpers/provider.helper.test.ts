@@ -135,6 +135,9 @@ describe('ProviderHelper', () => {
                 .mockResolvedValueOnce([]) // No recent session
                 .mockResolvedValueOnce([{
                     name: 'p1',
+                    address: undefined,
+                    identity: undefined,
+                    website: undefined,
                     plans: []
                 }]);
 
@@ -144,6 +147,10 @@ describe('ProviderHelper', () => {
                 message: RESPONSE_MESSAGES.PROVIDER_LIST_FETCH_SUCESSFULLY,
                 data: [{
                     name: 'p1',
+                    address: undefined,
+                    identity: undefined,
+                    website: undefined,
+                    countryCount: 0,
                     isUserSubscribed: false
                 }],
                 error: false
@@ -185,7 +192,8 @@ describe('ProviderHelper', () => {
                     website: 'web1',
                     plans: [{
                         plan_id: 'plan1',
-                        subscriptions: [{ wallet_address: 'wallet1' }]
+                        subscriptions: [{ wallet_address: 'wallet1' }],
+                        nodes: []
                     }]
                 }]);
 
@@ -198,6 +206,7 @@ describe('ProviderHelper', () => {
                     address: 'addr1',
                     identity: 'id1',
                     website: 'web1',
+                    countryCount: 0,
                     isUserSubscribed: true,
                     subscribedPlanIds: ['plan1']
                 }],

@@ -113,7 +113,7 @@ describe('JWT Utils', () => {
     });
     describe('Initialization', () => {
         it('should log error if initialization fails', async () => {
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
 
             jest.isolateModules(() => {
                 // Mock initiate to return false
@@ -128,8 +128,9 @@ describe('JWT Utils', () => {
             // Wait for async IIFE to complete
             await new Promise(resolve => setTimeout(resolve, 100));
 
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load environment config');
-            consoleErrorSpy.mockRestore();
+            // log.red uses ANSI color codes: console.log('\x1b[31m', 'message', '\x1b[39m')
+            expect(consoleLogSpy).toHaveBeenCalledWith('\x1b[31m', 'Failed to load environment config', '\x1b[39m');
+            consoleLogSpy.mockRestore();
         });
     });
 });

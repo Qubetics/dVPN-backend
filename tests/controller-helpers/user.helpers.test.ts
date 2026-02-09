@@ -16,6 +16,7 @@ jest.mock('../../src/helpers/redis.helper', () => ({
     client: {
         set: jest.fn(),
         get: jest.fn(),
+        del: jest.fn(),
     },
     removeFromRedis: jest.fn(),
 }));
@@ -50,12 +51,16 @@ jest.mock('../../src/connection', () => ({
 describe('UserHelper', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        // Set up environment variables used by userRefresh
+        process.env.ACCESS_TOKEN_EXPIRY = '15m';
+        process.env.REFRESH_TOKEN_EXPIRY = '7d';
     });
 
     describe('connectWallet', () => {
         it('should return error if signature is invalid', async () => {
             (verifyKeplrSignature as jest.Mock).mockReturnValue({ verify: false });
-            const result = await UserHelper.connectWallet('wallet1', 'pubkey', { signature: 'sig', pub_key: { type: 't', value: 'v' } });
+            const signature = { signature: 'sig', pub_key: { type: 't', value: 'v' } };
+            const result = await UserHelper.connectWallet('wallet1', signature);
             expect(result).toEqual({
                 status: STATUS_CODES.BADREQUEST,
                 message: RESPONSE_MESSAGES.INVALID_CREDENTIALS,
@@ -70,7 +75,8 @@ describe('UserHelper', () => {
             (generateAccessToken as unknown as jest.Mock).mockReturnValue('access_token');
             (generateRefreshToken as unknown as jest.Mock).mockReturnValue('refresh_token');
 
-            const result = await UserHelper.connectWallet('wallet1', 'pubkey', { signature: 'sig', pub_key: { type: 't', value: 'v' } });
+            const signature = { signature: 'sig', pub_key: { type: 't', value: 'v' } };
+            const result = await UserHelper.connectWallet('wallet1', signature);
 
             expect(postgresDataHelper.saveData).toHaveBeenCalled();
             expect(result).toEqual({
@@ -90,7 +96,8 @@ describe('UserHelper', () => {
             (generateAccessToken as unknown as jest.Mock).mockReturnValue('access_token');
             (generateRefreshToken as unknown as jest.Mock).mockReturnValue('refresh_token');
 
-            const result = await UserHelper.connectWallet('wallet1', 'pubkey', { signature: 'sig', pub_key: { type: 't', value: 'v' } });
+            const signature = { signature: 'sig', pub_key: { type: 't', value: 'v' } };
+            const result = await UserHelper.connectWallet('wallet1', signature);
 
             expect(postgresDataHelper.saveData).not.toHaveBeenCalled();
             expect(result).toEqual({
@@ -177,6 +184,7 @@ describe('UserHelper', () => {
         it('should refresh tokens', async () => {
             (verifyRefreshToken as jest.Mock).mockReturnValue({ refresh_uuid: 'uuid', wallet_address: 'wallet1' });
             (redisHelper.client.get as jest.Mock).mockResolvedValue('some value');
+            (redisHelper.client.set as jest.Mock).mockResolvedValue('OK');
             (generateAccessToken as unknown as jest.Mock).mockReturnValue('new_access');
             (generateRefreshToken as unknown as jest.Mock).mockReturnValue('new_refresh');
 

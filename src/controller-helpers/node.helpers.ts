@@ -1,13 +1,12 @@
 import postgresDataHelper from "../helpers/postgres.data.helper";
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, INACTIVE, ACTIVE, NODE_LIST_ATTRIBUTES } from "../constants/index";
+import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, ACTIVE, NODE_LIST_ATTRIBUTES } from "../constants/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
-import { fn, col, Sequelize } from "sequelize";
+import { fn, col } from "sequelize";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import Plans from "../model/plans/index";
-import dbConnectionHandler from "../connection";
 import Subscriptions from "../model/subscriptions";
-const sequelize = dbConnectionHandler.sequelize;
+import { log } from "../utils/helper.utils";
 
 class NodeHelper {
 
@@ -28,10 +27,8 @@ class NodeHelper {
  * @returns ApiResponse containing the relevant node(s) or metadata
  */
   public nodeList = async (
-    status?: string,
     limit?: number,
     page?: number,
-    countTotal?: boolean,
     order?: string,
     nodeAddress?: string,
     country?: string,
@@ -189,8 +186,8 @@ class NodeHelper {
       // Fetch directly from Node table
       const nodes = await postgresDataHelper.findDataFromJoinModels(
         DATA_MODELS.Node,
-        whereClause, 
-        NODE_LIST_ATTRIBUTES, 
+        whereClause,
+        NODE_LIST_ATTRIBUTES,
         [
           {
             model: Plans,
@@ -205,7 +202,7 @@ class NodeHelper {
                   "wallet_address",
                   "status",
                 ],
-                required: false,                      
+                required: false,
                 where: {
                   ...(walletAddress ? { wallet_address: walletAddress } : {}),
                   ...(planId ? { plan_id: String(planId) } : {})
@@ -218,7 +215,7 @@ class NodeHelper {
           limit,
           offset,
           order: [["address", sortOrder]],
-          raw: false,                                 
+          raw: false,
         }
       );
 
@@ -230,7 +227,7 @@ class NodeHelper {
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
       });
     } catch (error) {
-      console.error(error);
+      log.red(error);
       return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         status: STATUS_CODES.INTERNALSERVER,
@@ -275,7 +272,7 @@ class NodeHelper {
           {
             model: Subscriptions,
             as: "subscriptions",
-            attributes: ["id","wallet_address", "plan_id", "status", "start_at", "inactive_at"],
+            attributes: ["id", "wallet_address", "plan_id", "status", "start_at", "inactive_at"],
             where: {
               wallet_address: walletAddress,
               status: ACTIVE, // only active subscriptions
@@ -305,7 +302,7 @@ class NodeHelper {
       });
 
     } catch (error: any) {
-      console.error(error);
+      log.red(error);
       return errorHandler({
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         status: STATUS_CODES.INTERNALSERVER,

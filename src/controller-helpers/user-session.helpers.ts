@@ -31,7 +31,6 @@ class UserSessionHelper {
     wallet_address: string,
     limit?: number,
     page?: number,
-    countTotal?: boolean,
     order?: string
   ): Promise<ApiResponse> => {
     try {
@@ -48,7 +47,7 @@ class UserSessionHelper {
       const offset = (offsetPage - 1) * limit;
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
-      const results = await postgresDataHelper.findDataFromJoinModels(
+      const results = await postgresDataHelper.findAndCountFromJoinModels(
         DATA_MODELS.Sessions,
         {
           acc_address: wallet_address,
@@ -71,8 +70,8 @@ class UserSessionHelper {
 
       return successHandler({
         data: {
-          sessions: results ?? [],
-          total: results?.length ?? 0,
+          sessions: results?.rows ?? [],
+          total: results?.total ?? 0,
         },
         status: STATUS_CODES.SUCCESS,
         message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS,
@@ -107,7 +106,7 @@ class UserSessionHelper {
       const offset = (page - 1) * limit;
       const sortOrder = order === "ASC" ? "ASC" : "DESC";
 
-      const results = await PostgresDataHelper.findDataFromJoinModels(
+      const results = await PostgresDataHelper.findAndCountFromJoinModels(
         DATA_MODELS.Sessions,
         {
           acc_address: wallet_address,
@@ -136,11 +135,11 @@ class UserSessionHelper {
       );
 
       const responseData: any = {
-        nodes: results,
+        nodes: results?.rows,
       };
 
       if (countTotal) {
-        responseData.total = results.length;
+        responseData.total = results?.total ?? 0;
       }
 
       return successHandler({ data: responseData, status: STATUS_CODES.SUCCESS, message: RESPONSE_MESSAGES.FETCH_DATA_SUCCESS });

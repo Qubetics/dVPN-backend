@@ -176,7 +176,6 @@ describe('SubscriptionController', () => {
 
     describe('getRenewSubscriptions', () => {
         it('should call subscriptionHelper.getRenewSubscriptions with correct parameters', async () => {
-            req.query = { limit: '10', page: '1', order: 'ASC' };
             const mockResponse = {
                 status: STATUS_CODES.SUCCESS,
                 data: { subscriptions: [], total: 0 },
@@ -187,11 +186,11 @@ describe('SubscriptionController', () => {
 
             await (subscriptionController as any).getRenewSubscriptions(req, res);
 
-            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('wallet1', 10, 1, 'ASC');
+            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('wallet1');
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
 
-        it('should handle missing query parameters with defaults', async () => {
+        it('should handle missing query parameters', async () => {
             req.query = {};
             const mockResponse = {
                 status: STATUS_CODES.SUCCESS,
@@ -203,12 +202,7 @@ describe('SubscriptionController', () => {
 
             await (subscriptionController as any).getRenewSubscriptions(req, res);
 
-            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith(
-                'wallet1',
-                NaN,
-                NaN,
-                'undefined'
-            );
+            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('wallet1');
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
 
@@ -224,17 +218,11 @@ describe('SubscriptionController', () => {
 
             await (subscriptionController as any).getRenewSubscriptions(req, res);
 
-            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith(
-                'wallet1',
-                NaN,
-                NaN,
-                'DESC'
-            );
+            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('wallet1');
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
 
-        it('should handle DESC order parameter', async () => {
-            req.query = { limit: '20', page: '2', order: 'DESC' };
+        it('should call getRenewSubscriptions with wallet from user', async () => {
             const mockResponse = {
                 status: STATUS_CODES.SUCCESS,
                 data: { subscriptions: [], total: 0 },
@@ -245,7 +233,7 @@ describe('SubscriptionController', () => {
 
             await (subscriptionController as any).getRenewSubscriptions(req, res);
 
-            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('wallet1', 20, 2, 'DESC');
+            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('wallet1');
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
 
@@ -264,7 +252,6 @@ describe('SubscriptionController', () => {
         });
 
         it('should extract wallet_address from req.user', async () => {
-            req.query = { limit: '15', page: '3', order: 'ASC' };
             req.user = { wallet_address: 'another_wallet' };
             const mockResponse = {
                 status: STATUS_CODES.SUCCESS,
@@ -276,7 +263,7 @@ describe('SubscriptionController', () => {
 
             await (subscriptionController as any).getRenewSubscriptions(req, res);
 
-            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('another_wallet', 15, 3, 'ASC');
+            expect(subscriptionHelper.getRenewSubscriptions).toHaveBeenCalledWith('another_wallet');
         });
 
         it('should handle successful response with renew subscriptions data', async () => {

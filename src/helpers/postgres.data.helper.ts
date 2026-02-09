@@ -4,7 +4,8 @@ import Node from "../model/nodes/index"
 import Plans from "../model/plans/index";
 import Subscriptions from "../model/subscriptions/index";
 import Sessions from "../model/session/index";
-import Providers  from "../model/provider/index";
+import Providers from "../model/provider/index";
+import { log } from "../utils/helper.utils";
 
 class PostgresDataHelper {
   static instance: PostgresDataHelper = null;
@@ -37,7 +38,7 @@ class PostgresDataHelper {
         return result;
       }
     } catch (error) {
-      console.log("Error while to getCount: \n", error);
+      log.red("Error while to getCount: \n", error);
       return null;
     }
   };
@@ -55,7 +56,7 @@ class PostgresDataHelper {
       const result = await Model.create(data);
       return result;
     } catch (error) {
-      console.log(error.toString());
+      log.red(error.toString());
       return null;
     }
   };
@@ -72,7 +73,7 @@ class PostgresDataHelper {
       const result = await this._getModel(name).findAll(query);
       return result;
     } catch (error) {
-      console.log("Error while to findAndQueryData : \n", error);
+      log.red("Error while to findAndQueryData : \n", error);
       return null;
     }
   };
@@ -88,7 +89,7 @@ class PostgresDataHelper {
       const result = await this._getModel(name).findAndCountAll(query);
       return result;
     } catch (error) {
-      console.log("Error while to findAndCountAll : \n", error);
+      log.red("Error while to findAndCountAll : \n", error);
       return null;
     }
   };
@@ -99,7 +100,7 @@ class PostgresDataHelper {
       const result = await this._getModel(name).findOne(query);
       return result;
     } catch (error) {
-      console.log("Error while to findOneData: \n", error);
+      log.red("Error while to findOneData: \n", error);
       return null;
     }
   };
@@ -117,7 +118,7 @@ class PostgresDataHelper {
       });
       return result;
     } catch (error) {
-      console.log("Error while to findDataOfSelectedColumns: \n", error);
+      log.red("Error while to findDataOfSelectedColumns: \n", error);
       return null;
     }
   };
@@ -135,7 +136,7 @@ class PostgresDataHelper {
       const result = await this._getModel(name).update(update, query);
       return result;
     } catch (error) {
-      console.log("Error while to updateData: \n", error);
+      log.red("Error while to updateData: \n", error);
       return null;
     }
   };
@@ -148,29 +149,29 @@ class PostgresDataHelper {
  * @param groupFields (string or array)
  * @returns
  */
-public findGroupedData = async (
-  modelName: string,
-  whereClause: any,
-  attributes: any[],
-  groupFields: string | string[]
-) => {
-  try {
-    this._checkModel(modelName);
+  public findGroupedData = async (
+    modelName: string,
+    whereClause: any,
+    attributes: any[],
+    groupFields: string | string[]
+  ) => {
+    try {
+      this._checkModel(modelName);
 
-    const result = await this._getModel(modelName).findAll({
-      where: whereClause,
-      attributes: attributes,
-      group: groupFields,
-      raw: true,
-      subQuery: false
-    });
+      const result = await this._getModel(modelName).findAll({
+        where: whereClause,
+        attributes: attributes,
+        group: groupFields,
+        raw: true,
+        subQuery: false
+      });
 
-    return result;
-  } catch (error) {
-    console.log("Error while findGroupedData: \n", error);
-    return null;
-  }
-};
+      return result;
+    } catch (error) {
+      log.red("Error while findGroupedData: \n", error);
+      return null;
+    }
+  };
 
 
   /**
@@ -185,7 +186,7 @@ public findGroupedData = async (
       const result = await this._getModel(name).destroy({ where: query });
       return result;
     } catch (error) {
-      console.log("Error while to deleteData: \n", error);
+      log.red("Error while to deleteData: \n", error);
       return null;
     }
   };
@@ -232,7 +233,7 @@ public findGroupedData = async (
       });
       return result;
     } catch (error) {
-      console.log(
+      log.red(
         "Error while to findDataOfSelectedColumnsofDiffModels: \n",
         error
       );
@@ -240,7 +241,51 @@ public findGroupedData = async (
     }
   };
 
-  // get the selected moongose model
+  public findAndCountFromJoinModels = async (
+    modelName: string,
+    whereClause: any,
+    attributes: any[],
+    include: any[],
+    options: {
+      limit?: number;
+      offset?: number;
+      order?: any;
+      group?: string[] | string;
+      raw?: boolean;
+    }
+  ) => {
+    try {
+      this._checkModel(modelName);
+  
+      const result = await this._getModel(modelName).findAndCountAll({
+        where: whereClause,
+        attributes,
+        include: include.map((inc) => ({
+          ...inc,
+          required: true, // INNER JOIN (mandatory relationship)
+        })),
+        limit: options.limit,
+        offset: options.offset,
+        order: options.order,
+        distinct: true,  
+        subQuery: false,  
+        raw: options.raw ?? false,
+      });
+  
+      return {
+        rows: result.rows,
+        total: result.count,
+      };
+    } catch (error) {
+      log.red(
+        "Error while finding joined models with count:\n",
+        error
+      );
+      return null;
+    }
+  };
+
+// get the selected moongose model
   _getModel = (model: string): any => {
     switch (model) {
       case DATA_MODELS.User:
@@ -255,7 +300,7 @@ public findGroupedData = async (
         return Sessions;
       case DATA_MODELS.Providers:
         return Providers
-      default: 
+      default:
         return null;
     }
   };

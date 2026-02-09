@@ -36,10 +36,8 @@ describe('NodeController', () => {
     describe('getNodeList', () => {
         it('should call nodeHelpers.nodeList with correct parameters', async () => {
             req.query = {
-                status: 'active',
                 limit: '10',
                 page: '1',
-                count_total: 'true',
                 order: 'ASC',
                 address: 'addr1',
                 country: 'US',
@@ -54,7 +52,7 @@ describe('NodeController', () => {
             await (nodeController as any).getNodeList(req, res);
 
             expect(nodeHelpers.nodeList).toHaveBeenCalledWith(
-                'active', 10, 1, true, 'ASC', 'addr1', 'US', 'NY', 'p1', 'tcp', 'wallet1'
+                10, 1, 'ASC', 'addr1', 'US', 'NY', 'p1', 'tcp', 'wallet1'
             );
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
@@ -95,7 +93,7 @@ describe('NodeController', () => {
             await (nodeController as any).getNodeList(req, res);
 
             expect(nodeHelpers.nodeList).toHaveBeenCalledWith(
-                'undefined', NaN, NaN, false, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined', 'undefined', 'wallet1'
+                NaN, NaN, 'undefined', 'undefined', 'undefined', 'undefined', 'undefined', 'undefined', 'wallet1'
             );
         });
 

@@ -9,8 +9,6 @@ jest.mock('../../src/model/nodes/index');
 jest.mock('../../src/model/plans/index');
 jest.mock('../../src/model/subscriptions/index');
 jest.mock('../../src/model/session/index');
-jest.mock('../../src/model/user-session/index');
-jest.mock('../../src/model/plan-purchase');
 jest.mock('../../src/model/provider/index');
 
 describe('PostgresDataHelper', () => {
@@ -354,18 +352,6 @@ describe('PostgresDataHelper', () => {
             const Sessions = require('../../src/model/session/index').default;
             const result = (postgresDataHelper as any)._getModel(DATA_MODELS.Sessions);
             expect(result).toBe(Sessions);
-        });
-
-        it('should return UserSessions model for DATA_MODELS.UserSession', () => {
-            const UserSessions = require('../../src/model/user-session/index').default;
-            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.UserSession);
-            expect(result).toBe(UserSessions);
-        });
-
-        it('should return PlanPurchase model for DATA_MODELS.PlanPurchase', () => {
-            const PlanPurchase = require('../../src/model/plan-purchase').default;
-            const result = (postgresDataHelper as any)._getModel(DATA_MODELS.PlanPurchase);
-            expect(result).toBe(PlanPurchase);
         });
 
         it('should return Providers model for DATA_MODELS.Providers', () => {

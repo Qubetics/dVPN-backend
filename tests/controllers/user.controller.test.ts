@@ -42,15 +42,20 @@ describe('UserController', () => {
         it('should call UserHelper.connectWallet with correct parameters', async () => {
             req.body = {
                 wallet_address: 'wallet1',
-                pubKey: 'pubkey',
-                signature: 'sig'
+                signature: {
+                    pub_key: {
+                        type: 'tendermint/PubKeySecp256k1',
+                        value: 'test-pubkey-value'
+                    },
+                    signature: 'sig'
+                }
             };
             const mockResponse = { status: STATUS_CODES.SUCCESS, data: {} };
             (UserHelper.connectWallet as jest.Mock).mockResolvedValue(mockResponse);
 
             await (userController as any).connectWallet(req, res);
 
-            expect(UserHelper.connectWallet).toHaveBeenCalledWith('wallet1', 'pubkey', 'sig');
+            expect(UserHelper.connectWallet).toHaveBeenCalledWith('wallet1', req.body.signature);
             expect(sendResponse).toHaveBeenCalledWith(res, mockResponse);
         });
     });
