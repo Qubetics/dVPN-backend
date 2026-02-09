@@ -45,7 +45,7 @@ class App {
         this.app.use(
             cors({
                credentials: true,
-               origin: process.env.ORIGIN?.split(','),
+               origin: true,
                methods:["GET","POST","PUT","DELETE", "OPTIONS", "HEAD"],
                preflightContinue: false,
             })
