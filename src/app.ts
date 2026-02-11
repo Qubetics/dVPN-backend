@@ -43,12 +43,12 @@ class App {
     }
     private initializeMiddlewares() {
         this.app.use(
-            cors({
-               credentials: true,
-               origin: true,
-               methods:["GET","POST","PUT","DELETE", "OPTIONS", "HEAD"],
-               preflightContinue: false,
-            })
+          cors({
+            credentials: true,
+            origin: true,
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
+            preflightContinue: false,
+          })
         );
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended: false}));

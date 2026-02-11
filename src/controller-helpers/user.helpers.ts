@@ -12,6 +12,7 @@ import {
 } from "../constants/user.constant";
 import PostgresDataHelper from "../helpers/postgres.data.helper";
 import {
+  decodeToken,
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
@@ -137,7 +138,7 @@ class UserHelper {
         });
       }
 
-      const { refresh_uuid } = verifyRefreshToken(refresh_token);
+      const { refresh_uuid } = decodeToken(refresh_token);
 
       const values = await redisHelper.client.get(refresh_uuid);
 

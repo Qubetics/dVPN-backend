@@ -18,6 +18,7 @@ describe('User Validation', () => {
         it('should pass validation with valid data', () => {
             req.body = {
                 wallet_address: 'sent1abc123',
+                pubKey: Buffer.from('test-pubkey').toString('base64'),
                 signature: {
                     pub_key: {
                         type: 'tendermint/PubKeySecp256k1',

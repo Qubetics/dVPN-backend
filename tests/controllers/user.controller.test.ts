@@ -62,7 +62,7 @@ describe('UserController', () => {
 
     describe('userLogout', () => {
         it('should call userHelpers.userLogout with correct parameters', async () => {
-            req.headers['refresh_token'] = 'token';
+            req.headers['refresh-token'] = 'token';
             const mockResponse = { status: STATUS_CODES.SUCCESS, data: {} };
             (userHelpers.userLogout as jest.Mock).mockResolvedValue(mockResponse);
 
@@ -75,7 +75,7 @@ describe('UserController', () => {
 
     describe('userRefresh', () => {
         it('should call userHelpers.userRefresh with correct parameters', async () => {
-            req.headers['refresh_token'] = 'token';
+            req.headers['refresh-token'] = 'token';
             const mockResponse = { status: STATUS_CODES.SUCCESS, data: {} };
             (userHelpers.userRefresh as jest.Mock).mockResolvedValue(mockResponse);
 
