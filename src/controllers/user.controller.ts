@@ -45,7 +45,7 @@ class UserController implements Controller {
   private userLogout = async (req: any, res: Response) => {
     console.log("🚀 ~ UserController ~ req.headers:", req?.headers);
     console.log("🚀 ~ UserController ~ req.headers:", req?.Headers);
-    const refresh_token = String(req.headers['refresh-token']);
+    const refresh_token = String(req.headers['refresh_token']);
     console.log("🚀 ~ UserController ~ refresh_token:", refresh_token)
     const logoutResponse = await UserHelper.userLogout(refresh_token);
     return sendResponse(res, logoutResponse);
