@@ -9,6 +9,15 @@ import { connections } from "../src/utils/constant.util";
 })();
 
 const sequelizeEvent = new EventEmitter();
+
+const isProdSSL =
+    process.env.NODE_ENV === 'production' &&
+    process.env.DB_SSL === 'true';
+
+const caCert = isProdSSL && process.env.DB_CA_CERT
+    ? Buffer.from(process.env.DB_CA_CERT, 'base64').toString('utf-8')
+    : undefined;
+
 class DBConnectionHandler {
     static instance: DBConnectionHandler = null;
 
@@ -42,9 +51,15 @@ class DBConnectionHandler {
 
         },
         dialect: "postgres",
-        dialectOptions: process.env.NODE_ENV === 'production' && process.env.DB_SSL === 'true'
-        ? { ssl: { require: true, rejectUnauthorized: true } }
-        : {},
+        dialectOptions: isProdSSL
+            ? {
+                ssl: {
+                    require: true,
+                    rejectUnauthorized: false,
+                    ca: caCert,
+                },
+            }
+            : {},
         logging: false,
         pool: {
             max: 100,
