@@ -93,7 +93,7 @@ class UserHelper {
         access_token_uuid: access_uuid,
       };
       // set in the redis both the token
-      const set_value=await Promise.all([
+      await Promise.all([
         redisHelper.client.set(access_uuid, JSON.stringify(setDataAccess), {
           EX: REDIS_ACCESS_TOKEN_EXP_TIME.EXPIRE,
         }),
@@ -105,7 +105,6 @@ class UserHelper {
           }
         ),
       ]);
-      console.log("🚀 ~ UserHelper ~ set_value:", set_value)
 
       return successHandler({
         data: {
