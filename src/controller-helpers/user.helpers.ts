@@ -161,6 +161,7 @@ class UserHelper {
         status: Number(STATUS_CODES.SUCCESS),
       });
     } catch (error) {
+      console.log("🚀 ~ UserHelper ~ error:", error)
       return errorHandler({
         status: Number(STATUS_CODES.INTERNALSERVER),
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
