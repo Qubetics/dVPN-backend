@@ -139,13 +139,9 @@ class UserHelper {
         });
       }
 
-      console.log("🚀 ~ UserHelper ~ refresh_token:", refresh_token)
-
       const { refresh_uuid } = decodeToken(refresh_token);
-      console.log("🚀 ~ UserHelper ~ refresh_uuid:", refresh_uuid)
 
       const values = await redisHelper.client.get(refresh_uuid);
-      console.log("🚀 ~ UserHelper ~ values:", values)
 
       if (!values) {
         return errorHandler({
@@ -155,9 +151,7 @@ class UserHelper {
       }
 
       const parsedValues = JSON.parse(String(values));
-      console.log("🚀 ~ UserHelper ~ parsedValues:", parsedValues)
       const access_uuid = parsedValues.access_token_uuid;
-      console.log("🚀 ~ UserHelper ~ access_uuid:", access_uuid)
 
       await Promise.all([
         redisHelper.removeFromRedis(refresh_uuid),
@@ -169,7 +163,6 @@ class UserHelper {
         status: Number(STATUS_CODES.SUCCESS),
       });
     } catch (error) {
-      console.log("🚀 ~ UserHelper ~ error:", error)
       return errorHandler({
         status: Number(STATUS_CODES.INTERNALSERVER),
         message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,

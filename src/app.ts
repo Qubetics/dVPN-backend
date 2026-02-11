@@ -46,11 +46,6 @@ class App {
         cors({
           credentials: true,
           origin: true,
-          allowedHeaders: [
-            "Content-Type",
-            "Authorization",
-            "refresh_token"
-          ],
           methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
           preflightContinue: false,
         })

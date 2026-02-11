@@ -48,7 +48,6 @@ export const verifyRefreshToken = (token: string): AccessTokenPayload | null => 
 export const decodeToken = (token: string): AccessTokenPayload | null => {
   try {
     const decoded = jwt.decode(token);
-    console.log("🚀 ~ decodeToken ~ decoded:", decoded)
     return decoded as AccessTokenPayload;
   } catch (error) {
     return null;
