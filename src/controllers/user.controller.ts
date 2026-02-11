@@ -43,7 +43,7 @@ class UserController implements Controller {
    * @returns 
    */
   private userLogout = async (req: any, res: Response) => {
-    const refresh_token = String(req.headers['refresh_token']);
+    const refresh_token = String(req.headers['refresh-token']);
     const logoutResponse = await UserHelper.userLogout(refresh_token);
     return sendResponse(res, logoutResponse);
   };
@@ -55,7 +55,7 @@ class UserController implements Controller {
    * @returns
    */
   private userRefresh = async (req: any, res: Response) => {
-    const refresh_token = String(req.headers['refresh_token']);
+    const refresh_token = String(req.headers['refresh-token']);
     const refreshResponse = await UserHelper.userRefresh(refresh_token);
     return sendResponse(res, refreshResponse);
   };

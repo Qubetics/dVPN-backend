@@ -1,7 +1,7 @@
 import UserHelper from '../../src/controller-helpers/user.helpers';
 import postgresDataHelper from '../../src/helpers/postgres.data.helper';
 import redisHelper from '../../src/helpers/redis.helper';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../src/utils/jwt.utils';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, decodeToken } from '../../src/utils/jwt.utils';
 import { verifyKeplrSignature } from '../../src/controller-helpers/common.helpers';
 import { RESPONSE_MESSAGES, STATUS_CODES } from '../../src/constants/index';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,6 +25,7 @@ jest.mock('../../src/utils/jwt.utils', () => ({
     generateAccessToken: jest.fn(),
     generateRefreshToken: jest.fn(),
     verifyRefreshToken: jest.fn(),
+    decodeToken: jest.fn(),
 }));
 
 jest.mock('../../src/controller-helpers/common.helpers', () => ({
@@ -123,7 +124,7 @@ describe('UserHelper', () => {
         });
 
         it('should return error if session not found in redis', async () => {
-            (verifyRefreshToken as jest.Mock).mockReturnValue({ refresh_uuid: 'uuid' });
+            (decodeToken as jest.Mock).mockReturnValue({ refresh_uuid: 'uuid' });
             (redisHelper.client.get as jest.Mock).mockResolvedValue(null);
 
             const result = await UserHelper.userLogout('token');
@@ -135,7 +136,7 @@ describe('UserHelper', () => {
         });
 
         it('should logout user', async () => {
-            (verifyRefreshToken as jest.Mock).mockReturnValue({ refresh_uuid: 'uuid' });
+            (decodeToken as jest.Mock).mockReturnValue({ refresh_uuid: 'uuid' });
             (redisHelper.client.get as jest.Mock).mockResolvedValue(JSON.stringify({ access_token_uuid: 'access_uuid' }));
 
             const result = await UserHelper.userLogout('token');
