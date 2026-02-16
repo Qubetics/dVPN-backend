@@ -1,4 +1,4 @@
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
+import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, ACTIVE, UNKNOWN} from "../constants/index";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -6,6 +6,7 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
 import dbConnectionHandler from "../connection";
 import Node from "../model/nodes/index";
 import { log } from "../utils/helper.utils"
+import { Op } from "sequelize";
 require('dotenv').config();
 
 const sequelize = dbConnectionHandler.sequelize;
@@ -43,8 +44,14 @@ class PlanHelper {
                         model: Node,
                         as: "nodes",
                         attributes: [],
-                        required: false,
-                    },
+                        required: true,
+                        where: {
+                            node_status: ACTIVE,
+                            protocol: {
+                                [Op.ne]: UNKNOWN,
+                            },
+                        },
+                    }
                 ],
                 {
                     raw: true,
