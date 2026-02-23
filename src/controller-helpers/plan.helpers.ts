@@ -1,4 +1,4 @@
-import { DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
+import { CURRENCY_VALUE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -6,6 +6,8 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
 import dbConnectionHandler from "../connection";
 import Node from "../model/nodes/index";
 import { log } from "../utils/helper.utils"
+import { TOKEN_PRICE_KEY } from "./common.helpers";
+import redisHelper from "../helpers/redis.helper";
 require('dotenv').config();
 
 const sequelize = dbConnectionHandler.sequelize;
@@ -27,15 +29,19 @@ class PlanHelper {
                 });
             }
 
+            const redisKey = TOKEN_PRICE_KEY(CURRENCY_VALUE.TICS, CURRENCY_VALUE.USD);
+            let ticsUsdPrice = await redisHelper.client.get(redisKey);
+
+
             const result = await postgresDataHelper.findDataFromJoinModels(
                 DATA_MODELS.Plans,
-                { provider_address: providerAddress }, 
+                { provider_address: providerAddress },
                 [
                     "plan_id",
                     "hours",
                     "prices",
-                    [sequelize.col("nodes.country"), "country"], 
-                    [sequelize.fn("COUNT", sequelize.col("nodes.id")), "node_count"], 
+                    [sequelize.col("nodes.country"), "country"],
+                    [sequelize.fn("COUNT", sequelize.col("nodes.id")), "node_count"],
                     [sequelize.fn("MAX", sequelize.col("nodes.flag_url")), "flag_url"],
                 ],
                 [
@@ -54,7 +60,7 @@ class PlanHelper {
             );
 
             const mergedPlans = Object.values(
-                result.reduce((acc:any, row:any) => {
+                result.reduce((acc: any, row: any) => {
                     const { plan_id, hours, prices, country, node_count, flag_url } = row;
 
                     if (!acc[plan_id]) {
@@ -78,11 +84,29 @@ class PlanHelper {
                 }, {})
             );
 
+            const enrichedPlans = mergedPlans.map((plan: any) => {
+                const price = plan.prices?.[0];
+
+                if (!price) {
+                    return plan;
+                }
+
+                const ticsAmount = Number(price.quote_value) / 1e18;
+                let usdPrice: any = null;
+                if (ticsAmount) {
+                    usdPrice = ticsAmount * Number(ticsUsdPrice);
+                }
+
+                return {
+                    ...plan,
+                    prices_in_usd: usdPrice ?? Number(usdPrice.toFixed(6)),
+                };
+            });
 
             return successHandler({
                 status: STATUS_CODES.SUCCESS,
                 message: RESPONSE_MESSAGES.PLAN_FETCH_SUCCESS,
-                data: mergedPlans,
+                data: enrichedPlans,
             });
         } catch (error: any) {
             log.red("Error in getAllPlans:", error);
