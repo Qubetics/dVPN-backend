@@ -1,4 +1,4 @@
-import { CURRENCY_VALUE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED } from "../constants/index";
+import { CURRENCY_VALUE,DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, ACTIVE, UNKNOWN} from "../constants/index";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -8,6 +8,7 @@ import Node from "../model/nodes/index";
 import { log } from "../utils/helper.utils"
 import { TOKEN_PRICE_KEY } from "./common.helpers";
 import redisHelper from "../helpers/redis.helper";
+import { Op } from "sequelize";
 require('dotenv').config();
 
 const sequelize = dbConnectionHandler.sequelize;
@@ -49,8 +50,14 @@ class PlanHelper {
                         model: Node,
                         as: "nodes",
                         attributes: [],
-                        required: false,
-                    },
+                        required: true,
+                        where: {
+                            node_status: ACTIVE,
+                            protocol: {
+                                [Op.ne]: UNKNOWN,
+                            },
+                        },
+                    }
                 ],
                 {
                     raw: true,

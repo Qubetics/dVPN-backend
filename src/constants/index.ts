@@ -112,3 +112,4 @@ export const UNDEFINED = "undefined";
 export const ACTIVE = "active";
 export const INACTIVE = "inactive";
 export const USER = "user";
+export const UNKNOWN = "Unknown"
