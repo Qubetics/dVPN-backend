@@ -37,6 +37,8 @@ export const DATA_MODELS = {
 
 // Response messages
 export const RESPONSE_MESSAGES = {
+  CURRENT_TOKEN_PRICE_SUCCESSFULLY_FETCH: "Successfully fetched the current token price",
+  UNABLE_TO_FETCH_THE_TOKEN_PRICE: "unable to fetch the token price",
   PROVIDER_LIST_FETCH_SUCESSFULLY: "provider list is successfully fetched",
   PLAN_ID_IS_NOT_PRESENT: "You need to purchase the plan first",
   PLAN_ID_FETCH: "Plan Id fetch successfully",
@@ -107,6 +109,10 @@ export const CURRENCY_VALUE = {
   TICS: "TICS",
   USD: "USD"
 };
+
+export const API_URL_ENDPOINT = {
+  token_price : "/api/app/current-token-price",
+}
 
 export const UNDEFINED = "undefined";
 export const ACTIVE = "active";

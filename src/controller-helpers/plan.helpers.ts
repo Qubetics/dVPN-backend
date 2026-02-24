@@ -1,4 +1,4 @@
-import { CURRENCY_VALUE,DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, ACTIVE, UNKNOWN} from "../constants/index";
+import { CURRENCY_VALUE, DATA_MODELS, RESPONSE_MESSAGES, STATUS_CODES, UNDEFINED, ACTIVE, UNKNOWN, API_URL_ENDPOINT } from "../constants/index";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -6,7 +6,7 @@ import postgresDataHelper from "../helpers/postgres.data.helper";
 import dbConnectionHandler from "../connection";
 import Node from "../model/nodes/index";
 import { log } from "../utils/helper.utils"
-import { TOKEN_PRICE_KEY } from "./common.helpers";
+import { getCurrentTokenPrice, TOKEN_PRICE_KEY } from "./common.helpers";
 import redisHelper from "../helpers/redis.helper";
 import { Op } from "sequelize";
 require('dotenv').config();
@@ -30,8 +30,15 @@ class PlanHelper {
                 });
             }
 
-            const redisKey = TOKEN_PRICE_KEY(CURRENCY_VALUE.TICS, CURRENCY_VALUE.USD);
-            let ticsUsdPrice = await redisHelper.client.get(redisKey);
+            let ticsUsdPrice: any;
+            const API_URL = process.env.CURRENT_TOKEN_API;
+
+            if (process.env.NODE_ENV == 'production') {
+                const redisKey = TOKEN_PRICE_KEY(CURRENCY_VALUE.TICS, CURRENCY_VALUE.USD);
+                ticsUsdPrice = await redisHelper.client.get(redisKey) ?? 0;
+            } else {
+                ticsUsdPrice = await getCurrentTokenPrice(API_URL,API_URL_ENDPOINT.token_price) ?? 0;
+            }
 
 
             const result = await postgresDataHelper.findDataFromJoinModels(
