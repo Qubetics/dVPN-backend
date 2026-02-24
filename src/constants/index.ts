@@ -37,15 +37,17 @@ export const DATA_MODELS = {
 
 // Response messages
 export const RESPONSE_MESSAGES = {
-  PROVIDER_LIST_FETCH_SUCESSFULLY:"provider list is successfully fetched",
-  PLAN_ID_IS_NOT_PRESENT:"You need to purchase the plan first",
-  PLAN_ID_FETCH:"Plan Id fetch successfully",
-  PLAN_ID_SUCCESS:"Plan ID saved successfully",
-  PLAN_ID_NOT_FOUND:"Plan ID not found in transaction message",
-  NO_MESSAGE:"No messages found in transaction",
+  CURRENT_TOKEN_PRICE_SUCCESSFULLY_FETCH: "Successfully fetched the current token price",
+  UNABLE_TO_FETCH_THE_TOKEN_PRICE: "unable to fetch the token price",
+  PROVIDER_LIST_FETCH_SUCESSFULLY: "provider list is successfully fetched",
+  PLAN_ID_IS_NOT_PRESENT: "You need to purchase the plan first",
+  PLAN_ID_FETCH: "Plan Id fetch successfully",
+  PLAN_ID_SUCCESS: "Plan ID saved successfully",
+  PLAN_ID_NOT_FOUND: "Plan ID not found in transaction message",
+  NO_MESSAGE: "No messages found in transaction",
   FAILED_TRANSACTION: "Invalid transaction or failed transaction",
-  PLAN_FETCH_SUCCESS:"Plans fetched successfully",
-  NODE_DETAIL_FOUND:"Node details fetched successfully",
+  PLAN_FETCH_SUCCESS: "Plans fetched successfully",
+  NODE_DETAIL_FOUND: "Node details fetched successfully",
   NO_NODE_FOUND: "No nodes found for this planId",
   PLAN_NOT_FOUND: "No plan found for this address",
   SUCCESS_NEW_TOKEN: "New Token generated successfully",
@@ -70,7 +72,7 @@ export const RESPONSE_MESSAGES = {
   BASE_ERROR_MESSAGE: "Failed",
 };
 
-export const SESSION_ATTRIBUTES = ['subscription_id','start_at', 'status_at', 'status'];
+export const SESSION_ATTRIBUTES = ['subscription_id', 'start_at', 'status_at', 'status'];
 
 export const NODE_ATTRIBUTES = ['flag_url', 'city', 'country', 'remote_url', 'address'];
 
@@ -92,7 +94,12 @@ export const NODE_LIST_ATTRIBUTES = [
   'protocol'
 ];
 
-export const SUBSCRIPTION_LIST_ATTRIBUTE=[
+export const CURRENCY_CONSTANT = {
+  TICS: 'TICS',
+  USD: 'USD'
+};
+
+export const SUBSCRIPTION_LIST_ATTRIBUTE = [
   "id",
   "wallet_address",
   "plan_id",

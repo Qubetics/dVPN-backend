@@ -95,3 +95,7 @@ export function flattenNodeFields(results: any[]): any[] {
     return flatRow;
   });
 };
+
+export function TOKEN_PRICE_KEY(symbol: string, currency: string) {
+  return `token_price:${symbol.toUpperCase()}:${currency.toLowerCase()}`;
+};
