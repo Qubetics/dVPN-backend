@@ -1,4 +1,4 @@
-import { CURRENCY_CONSTANT, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
+import { CURRENCY_VALUE, RESPONSE_MESSAGES, STATUS_CODES } from "../constants/index";
 import { successHandler } from "../success-handler/index";
 import { errorHandler } from "../error-handler/index";
 import { ApiResponse } from "../interfaces/user.helpers.interfaces";
@@ -64,11 +64,8 @@ class AppHelper {
  */
     public getCurrentTokenPrice = async (): Promise<ApiResponse> => {
         try {
-            const currentTokenPriceKey = TOKEN_PRICE_KEY(CURRENCY_CONSTANT.TICS, CURRENCY_CONSTANT.USD);
-            console.log("🚀 ~ AppHelper ~ currentTokenPrice:", currentTokenPriceKey);
-
+            const currentTokenPriceKey = TOKEN_PRICE_KEY(CURRENCY_VALUE.TICS, CURRENCY_VALUE.USD);
             const currentTokenPrice = await redisHelper.client.get(currentTokenPriceKey);
-            console.log("🚀 ~ AppHelper ~ currentTokenPrice:", currentTokenPrice)
 
             if (!currentTokenPrice) {
                 return errorHandler({

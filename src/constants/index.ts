@@ -94,11 +94,6 @@ export const NODE_LIST_ATTRIBUTES = [
   'protocol'
 ];
 
-export const CURRENCY_CONSTANT = {
-  TICS: 'TICS',
-  USD: 'USD'
-};
-
 export const SUBSCRIPTION_LIST_ATTRIBUTE = [
   "id",
   "wallet_address",
@@ -109,6 +104,15 @@ export const SUBSCRIPTION_LIST_ATTRIBUTE = [
   "inactive_at",
   "start_at"
 ];
+
+export const CURRENCY_VALUE = {
+  TICS: "TICS",
+  USD: "USD"
+};
+
+export const API_URL_ENDPOINT = {
+  token_price : "/api/app/current-token-price",
+}
 
 export const UNDEFINED = "undefined";
 export const ACTIVE = "active";

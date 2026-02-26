@@ -1,3 +1,4 @@
+import axios from 'axios';
 import sha3 from "js-sha3";
 const { bech32 } = require("bech32");
 import { serializeSignDoc } from "@cosmjs/amino";
@@ -78,7 +79,6 @@ export const verifyKeplrSignature = async (
   }
 };
 
-
 export function flattenNodeFields(results: any[]): any[] {
   return results.map((row: any) => {
     const flatRow: any = {};
@@ -99,3 +99,14 @@ export function flattenNodeFields(results: any[]): any[] {
 export function TOKEN_PRICE_KEY(symbol: string, currency: string) {
   return `token_price:${symbol.toUpperCase()}:${currency.toLowerCase()}`;
 };
+
+export async function getCurrentTokenPrice(API_URL:string,END_POINT:string): Promise<string | null> {
+  try {
+    const { data } = await axios.get(`${API_URL}${END_POINT}`);
+
+    return data?.data?.current_token_price ?? null;
+  } catch (error) {
+    console.error('Token price fetch error:', error);
+    return null;
+  }
+}
