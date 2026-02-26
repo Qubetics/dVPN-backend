@@ -31,12 +31,11 @@ class PlanHelper {
             }
 
             let ticsUsdPrice: any;
-            const API_URL = process.env.CURRENT_TOKEN_API;
-
             if (process.env.NODE_ENV == 'production') {
                 const redisKey = TOKEN_PRICE_KEY(CURRENCY_VALUE.TICS, CURRENCY_VALUE.USD);
                 ticsUsdPrice = await redisHelper.client.get(redisKey) ?? 0;
             } else {
+                const API_URL = process.env.CURRENT_TOKEN_API;
                 ticsUsdPrice = await getCurrentTokenPrice(API_URL,API_URL_ENDPOINT.token_price) ?? 0;
             }
 
