@@ -8,6 +8,12 @@ jest.mock('../../src/helpers/postgres.data.helper', () => ({
     findAndCountFromJoinModels: jest.fn(),
 }));
 
+// Mock common helpers
+jest.mock('../../src/controller-helpers/common.helpers', () => ({
+    getCurrentTokenPrice: jest.fn().mockResolvedValue('0.1'), // 0.1 USD per TICS
+    TOKEN_PRICE_KEY: jest.fn().mockReturnValue('token_price:TICS:usd'),
+}));
+
 // Mock connection
 jest.mock('../../src/connection', () => ({
     sequelize: {
@@ -66,7 +72,7 @@ describe('SubscriptionHelper', () => {
 
             expect(result).toEqual({
                 data: {
-                    subscriptions: mockSubscriptions,
+                    subscriptions: mockSubscriptions.map(s => ({ ...s, prices_in_usd: null })),
                     total: 1
                 },
                 status: STATUS_CODES.SUCCESS,
@@ -96,7 +102,7 @@ describe('SubscriptionHelper', () => {
 
             expect(result).toEqual({
                 data: {
-                    subscriptions: mockSubscriptions,
+                    subscriptions: mockSubscriptions.map(s => ({ ...s, prices_in_usd: null })),
                     total: 1
                 },
                 status: STATUS_CODES.SUCCESS,
