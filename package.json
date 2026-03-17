@@ -6,6 +6,8 @@
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watchAll",
     "test:coverage": "jest --coverage --detectOpenHandles",
+    "build":"tsc",
+    "start:node": "node ./dist/server.js",
     "start": "ts-node ./src/server.ts",
     "dev": "nodemon ./src/server.ts",
     "migrate:table": "ts-node ./src/custom-migrations/20260115-sync-sessions-subscriptions-from-fallback.ts",

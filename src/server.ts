@@ -1,18 +1,18 @@
-import { REDIS_ERR_MSG } from "../src/constants/redis.constant";
+require('dotenv').config();
+import { REDIS_ERR_MSG } from "./constants/redis.constant";
 import App from "./app";
 import { log } from './utils/helper.utils';
 import * as config from './config';
-import redisHelper from "../src/helpers/redis.helper";
+import redisHelper from "./helpers/redis.helper";
 import UserController from "./controllers/user.controller";
 import dbConnectionHandler from "./connection"
 import NodeController from "./controllers/node.controller";
 import UserSessionController from "./controllers/user-session.controller";
-import ERR from "../src/constants/server.constants";
+import ERR from "./constants/server.constants";
 import SubscriptionController from "./controllers/subscription.controller";
 import AppController from "./controllers/app.controller";
 import PlanController from "./controllers/plan.controller";
 import ProviderController from "./controllers/provider.controller";
-require('dotenv').config();
 
 (async () => {
     try {
