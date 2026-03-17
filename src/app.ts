@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { Controller } from "@interfaces";
 import './model/index';
 import sendResponse from "./responses/response.helper";
-import { RESPONSE_MESSAGES, STATUS_CODES } from "../src/constants/index";
+import { RESPONSE_MESSAGES, STATUS_CODES } from "./constants/index";
 import { log } from "./utils/helper.utils";
 require('dotenv').config();
 

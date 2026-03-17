@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 import { log } from "./utils/helper.utils";
 import * as config from './config/index';
 import { EventEmitter } from "events";
-import { connections } from "../src/utils/constant.util";
+import { connections } from "./utils/constant.util";
 
 (async () => {
     await config.initiate();
