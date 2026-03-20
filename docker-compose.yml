@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:16
     restart: always
     ports:
       - "9876:5432"
@@ -39,15 +39,15 @@ services:
         interval: 30s
         timeout: 10s
         retries: 3
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    env_file:
-      - /root/dVPN-backend/.env
-    ports:
-      - "0.0.0.0:7000:7000"
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   env_file:
+  #     - /root/dVPN-backend/.env
+  #   ports:
+  #     - "0.0.0.0:7000:7000"
 
   # redpanda service (kafka)
   # redpanda-0:
