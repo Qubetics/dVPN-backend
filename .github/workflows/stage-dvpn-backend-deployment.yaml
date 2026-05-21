@@ -7,13 +7,13 @@ on:
 
 jobs:
   dvpn-backend:
-    uses: Qubetics/argocd-qubetics/.github/workflows/deployment.yaml@dev
+    uses: Qubetics/argocd-qubetics/.github/workflows/helm-deployment.yaml@dev
     with:
       SWR_ORGANIZATION: dev-qubetics
       ARGOCD_BRANCH: dev
       HUAWEI_REGION: 'ap-southeast-3'
       ARGOCD_REPOSITORY: Qubetics/argocd-qubetics
-      DEPLOYMENT_PATH: Dvpn-backend/deployment.yaml
+      DEPLOYMENT_PATH: services/values/dvpn-backend.yaml
       HUAWEI_IMAGE: dvpn-backend
       DOCKER_USERNAME: ap-southeast-3@${{ vars.DOCKER_USERNAME_V2 }}
       ENV: ${{ vars.DVPN_BACKEND }}
