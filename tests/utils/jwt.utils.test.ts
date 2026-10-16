@@ -1,13 +1,18 @@
-import * as jwtUtils from '../../src/utils/jwt.utils';
 import jwt from 'jsonwebtoken';
 
 jest.mock('jsonwebtoken');
 
-// Mock environment variables before importing
+// Set environment variables BEFORE the module under test is loaded.
+// jwt.utils.ts captures these secrets into module-level constants at load time,
+// so the module must be required (require is not hoisted, unlike `import`) only
+// after these assignments run — otherwise the secrets are read as `undefined`.
 process.env.ACCESS_TOKEN_SECRET = 'test-access-secret';
 process.env.REFRESH_TOKEN_SECRET = 'test-refresh-secret';
 process.env.ACCESS_TOKEN_EXPIRY = '15m';
 process.env.REFRESH_TOKEN_EXPIRY = '7d';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const jwtUtils = require('../../src/utils/jwt.utils');
 
 describe('JWT Utils', () => {
     const mockPayload = {

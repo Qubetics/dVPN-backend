@@ -1,3 +1,11 @@
+# ===========================================================================
+# LOCAL DEVELOPMENT ONLY.
+# The credentials below (Postgres postgres/postgres, pgAdmin admin@admin.com/root)
+# are weak, well-known defaults intended purely for running the stack on a
+# developer machine. DO NOT use this file, these credentials, or these exposed
+# ports in any shared, staging or production environment. Supply real secrets
+# via environment variables / a secrets manager instead.
+# ===========================================================================
 version: "3.5"
 
 services:
